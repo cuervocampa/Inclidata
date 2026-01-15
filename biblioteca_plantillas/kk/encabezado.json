@@ -1,0 +1,154 @@
+{
+  "elementos": {
+    "Rectángulo 1": {
+      "tipo": "rectangulo",
+      "geometria": {
+        "x": 0.6,
+        "y": 0.5,
+        "ancho": 4.4,
+        "alto": 1
+      },
+      "estilo": {
+        "grosor_borde": 1,
+        "color_borde": "#000000",
+        "color_relleno": "#FFFFFF",
+        "opacidad": 100
+      },
+      "grupo": {
+        "nombre": "encabezado",
+        "color": "#cccccc"
+      },
+      "metadata": {
+        "zIndex": 5,
+        "visible": true,
+        "bloqueado": false
+      }
+    },
+    "Rectángulo 2": {
+      "tipo": "rectangulo",
+      "geometria": {
+        "x": 0.6,
+        "y": 1.5,
+        "ancho": 4.4,
+        "alto": 0.5
+      },
+      "estilo": {
+        "grosor_borde": 1,
+        "color_borde": "#000000",
+        "color_relleno": "#3915d6",
+        "opacidad": 100
+      },
+      "grupo": {
+        "nombre": "encabezado",
+        "color": "#cccccc"
+      },
+      "metadata": {
+        "zIndex": 5,
+        "visible": true,
+        "bloqueado": false
+      }
+    },
+    "Rectángulo 3": {
+      "tipo": "rectangulo",
+      "geometria": {
+        "x": 0.6,
+        "y": 2,
+        "ancho": 4.4,
+        "alto": 0.5
+      },
+      "estilo": {
+        "grosor_borde": 1,
+        "color_borde": "#000000",
+        "color_relleno": "#fcd03d",
+        "opacidad": 100
+      },
+      "grupo": {
+        "nombre": "encabezado",
+        "color": "#cccccc"
+      },
+      "metadata": {
+        "zIndex": 5,
+        "visible": true,
+        "bloqueado": false
+      }
+    },
+    "Rectángulo 4": {
+      "tipo": "rectangulo",
+      "geometria": {
+        "x": 5,
+        "y": 0.5,
+        "ancho": 8.7,
+        "alto": 2
+      },
+      "estilo": {
+        "grosor_borde": 1,
+        "color_borde": "#000000",
+        "color_relleno": "#FFFFFF",
+        "opacidad": 100
+      },
+      "grupo": {
+        "nombre": "encabezado",
+        "color": "#cccccc"
+      },
+      "metadata": {
+        "zIndex": 5,
+        "visible": true,
+        "bloqueado": false
+      }
+    },
+    "Rectángulo 5": {
+      "tipo": "rectangulo",
+      "geometria": {
+        "x": 13.7,
+        "y": 0.5,
+        "ancho": 8.8,
+        "alto": 2
+      },
+      "estilo": {
+        "grosor_borde": 1,
+        "color_borde": "#000000",
+        "color_relleno": "#FFFFFF",
+        "opacidad": 100
+      },
+      "grupo": {
+        "nombre": "encabezado",
+        "color": "#cccccc"
+      },
+      "metadata": {
+        "zIndex": 5,
+        "visible": true,
+        "bloqueado": false
+      }
+    },
+    "Rectángulo 6": {
+      "tipo": "rectangulo",
+      "geometria": {
+        "x": 22.5,
+        "y": 0.5,
+        "ancho": 6.5,
+        "alto": 2
+      },
+      "estilo": {
+        "grosor_borde": 1,
+        "color_borde": "#000000",
+        "color_relleno": "#FFFFFF",
+        "opacidad": 100
+      },
+      "grupo": {
+        "nombre": "encabezado",
+        "color": "#cccccc"
+      },
+      "metadata": {
+        "zIndex": 5,
+        "visible": true,
+        "bloqueado": false
+      }
+    }
+  },
+  "seleccionado": null,
+  "configuracion": {
+    "orientacion": "landscape",
+    "nombre_plantilla": "",
+    "version": "1.0"
+  }
+}

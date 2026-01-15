@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Archivos comprimidos (no subir backups)
+*.zip
+
+# Archivos temporales
+_kk.txt
+*.log
+*.tmp
+
+# OS
+.DS_Store
+Thumbs.db

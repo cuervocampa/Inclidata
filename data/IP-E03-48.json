@@ -1,0 +1,18 @@
+{
+    "info": {
+        "nom_sensor": "IP-E03-48",
+        "coordenadas": {
+            "x": 100,
+            "y": 200,
+            "z": 300
+        },
+        "cota_1000": 0,
+        "adquisicion": "manual",
+        "disposicion": "vertical",
+        "sentido_calculo": "abajo-arriba"
+    },
+        "umbrales": {
+        "deformadas": {},
+        "valores": []
+    },
+}

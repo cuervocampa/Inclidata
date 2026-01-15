@@ -1,0 +1,34 @@
+{
+    "2024-10-30T11:57:29": {
+        "bias": [
+            {
+                "Correccion": "Bias_1_A",
+                "Selec": true,
+                "Prof_inf": 37.5,
+                "Prof_sup": 0.5,
+                "Delta": -2.32
+            },
+            {
+                "Correccion": "Bias_1_B",
+                "Selec": true,
+                "Prof_inf": 37.5,
+                "Prof_sup": 0.5,
+                "Delta": 2.39
+            },
+            {
+                "Correccion": "Bias_2_A",
+                "Selec": false,
+                "Prof_inf": 0.5,
+                "Prof_sup": 0.5,
+                "Delta": 0.0
+            },
+            {
+                "Correccion": "Bias_2_B",
+                "Selec": false,
+                "Prof_inf": 0.5,
+                "Prof_sup": 0.5,
+                "Delta": 0.0
+            }
+        ]
+    }
+}

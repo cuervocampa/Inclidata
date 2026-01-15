@@ -1,0 +1,13 @@
+/* assets/styles.css */
+
+/* Ocultar el tooltip del slider y las marcas para sliders con la clase 'slider-ocultar-tooltip-marks' */
+
+/* Ocultar el tooltip del slider */
+.slider-ocultar-tooltip-marks .rc-slider-tooltip {
+    display: none !important;
+}
+
+/* Ocultar las marcas del slider */
+.slider-ocultar-tooltip-marks .rc-slider-mark-text {
+    display: none !important;
+}

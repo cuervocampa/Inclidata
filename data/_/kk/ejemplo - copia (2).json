@@ -1,0 +1,43 @@
+{
+  "info": {
+    "nom_sensor": "uno",
+    "coordenadas": {
+      "x": 100,
+      "y": 200,
+      "z": 300
+    },
+    "adquisicion": "manual",
+    "disposicion": "vertical",
+    "sentido_calculo": "abajo-arriba",
+    "umbrales": "por_definir"
+  },
+  "2017-07-18T09:50:38": {
+    "campaign_info": {
+      "importador": "RST",
+      "reference": false,
+      "active": true,
+      "quarentine": false,
+      "alarm": "por definir"
+    }
+  },
+    "2017-07-21T09:00:00": {
+    "campaign_info": {
+      "importador": "RST",
+      "reference": false,
+      "active": true,
+      "quarentine": false,
+      "alarm": "por definir"
+    }
+  },
+      "2019-08-01T09:00:00": {
+    "campaign_info": {
+      "importador": "RST",
+      "reference": true,
+      "active": true,
+      "quarentine": false,
+      "alarm": "por definir"
+    }
+  }
+}
+
+
