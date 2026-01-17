@@ -309,7 +309,7 @@ def calculos_bias_1(df_bias, df_bias_table, json_spikes):
         df_componentes['delta_b'] = df_componentes['recta_b'].iloc[::-1].diff().iloc[::-1]
 
         # Llenar la última fila con 0 en lugar de NaN
-        df_componentes.fillna(0, inplace=True)
+        df_componentes = df_componentes.fillna(0)
 
         # ii) extrae las columnas a0-a180 de json_spikes y lo añade a df_componentes
         # Obtener la única clave de fecha disponible
@@ -324,7 +324,7 @@ def calculos_bias_1(df_bias, df_bias_table, json_spikes):
         # Agregar las columnas extraídas a df_componentes usando merge
         df_componentes = df_componentes.merge(df_extracted_generic, on="depth", how="left")
         # Renombrar las columnas de spk
-        df_componentes.rename(columns={'a0': 'a0_spk', 'a180': 'a180_spk', 'b0': 'b0_spk', 'b180': 'b180_spk'}, inplace=True)
+        df_componentes = df_componentes.rename(columns={'a0': 'a0_spk', 'a180': 'a180_spk', 'b0': 'b0_spk', 'b180': 'b180_spk'})
 
         # iii) Agregar las nuevas columnas con los componentes corregidos
         # la corrección debe sumar -delta
@@ -386,7 +386,7 @@ def std(variables, fechas_activas, data, profundidad):
     df_std = pd.DataFrame({var: dfs_sigma[var].std() for var in dfs_sigma})
 
     # Renombrar las columnas agregando '_std'
-    df_std.rename(columns={col: f"{col}_std" for col in df_std.columns}, inplace=True)
+    df_std = df_std.rename(columns={col: f"{col}_std" for col in df_std.columns})
 
     # Renombrar el índice del DataFrame
     df_std.index.name = 'fecha'

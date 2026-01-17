@@ -46,17 +46,26 @@ def load_local_funciones():
 
     except Exception as e:
         print(f"Error cargando módulo funciones local: {e}")
-        # Fallback: intentar importación normal
+        import traceback
+        traceback.print_exc()
+        
+        # Fallback mejorado: Cargar directamente leyendo el archivo y ejecutando
         try:
             current_dir = os.path.dirname(os.path.abspath(__file__))
-            if current_dir not in sys.path:
-                sys.path.insert(0, current_dir)
-
-            import funciones
-            print(f"DEBUG: Funciones importado usando fallback desde {funciones.__file__}")
+            funciones_path = os.path.join(current_dir, 'funciones.py')
+            
+            import types
+            funciones = types.ModuleType(f"funciones_fallback_{id(funciones_path)}")
+            
+            with open(funciones_path, 'r', encoding='utf-8') as f:
+                code = f.read()
+            
+            exec(code, funciones.__dict__)
+            print(f"DEBUG: Funciones cargado via exec desde {funciones_path}")
             return funciones
-        except ImportError:
-            raise ImportError(f"No se pudo cargar el módulo funciones: {e}")
+        except Exception as e2:
+             print(f"Error en fallback de carga: {e2}")
+             raise ImportError(f"No se pudo cargar el módulo funciones: {e}\nFallback error: {e2}")
 
 
 # Cargar el módulo funciones local

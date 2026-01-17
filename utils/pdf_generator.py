@@ -388,6 +388,14 @@ def render_matplotlib_graph(script_path, params, data_source, ancho, alto, forma
         Ruta al archivo temporal del gráfico o None si hubo error
     """
     try:
+        # Usar backend no interactivo para evitar errores de GUI
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+        
+        print(f"DEBUG: Iniciando renderizado de gráfico con script: {script_path}")
+        print(f"DEBUG: Parámetros recibidos: {params.keys()}")
+
         # Limpiar cualquier figura de matplotlib anterior
         plt.close('all')
 
@@ -612,15 +620,26 @@ def draw_graph(pdf, graph_data, page_height, data_source, biblioteca_graficos_pa
                 print(f"No se pudo eliminar el archivo temporal: {temp_graph_path}")
 
         except Exception as e:
-            # Si falla la inserción, dibujar un mensaje de error
+            # Error al generar gráfico
+            print(f"ERROR: Fallo al generar gráfico {script_name}: {str(e)}")
+            import traceback
+            traceback.print_exc()
+
             pdf.setStrokeColor("#FF0000")
             pdf.setFillColor("#FFEEEE")
             pdf.rect(x, y, ancho, alto, fill=True, stroke=True)
             pdf.setFillColor("#CC0000")
             pdf.setFont("Helvetica", 10)
             pdf.drawCentredString(x + ancho / 2, y + alto / 2, "Error al generar gráfico")
-            pdf.setFont("Helvetica", 8)
-            pdf.drawCentredString(x + ancho / 2, y + alto / 2 - 15, str(e)[:50])
+            pdf.setFont("Helvetica", 6)
+            
+            # Mostrar mensaje de error más largo y dividido en líneas
+            error_msg = str(e)
+            chunks = [error_msg[i:i+60] for i in range(0, len(error_msg), 60)]
+            y_offset = 15
+            for chunk in chunks[:3]:  # Mostrar hasta 3 líneas
+                pdf.drawCentredString(x + ancho / 2, y + alto / 2 - y_offset, chunk)
+                y_offset += 8
     else:
         # Si no se pudo generar el gráfico, dibujar un placeholder
         pdf.setStrokeColor("#FF0000")

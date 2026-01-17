@@ -71,8 +71,8 @@ def buscar_referencia(data, fecha_calc):
 
     fecha_referencia = None
     for fecha in reversed(fechas):
-        print('fecha_calc_dt', fecha_calc_dt, '----', 'fecha', fecha)
-        print (print(list(data[fecha.isoformat()]['campaign_info'].keys())))
+        # print('fecha_calc_dt', fecha_calc_dt, '----', 'fecha', fecha)
+        # print(list(data[fecha.isoformat()]['campaign_info'].keys()))
         if fecha <= fecha_calc_dt and data[fecha.isoformat()]['campaign_info']['reference']:
 
             fecha_referencia = fecha.isoformat()

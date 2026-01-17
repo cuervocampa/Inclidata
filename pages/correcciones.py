@@ -30,39 +30,38 @@ def layout():
             html.Div(style={'height': '50px'}),
 
             # Upload section
-            dmc.Group(
+            dmc.Grid(
                 children=[
-                    dmc.Col(
+                    dmc.GridCol(
                         dcc.Upload(
                             id='archivo-uploader',
                             multiple=False,
                             accept='.json',
                             children=['Drag and Drop o seleccionar archivo'],
                             style={
-                                'flexShrink': 1,  # Permite que el componente se reduzca si no hay suficiente espacio
                                 'width': '100%', 'height': '60px', 'lineHeight': '60px', 'borderWidth': '2px',
                                 'borderStyle': 'dashed', 'borderRadius': '5px', 'borderColor': 'blue',
                                 'textAlign': 'center', 'margin': '10px 0', 'display': 'flex',
                                 'justifyContent': 'center',
-                                'alignItems': 'center', 'color': 'red'
+                                'alignItems': 'center', 'color': 'blue'
                             }
                         ),
-                        span=3
+                        span=4
                     ),
-                    dmc.Col(
+                    dmc.GridCol(
                         html.Div(id='informacion-archivo', style={'width': '100%', 'display':'flex', 'alignItems': 'center','height': '100%'}),
-                        span=3
+                        span=4
                     ),
-                    dmc.Col(
+                    dmc.GridCol(
                         html.Div(
                             children=[
                                 html.B('Campaña a Graficar: '),
                                 dmc.Select(
                                     id='camp_a_graficar',
                                     placeholder='Selecciona una fecha',
-                                    value= None,  # Valor por defecto será actualizado en el callback
-                                    clearable=False,
-                                    data=[]  # Inicialmente vacío, será llenado por el callback
+                                    clearable=True,
+                                    data=[],
+                                    style={'minWidth': '200px'}
                                 )
                             ],
                             style={'width': '100%', 'display': 'flex','justifyContent': 'flex-start', 'alignItems': 'center', 'gap': '20px'}
@@ -70,7 +69,7 @@ def layout():
                         span=4
                     )
                 ],
-                style={'width': '100%'},noWrap=True  # Evitar que los elementos hagan salto de línea
+                style={'width': '100%'}
             ),
             dcc.Store(id='corregir-tubo', storage_type='memory'),  # archivo json, se parte del original y se incorporan modificaciones
             dcc.Store(id='corregir_archivo', storage_type='memory'),  # nombre del archivo json. Pensado para funcionamiento en local
@@ -87,7 +86,7 @@ def layout():
             # Table and Info Section
             dmc.Grid(
                 children=[
-                    dmc.Col(
+                    dmc.GridCol(
                         AgGrid(
                             id='tabla-json',
                             style={
@@ -117,16 +116,18 @@ def layout():
                         ),
                         span=8
                     ),
-                    dmc.Col(
+                    dmc.GridCol(
                         children=[
                             html.Div(id='log-cambios',
                                      style={'height': '200px', 'overflowY': 'auto', 'border': '1px solid #ccc', 'padding': '10px'}),
+                            # Botones Guardar y Configuración en la misma línea
                             dmc.Group(
                                 children=[
-                                    #dmc.Button("Recalcular Tabla", id='recalcular_tabla', variant='outline', c='blue'),
-                                    dmc.Button("Guardar Tabla", id='guardar_tabla', variant='outline', c='green')
+                                    dmc.Button("Guardar Tabla", id='guardar_tabla', variant='outline', color='green'),
+                                    dmc.Button("Configuración", id="correc-open-drawer-1", n_clicks=None, variant='outline', color='blue')
                                 ],
-                                style={'marginTop': '10px'}
+                                style={'marginTop': '10px', 'width': '100%'},
+                                grow=True
                             ),
                             dmc.Modal(
                                 id="guardar-cambios-tabla",
@@ -138,7 +139,7 @@ def layout():
                                 ],
                                 centered=True,
                                 size="md",
-                                opened=False  # Inicialmente cerrado
+                                opened=False
                             ),
                         ],
                         span=4
@@ -146,26 +147,28 @@ def layout():
                 ],
                 style={'width': '100%'}
             ),
-            # Gráficos del incli - GRAFICO 1
+            
+            # Espaciador vertical
+            dmc.Space(h=30),
 
-            html.Div(style={"height": "200px"}),  # Espacio. No funciona bien, quiero que esté un poco más separado
-
-            dmc.Grid([
-                dmc.Col(  # gráficos de desplazamientos vs profunfidadad
+            # BLOQUE GRÁFICOS PRINCIPALES - con altura mínima fija
+            html.Div([
+                dmc.Grid([
+                dmc.GridCol(  # gráficos de desplazamientos vs profunfidadad
                     dmc.Tabs([
                         dmc.TabsList([
-                            dmc.Tab("Desplazamientos", value="corr_grafico1", style={'fontWeight': 'bold', 'fontSize': '1.1rem'}),
-                            dmc.Tab("Incrementales", value="corr_grafico2", style={'fontWeight': 'bold', 'fontSize': '1.1rem'}),
-                            dmc.Tab("Despl. compuestos", value="corr_grafico3", style={'fontWeight': 'bold', 'fontSize': '1.1rem'})
-                        ]),
+                            dmc.TabsTab("Desplazamientos", value="corr_grafico1", style={'fontWeight': 'bold', 'fontSize': '0.9rem', 'whiteSpace': 'nowrap', 'padding': '8px 12px'}),
+                            dmc.TabsTab("Incrementales", value="corr_grafico2", style={'fontWeight': 'bold', 'fontSize': '0.9rem', 'whiteSpace': 'nowrap', 'padding': '8px 12px'}),
+                            dmc.TabsTab("Compuestos", value="corr_grafico3", style={'fontWeight': 'bold', 'fontSize': '0.9rem', 'whiteSpace': 'nowrap', 'padding': '8px 12px'})
+                        ], style={'flexWrap': 'nowrap'}),
                         dmc.TabsPanel(
                             html.Div([
                                 dmc.Grid([
-                                    dmc.Col([
-                                        dcc.Graph(id='corr_grafico_incli_1_a'),
+                                    dmc.GridCol([
+                                        dcc.Graph(id='corr_grafico_incli_1_a', config={'responsive': False}, style={'height': '600px'}),
                                         dmc.Text("Desplazamiento A (mm)", ta="center")], span=6, style={'padding': '0', 'margin': '0'}),
-                                    dmc.Col([
-                                        dcc.Graph(id='corr_grafico_incli_1_b'),
+                                    dmc.GridCol([
+                                        dcc.Graph(id='corr_grafico_incli_1_b', config={'responsive': False}, style={'height': '600px'}),
                                         dmc.Text("Desplazamiento B (mm)", ta="center")
                                     ], span=6, style={'padding': '0', 'margin': '0'}),
                                 ])
@@ -175,12 +178,12 @@ def layout():
                         dmc.TabsPanel(
                             html.Div([
                                 dmc.Grid([
-                                    dmc.Col([
-                                        dcc.Graph(id='corr_grafico_incli_2_a'),
+                                    dmc.GridCol([
+                                        dcc.Graph(id='corr_grafico_incli_2_a', config={'responsive': False}, style={'height': '600px'}),
                                         dmc.Text("Incremental A (mm)", ta="center")
                                     ], span=6, style={'padding': '0', 'margin': '0'}),
-                                    dmc.Col([
-                                        dcc.Graph(id='corr_grafico_incli_2_b'),
+                                    dmc.GridCol([
+                                        dcc.Graph(id='corr_grafico_incli_2_b', config={'responsive': False}, style={'height': '600px'}),
                                         dmc.Text("Incremental B (mm)", ta="center")
                                     ], span=6, style={'padding': '0', 'margin': '0'}),
                                 ])
@@ -190,16 +193,16 @@ def layout():
                         dmc.TabsPanel(
                             html.Div([
                                 dmc.Grid([
-                                    dmc.Col([
-                                        dcc.Graph(id='corr_grafico_incli_3_a'),
+                                    dmc.GridCol([
+                                        dcc.Graph(id='corr_grafico_incli_3_a', config={'responsive': False}, style={'height': '600px'}),
                                         dmc.Text("Desplazamiento A", ta="center")],
                                         span=4, style={'padding': '0', 'margin': '0'}),
-                                    dmc.Col([
-                                        dcc.Graph(id='corr_grafico_incli_3_b'),
+                                    dmc.GridCol([
+                                        dcc.Graph(id='corr_grafico_incli_3_b', config={'responsive': False}, style={'height': '600px'}),
                                         dmc.Text("Desplazamiento B", ta="center")],
                                         span=4, style={'padding': '0', 'margin': '0'}),
-                                    dmc.Col([
-                                        dcc.Graph(id='corr_grafico_incli_3_total'),
+                                    dmc.GridCol([
+                                        dcc.Graph(id='corr_grafico_incli_3_total', config={'responsive': False}, style={'height': '600px'}),
                                         dmc.Text("Desplazamientos  (mm)", ta="center")
                                     ], span=4, style={'padding': '0', 'margin': '0'}),
                                 ])
@@ -207,21 +210,10 @@ def layout():
                             value="corr_grafico3"
                         )
                     ], value="corr_grafico1"),
-                    span=10  # Ocupa el 70% de la fila
-                ),
-
-                dmc.Col([
-                    html.Div(style={'height': '50px'}),  # Espacio al comienzo
-                    dmc.Group(
-                        [
-                            dmc.Button("Configuración", id="correc-open-drawer-1", n_clicks=None, fullWidth=True),
-                            #dmc.Button("Configuración", id="open-config-drawer", n_clicks=None, fullWidth=True)
-                        ],
-                        style={'display': 'flex', 'flexDirection': 'column'},
-                        gap="1"  # Espaciamiento entre botones
-                    ),
-                ], span=2)  # Ocupa el 30% de la fila
-            ], style={"width": "100%"}),
+                    span=12  # Ocupa todo el ancho
+                )
+                ], style={"width": "100%"})
+            ], style={'minHeight': '700px', 'width': '100%', 'marginBottom': '20px'}),
             # drawer con la configuración del GRAFICO 1: correc-drawer-1
             dmc.Drawer(
                 title=dmc.Text("Configuración gráficos", fw="bold", size="xl", style={"marginBottom": "20px"}),
@@ -358,29 +350,27 @@ def layout():
                     # Escala manual gráficos temporal
                     dmc.Button("Cerrar", id="close-correc-drawer-1", n_clicks=None)
                 ],
-                opened=False,
-                justify="flex-end"
+                opened=False
             ),
             # Correcciones de spikes
-            dmc.Grid([
-                # Espacio en blanco para separación
-                html.Div(style={'height': '100px'}),
-            ], style={'width': '100%'}),
+            dmc.Space(h=30),
 
-            dmc.Grid([
+            # BLOQUE SPIKES - con altura mínima fija
+            html.Div([
+                dmc.Grid([
                 # Primera columna - 70% de ancho, contiene los gráficos
-                dmc.Col([
+                dmc.GridCol([
                     dmc.Grid([
-                        dmc.Col([
-                            dcc.Graph(id='corr_graf_spike_a'),
+                        dmc.GridCol([
+                            dcc.Graph(id='corr_graf_spike_a', config={'responsive': False}, style={'height': '600px'}),
                             dmc.Text("Incr CheckSum A", ta="center")],
                             span=3, style={'padding': '0', 'margin': '0'}),
-                        dmc.Col([
-                            dcc.Graph(id='corr_graf_spike_b'),
+                        dmc.GridCol([
+                            dcc.Graph(id='corr_graf_spike_b', config={'responsive': False}, style={'height': '600px'}),
                             dmc.Text("Incr CheckSum B", ta="center")],
                             span=3, style={'padding': '0', 'margin': '0'}),
-                        dmc.Col([
-                            dcc.Graph(id='corr_graf_stats_a'),
+                        dmc.GridCol([
+                            dcc.Graph(id='corr_graf_stats_a', config={'responsive': False}, style={'height': '600px'}),
                             dmc.Text("Estadística seleccionada", ta="center")],
                             span=6, style={'padding': '0', 'margin': '0'})
                     ], style={'width': '100%', 'display': 'flex', 'flexWrap': 'nowrap'})
@@ -388,8 +378,8 @@ def layout():
 
 
                 # Segunda columna - 30% de ancho, contiene la tabla 'spikes'
-                dmc.Col([
-                    html.H2("Corrección de spikes"),
+                dmc.GridCol([
+                    html.H2("Corrección de spikes", style={'textAlign': 'center', 'width': '100%'}),
                     html.Div(style={"height": "20px"}),
                     # Primer grupo
                     dmc.Group(
@@ -405,9 +395,9 @@ def layout():
                                 style={'width': '200px', 'marginLeft': 'auto'}  # Alineado a la derecha
                             ),
                         ],
-                        gap="1",  # Espaciado entre el texto y el dropdown
-                        style={'width': '100%', 'marginBottom': '15px', 'display': 'flex', 'alignItems': 'center',
-                               'justifyContent': 'flex-end'}
+                        gap="md",
+                        style={'width': '100%', 'marginBottom': '15px', 'padding': '0 15px'},
+                        justify="space-between"
                     ),
 
                     # dropdown de estadística a elegir
@@ -432,9 +422,9 @@ def layout():
                                 style={'width': '200px', 'marginLeft': 'auto'}  # Alineado a la derecha
                             )
                         ],
-                        gap="1",  # Espaciado entre el texto y el dropdown
-                        style={'width': '100%', 'marginBottom': '15px', 'display': 'flex', 'alignItems': 'center',
-                               'justifyContent': 'flex-end'}
+                        gap="md",
+                        style={'width': '100%', 'marginBottom': '15px', 'padding': '0 15px'},
+                        justify="space-between"
                     ),
                     # dropdown de corrección a realizar
                     dmc.Group(
@@ -453,34 +443,30 @@ def layout():
                                 style={'width': '200px', 'marginLeft': 'auto'}  # Alineado a la derecha
                             )
                         ],
-                        gap="1",  # Espaciado entre el texto y el dropdown
-                        style={'width': '100%', 'marginBottom': '15px', 'display': 'flex', 'alignItems': 'center',
-                               'justifyContent': 'flex-end'}
+                        gap="md",
+                        style={'width': '100%', 'marginBottom': '15px', 'padding': '0 15px'},
+                        justify="space-between"
                     ),
                     # Dropdown and button above the table
                     dmc.Group(
                         children=[
-                            dmc.Col(
-                                dmc.MultiSelect(
-                                    id='spike_profundidad',
-                                    placeholder='Selecciona profundidad',
-                                    data=[],  # This will be populated dynamically
-                                    style={'width': '100%'}
-                                ),
-                                span=6
+                            dmc.MultiSelect(
+                                id='spike_profundidad',
+                                placeholder='Selecciona profundidad',
+                                data=[],  # This will be populated dynamically
+                                style={'flex': '1'}
                             ),
-                            dmc.Col(
-                                dmc.Button(
-                                    "Cargar Temporal Spike",
-                                    id='temporal_spike',
-                                    variant='outline',
-                                    c='blue'
-                                ),
-                                span=2
+                            dmc.Button(
+                                "Cargar Temporal Spike",
+                                id='temporal_spike',
+                                variant='outline',
+                                color='blue',
+                                style={'width': '200px'}  # Mismo ancho que los selectbox superiores
                             )
                         ],
-                        ta='center',
-                        style={'marginBottom': '20px'}
+                        style={'marginBottom': '20px', 'padding': '0 15px', 'width': '100%'},
+                        justify="space-between",
+                        gap="md"
                     ),
                     AgGrid(
                         id='spikes-table',
@@ -527,7 +513,7 @@ def layout():
                                 style={"marginBottom": "20px"}
                             ),
                             # Gráfico
-                            dcc.Graph(id='temporal-spike-graph')
+                            dcc.Graph(id='temporal-spike-graph', config={'responsive': False}, style={'height': '600px'})
                         ],
                         opened=False,
                         size="xl",
@@ -545,88 +531,79 @@ def layout():
                         opened=False,
                     )
                 ], span=4, style={'padding': '0', 'margin': '0'}),
-            ], style={'width': '100%', 'display': 'flex', 'flexWrap': 'nowrap'}),
+                ], style={'width': '100%', 'display': 'flex', 'flexWrap': 'nowrap'})
+            ], style={'minHeight': '700px', 'width': '100%', 'marginBottom': '20px'}),
 
             # Correcciones de bias
-            dmc.Grid([
-                # Espacio en blanco para separación
-                html.Div(style={'height': '100px'}),], style={'width': '100%'}),
+            # Separador visual entre bloques con línea divisoria
+            dmc.Space(h=50),
+            dmc.Divider(label="Sección: Corrección de Bias", labelPosition="center", color="gray", variant="dashed"),
+            dmc.Space(h=50),
+
+            # BLOQUE BIAS - con altura mínima fija
+            html.Div([
 
             dmc.Grid([
                 # Primera columna - 70% de ancho, contiene los gráficos
-                dmc.Col([
+                dmc.GridCol([
                     dmc.Grid([
-                        dmc.Col(dcc.Graph(id='corr_graf_bias_a'), span=4, style={'padding': '0', 'margin': '0'}),
-                        dmc.Col(dcc.Graph(id='corr_estad_bias_a'), span=2, style={'padding': '0', 'margin': '0'}),
-                        dmc.Col(dcc.Graph(id='corr_graf_bias_b'), span=4, style={'padding': '0', 'margin': '0'}),
-                        dmc.Col(dcc.Graph(id='corr_estad_bias_b'), span=2, style={'padding': '0', 'margin': '0'}),
+                        dmc.GridCol(dcc.Graph(id='corr_graf_bias_a', config={'responsive': False}, style={'height': '600px'}), span=4, style={'padding': '0', 'margin': '0'}),
+                        dmc.GridCol(dcc.Graph(id='corr_estad_bias_a', config={'responsive': False}, style={'height': '600px'}), span=2, style={'padding': '0', 'margin': '0'}),
+                        dmc.GridCol(dcc.Graph(id='corr_graf_bias_b', config={'responsive': False}, style={'height': '600px'}), span=4, style={'padding': '0', 'margin': '0'}),
+                        dmc.GridCol(dcc.Graph(id='corr_estad_bias_b', config={'responsive': False}, style={'height': '600px'}), span=2, style={'padding': '0', 'margin': '0'}),
                     ], style={'width': '100%', 'display': 'flex', 'flexWrap': 'nowrap'})
                 ], span=8, style={'padding': '0', 'margin': '0'}), # ancho de la columna de gráficos
 
                 # Segunda columna - 30% de ancho, contiene la definición de correcciones bias
-                dmc.Col([
-                    html.H2("Corrección de bias"),
+                dmc.GridCol([
+                    html.H2("Corrección de bias", style={'textAlign': 'center', 'width': '100%'}),
                     html.Div(style={"height": "20px"}),
                     # Modal para el análisis de checksum o lo que sea, por definir
                     dmc.Group(
                         children=[
-                            dmc.Col(
-                                html.H4("Evolución temporal"),
-                                span=6
-                            ),
-                            dmc.Col(
-                                dmc.Button(
-                                    "Cargar Análisis Bias",
-                                    id='boton_ventana_modal_bias',
-                                    variant='outline',
-                                    c='blue'
-                                ),
-                                span=2
+                            html.H4("Evolución temporal"),
+                            dmc.Button(
+                                "Cargar Análisis Bias",
+                                id='boton_ventana_modal_bias',
+                                variant='outline',
+                                color='blue',
+                                style={'width': '200px'}
                             )
                         ],
-                        ta='center',
-                        style={'marginBottom': '20px'}
+                        gap="md",
+                        style={'width': '100%', 'marginBottom': '15px', 'padding': '0 15px'},
+                        justify="space-between"
                     ),
-                    # Modal para el análisis de std de checksum o lo que sea, por definir
                     dmc.Group(
                         children=[
-                            dmc.Col(
-                                html.H4("Evolución temporal std"),
-                                span=6
-                            ),
-                            dmc.Col(
-                                dmc.Button(
-                                    "Cargar Evolución std",
-                                    id='boton_ventana_modal_bias_1',
-                                    variant='outline',
-                                    c='blue'
-                                ),
-                                span=2
+                            html.H4("Evolución temporal std"),
+                            dmc.Button(
+                                "Cargar Evolución std",
+                                id='boton_ventana_modal_bias_1',
+                                variant='outline',
+                                color='blue',
+                                style={'width': '200px'}
                             )
                         ],
-                        ta='center',
-                        style={'marginBottom': '20px'}
+                        gap="md",
+                        style={'width': '100%', 'marginBottom': '15px', 'padding': '0 15px'},
+                        justify="space-between"
                     ),
 
                     dmc.Group(
                         children=[
-                            dmc.Col(
-                                html.H4("Empotramiento teórico"),
-                                span=6
-                            ),
-                            dmc.Col(
-                                dmc.NumberInput(
-                                    id='empotramiento',
-                                    value=5, # valor por defecto
-                                    min=1, max=99,
-                                    step=1,
-                                    style={"width": "100px"}
-                                ),
-                                span=2
+                            html.H4("Empotramiento teórico"),
+                            dmc.NumberInput(
+                                id='empotramiento',
+                                value=5, # valor por defecto
+                                min=1, max=99,
+                                step=1,
+                                style={"width": "200px"}  # Mismo ancho que los botones
                             )
                         ],
-                        ta='center',
-                        style={'marginBottom': '20px'}
+                        gap="md",
+                        style={'width': '100%', 'marginBottom': '15px', 'padding': '0 15px'},
+                        justify="space-between"
                     ),
                     # ventana modal del analisis del checksum por intervalos
                     dmc.Modal(
@@ -656,7 +633,7 @@ def layout():
                                 style={"marginBottom": "20px"}
                             ),
                             # Gráficos en el modal
-                            dcc.Graph(id='modal_bias_graph_1'),
+                            dcc.Graph(id='modal_bias_graph_1', config={'responsive': False}, style={'height': '600px'}),
                         ],
                         opened=False,
                         size="xl",
@@ -668,7 +645,7 @@ def layout():
                         title="Bùsqueda de parámetro",
                         children=[
                             # Gráficos en el modal
-                            dcc.Graph(id='modal_bias_graph_2'),
+                            dcc.Graph(id='modal_bias_graph_2', config={'responsive': False}, style={'height': '600px'}),
                         ],
                         opened=False,
                         size="xl",
@@ -707,41 +684,28 @@ def layout():
                         },
                         style={'width': '100%', 'height': '220px'}  # Altura inicial
                     ),
-                    # botón para Refrescar sugerencias
-                    # separación
+                    # separación antes de sugerencias
                     html.Div(style={"height": "20px"}),
-                    dmc.Group(
-                        children=[
-                            dmc.Col(
-                                html.H4("Sugerir correcciones"),
-                                span=6
-                            ),
-                            dmc.Col(
-                                dmc.Button("Sugerir", id="sugerir_bias", c="blue", variant="outline"),
-                                span=2
-                            )
-                        ],
-                        ta='center',
-                        style={'marginBottom': '20px'}
-                    ),
-                    html.Div(style={"height": "20px"}),
-                    html.Hr(style={"borderTop": "2px solid black", "width": "100%", "margin": "20px 0","borderBottom": "none"}),  # Línea divisoria
                     # botón para aplicar los cambios de bias
                     dmc.Group(
                         children=[
-                            dmc.Col(
-                                html.H4("Aplicar cambios Spikes y Bias", style={"fontWeight": "bold"}),  # Negrita
-                                span=6
-                            ),
-                            dmc.Col(
-                                dmc.Button("Guardar cambios", id="save_json", style={"backgroundColor": "#4c78af",  # Azul más suave
-                                                                           "color": "white",  # Texto en blanco para contraste
-                                                                           "border": "none",  # Quita el borde del botón
-                                                                           "fontSize": "1rem",  # Tamaño de fuente un poco más grande
-                                                                           "padding": "12px 24px",  # Aumenta el tamaño del botón (20% más grande)
-                                                                           }),
-                                span=2
-                            ),
+                            html.H4("Sugerir correcciones"),
+                            dmc.Button("Sugerir", id="sugerir_bias", color="blue", variant="outline", style={'width': '200px'})
+                        ],
+                        gap="md",
+                        style={'width': '100%', 'marginBottom': '15px', 'padding': '0 15px'},
+                        justify="space-between"
+                    ),
+                    html.Div(style={"height": "10px"}),
+                    dmc.Group(
+                        children=[
+                            html.H4("Aplicar cambios Spikes y Bias", style={"fontWeight": "bold"}),
+                            dmc.Button("Guardar cambios", id="save_json", style={
+                                "backgroundColor": "#4c78af",
+                                "color": "white",
+                                "border": "none",
+                                "width": "200px"
+                            }),
                             dmc.Modal(
                                 id="guardar-modal",
                                 title="Confirmación",
@@ -752,21 +716,23 @@ def layout():
                                 ],
                                 centered=True,
                                 size="md",
-                                opened=False  # Inicialmente cerrado
+                                opened=False
                             ),
                         ],
-                        ta='center',
-                        #style={'marginBottom': '20px'}
+                        gap="md",
                         style={
+                            'width': '100%',
                             'marginBottom': '20px',
-                            'padding': '10px',  # Espaciado interno
-                            'borderRadius': '8px',  # Bordes redondeados
-                            'backgroundColor': 'rgba(173, 216, 230, 0.5)'  # Azul claro con transparencia
-                        }
+                            'padding': '10px 15px',
+                            'borderRadius': '8px',
+                            'backgroundColor': 'rgba(173, 216, 230, 0.5)'
+                        },
+                        justify="space-between"
                     ),
 
                 ], span=4, style={'padding': '0', 'margin': '0'}), # definición de la columna de la tabla, ancho 4
-            ], style={'width': '100%', 'display': 'flex', 'flexWrap': 'nowrap'}),
+                ], style={'width': '100%', 'display': 'flex', 'flexWrap': 'nowrap'}),
+            ], style={'minHeight': '700px', 'width': '100%', 'marginBottom': '20px'}),  # Cierre del html.Div del bloque bias
 
         ])
     )
@@ -894,7 +860,6 @@ def register_callbacks(app):
             # Crear una copia simulada del DataFrame original
             df_simulado = df_tabla_json.copy()
 
-
             # Aplicar los cambios simulados
             for key, cambio in log_cambios.items():
                 fecha = cambio['fecha']
@@ -941,13 +906,13 @@ def register_callbacks(app):
                         # Debe existir, en las campañas "anteriores en el tiempo" (ya recorridas en el bucle),
                         # al menos una campaña válida.
                         if valid_found:
-                            print(f"Condición cumplida en la fila {i} (Fecha: {row['Fecha']}): "
-                                  "se encontró una campaña anterior válida (Activa=True y Referencia=True).")
+                            # print(f"Condición cumplida en la fila {i} (Fecha: {row['Fecha']}): "
+                            #       "se encontró una campaña anterior válida (Activa=True y Referencia=True).")
                             break  # Se cumple la condición, salimos del bucle
                         else:
                             error_message = (f"Error en la fila {i} (Fecha: {row['Fecha']}): "
                                              "es Activa=True y Referencia=False, pero no hay campaña anterior válida.")
-                            print(error_message)
+                            # print(error_message)
                             control_de_fallos = True
                             break  # Salimos del bucle al detectar el error
 
@@ -1065,7 +1030,6 @@ def register_callbacks(app):
                     # Cambios 1/3. Se reescribe el bloque 'campaign info'
                     # reference
                     if acciones[fecha]['cambios_camp']['referencia']['bool_referencia']:
-                        print('fecha', fecha,'valoor bool',acciones[fecha]['cambios_camp']['referencia']['bool_referencia'] )
                         corregir_tubo[fecha]['campaign_info']['reference'] = acciones[fecha]['cambios_camp']['referencia']['valor_referencia']
 
                     # active
@@ -1103,6 +1067,7 @@ def register_callbacks(app):
                     pass
 
 
+
             # GUARDO LOS CAMBIOS EN EL ARCHIVO JSON. OJO, EN ESTE CASO LO REESCRIBO ENTERO
             # AL PASARLO A TD ESTO HAY QUE VER CÓMO SE HACE
 
@@ -1115,14 +1080,16 @@ def register_callbacks(app):
 
             # Sobrescribir completamente el archivo JSON
             with open(ruta_json, "w", encoding="utf-8") as f:
-                with open(ruta_json, "w", encoding="utf-8") as f:
-                    json.dump(corregir_tubo, f, ensure_ascii=False, indent=4,
-                              default=lambda o: o.item() if hasattr(o, 'item') else o)
+                json.dump(corregir_tubo, f, ensure_ascii=False, indent=4,
+                          default=lambda o: o.item() if hasattr(o, 'item') else o)
 
 
             return (corregir_tubo, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update,dash.no_update, True, "Guardados los cambios")
         elif trigger_id == "cerrar-cambios-tabla":
             return (dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update,dash.no_update,False, dash.no_update)  # Cierra el modal sin cambiar el mensaje
+        
+        # Return por defecto para evitar None
+        return (dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update)
 
     @app.callback(
         Output("json_spikes", "data"),  # Update the "json_spikes" Store
@@ -1137,7 +1104,7 @@ def register_callbacks(app):
     def cambio_json_spikes(data, cellValueChanged, camp_graficar, table_data):#, camp_corregida):
         # se guarda el "calc" modificado y las profundidades en las que se realiza un corrección de spk
         # el registro de correcciones se guarda en la clave "spike": {"A": [], "B": []}
-        if camp_graficar == None:
+        if not data or not camp_graficar or camp_graficar == "":
             # no hay nada cargado
             return dash.no_update
 
@@ -1187,8 +1154,8 @@ def register_callbacks(app):
         for entrada in correccion[camp_graficar]["calc"]:
             entrada["dev_a"] = round((entrada["a0"] - entrada["a180"]) / 2, 2)
             entrada["dev_b"] = round((entrada["b0"] - entrada["b180"]) / 2, 2)
-            #entrada["checksum_a"] = round(entrada["a0"] + entrada["a180"], 4), # eliminado al pasar de chk a incr_check
-            #entrada["checksum_b"] = round(entrada["b0"] + entrada["b180"], 4)
+            entrada["checksum_a"] = round(entrada["a0"] + entrada["a180"], 4)
+            entrada["checksum_b"] = round(entrada["b0"] + entrada["b180"], 4)
         # busco referencia
         fecha_referencia = buscar_referencia(data, camp_graficar)
         data_new = {
@@ -1202,7 +1169,7 @@ def register_callbacks(app):
         resultado = calcular_incrementos(dic_temporal, camp_graficar, fecha_referencia)
 
         # Control de ejecución
-        debug_funcion('cambios_json_spikes')
+        # debug_funcion('cambios_json_spikes')
 
         # provisional para ver el resultado de forma externa
         # Crear el diccionario
@@ -1237,7 +1204,7 @@ def register_callbacks(app):
         # si corregir_tubo, significa que o se cargó un nuevo tubo o se modificó, se debe borrar el log_cambios
         triggered_input = callback_context.triggered[0]['prop_id'].split('.')[0]
         if triggered_input == 'corregir-tubo':
-            return {}, {}
+            return {}, []  # [] en lugar de {} para children
 
 
         for change in cell_value_changed:
@@ -1271,7 +1238,7 @@ def register_callbacks(app):
                 log_lines.append(html.Br())
 
         # Control de ejecución
-        debug_funcion('registrar_cambios')
+        # debug_funcion('registrar_cambios')
 
         return log_cambios, log_lines
 
@@ -1340,7 +1307,9 @@ def register_callbacks(app):
                             valor_positivo_desplazamiento, valor_negativo_desplazamiento,
                             valor_positivo_incremento, valor_negativo_incremento):
         if not fecha_seleccionada or not data:
-            return [go.Figure() for _ in range(7)]
+            fig_vacia = go.Figure()
+            fig_vacia.update_layout(autosize=False, height=600)
+            return [fig_vacia for _ in range(7)]
 
         fig1_a = go.Figure()
         fig1_b = go.Figure()
@@ -1387,30 +1356,30 @@ def register_callbacks(app):
                 eje_y = depth_list  # por facilidad para hacer pruebas
                 # Gráfico 1: Desplazamientos
                 fig1_a.add_trace(go.Scatter(x=desp_a_list, y=eje_y, mode="lines", name=f"{fecha} - Desp A",
-                                            line=dict(c=color, width=grosor), legendgroup=fecha,
+                                            line=dict(color=color, width=grosor), legendgroup=fecha,
                                             opacity=opacity))
                 fig1_b.add_trace(go.Scatter(x=desp_b_list, y=eje_y, mode="lines", name=f"{fecha} - Desp B",
-                                            line=dict(c=color, width=grosor), legendgroup=fecha,
+                                            line=dict(color=color, width=grosor), legendgroup=fecha,
                                             opacity=opacity))
 
                 # Gráfico 2: Incrementales
                 fig2_a.add_trace(
                     go.Scatter(x=incr_dev_a_list, y=eje_y, mode="lines", name=f"{fecha} - Incr Dev A",
-                               line=dict(c=color, width=grosor), legendgroup=fecha, opacity=opacity))
+                               line=dict(color=color, width=grosor), legendgroup=fecha, opacity=opacity))
                 fig2_b.add_trace(
                     go.Scatter(x=incr_dev_b_list, y=eje_y, mode="lines", name=f"{fecha} - Incr Dev B",
-                               line=dict(c=color, width=grosor), legendgroup=fecha, opacity=opacity))
+                               line=dict(color=color, width=grosor), legendgroup=fecha, opacity=opacity))
 
                 # Gráfico 3: Desplazamientos Compuestos
                 fig3_a.add_trace(go.Scatter(x=desp_a_list, y=eje_y, mode="lines", name=f"{fecha} - Desp A",
-                                            line=dict(c=color, width=grosor), legendgroup=fecha,
+                                            line=dict(color=color, width=grosor), legendgroup=fecha,
                                             opacity=opacity))
                 fig3_b.add_trace(go.Scatter(x=desp_b_list, y=eje_y, mode="lines", name=f"{fecha} - Desp B",
-                                            line=dict(c=color, width=grosor), legendgroup=fecha,
+                                            line=dict(color=color, width=grosor), legendgroup=fecha,
                                             opacity=opacity))
                 fig3_total.add_trace(
                     go.Scatter(x=desp_total_list, y=eje_y, mode="lines", name=f"{fecha} - Desp Total",
-                               line=dict(c=color, width=grosor), legendgroup=fecha, opacity=opacity))
+                               line=dict(color=color, width=grosor), legendgroup=fecha, opacity=opacity))
         # agrego la campaña con las correcciones de bias, en línea discontínua
         # el motivo de agregarla es que cuando hay cambio de referencia, no se ve el resultado final
         # sólo se agrega en caso de que haya correcciones y sólo en "Desplazamientos"
@@ -1423,7 +1392,7 @@ def register_callbacks(app):
             # profundidades
             cota_abs_list = [punto["cota_abs"] for punto in corr_bias[fecha_seleccionada]["calc"]]
 
-            print ('bias corregido')
+            # print ('bias corregido')
             bias_list = corr_bias[fecha_seleccionada]['bias']  # Extrae la lista de bias
             # bias A
             if next((item['Selec'] for item in bias_list if item['Correccion'] == 'Bias_1_A'), None) or next((item['Selec'] for item in bias_list if item['Correccion'] == 'Bias_2_A'), None):
@@ -1476,13 +1445,13 @@ def register_callbacks(app):
             # Gráfico 1: Desplazamientos
             fig1_a.add_trace(
                 go.Scatter(x=desp_a_list, y=eje_y, mode="lines", name=f"{fecha} - Desp A",
-                           line=dict(c=color, width=grosor),
+                           line=dict(color=color, width=grosor),
                            # marker=marker,
                            legendgroup=fecha,
                            opacity=opacity))
             fig1_b.add_trace(
                 go.Scatter(x=desp_b_list, y=eje_y, mode="lines", name=f"{fecha} - Desp B",
-                           line=dict(c=color, width=grosor),
+                           line=dict(color=color, width=grosor),
                            # marker=marker,
                            legendgroup=fecha,
                            opacity=opacity))
@@ -1490,31 +1459,31 @@ def register_callbacks(app):
             # Gráfico 2: Incrementales
             fig2_a.add_trace(go.Scatter(x=incr_dev_a_list, y=eje_y, mode="lines",
                                         name=f"{fecha} - Incr Dev A",
-                                        line=dict(c=color, width=grosor),
+                                        line=dict(color=color, width=grosor),
                                         # marker=marker,
                                         legendgroup=fecha, opacity=opacity))
             fig2_b.add_trace(go.Scatter(x=incr_dev_b_list, y=eje_y, mode="lines",
                                         name=f"{fecha} - Incr Dev B",
-                                        line=dict(c=color, width=grosor),
+                                        line=dict(color=color, width=grosor),
                                         # marker=marker,
                                         legendgroup=fecha, opacity=opacity))
 
             # Gráfico 3: Desplazamientos Compuestos
             fig3_a.add_trace(
                 go.Scatter(x=desp_a_list, y=eje_y, mode="lines", name=f"{fecha} - Desp A",
-                           line=dict(c=color, width=grosor),
+                           line=dict(color=color, width=grosor),
                            # marker=marker,
                            legendgroup=fecha,
                            opacity=opacity))
             fig3_b.add_trace(
                 go.Scatter(x=desp_b_list, y=eje_y, mode="lines", name=f"{fecha} - Desp B",
-                           line=dict(c=color, width=grosor),
+                           line=dict(color=color, width=grosor),
                            # marker=marker,
                            legendgroup=fecha,
                            opacity=opacity))
             fig3_total.add_trace(go.Scatter(x=desp_total_list, y=eje_y, mode="lines",
                                             name=f"{fecha} - Desp Total",
-                                            line=dict(c=color, width=grosor),
+                                            line=dict(color=color, width=grosor),
                                             # marker=marker,
                                             legendgroup=fecha, opacity=opacity))
         # añado la corrección tras el bias (el puntual lo coge antes)
@@ -1534,23 +1503,24 @@ def register_callbacks(app):
             fig.update_layout(
                 yaxis=dict(
                     autorange="reversed",
-                    gridc='lightgray', gridwidth=1, griddash='dash',
+                    gridcolor='lightgray', gridwidth=1, griddash='dash',
                     anchor='free',
                     position=0,  # Posicionar el eje Y en x=0
                     showline=False,  # Asegurarse de que no se muestra la línea vertical del eje Y
                 ),
                 xaxis=dict(
-                    gridc='lightgray', gridwidth=1, griddash='dash',
+                    gridcolor='lightgray', gridwidth=1, griddash='dash',
                     showline=True,  # Mostrar la línea del borde inferior (eje X)
-                    linec='darkgray',  # Color del borde inferior
+                    linecolor='darkgray',  # Color del borde inferior
                     linewidth=1,  # Grosor del borde inferior
-                    zeroline=True, zerolinec='darkgray', zerolinewidth=1  # muestra el eje vertical en x=0
+                    zeroline=True, zerolinecolor='darkgray', zerolinewidth=1  # muestra el eje vertical en x=0
                 ),
-                showlegend=False, height=alto_graficos, title_x=0.5, plot_bgc='white'
+                showlegend=False, height=alto_graficos, title_x=0.5, plot_bgcolor='white',
+                autosize=False  # CRÍTICO: Evita bucle de redimensionado
             )
 
         # Control de ejecución
-        debug_funcion('corr_grafico_1')
+        # debug_funcion('corr_grafico_1')
 
 
         return [fig1_a, fig1_b, fig2_a, fig2_b, fig3_a, fig3_b, fig3_total]
@@ -1631,11 +1601,11 @@ def register_callbacks(app):
             # Gráfico 1: icnre Checksums
             fig1_a.add_trace(go.Scatter(x=dfs['incr_checksum_a'][fecha], y=dfs['incr_checksum_a'].index, mode="lines",
                                         name=f"{fecha} - Incr CheckSum A",
-                                        line=dict(c=color, width=grosor), legendgroup=fecha,
+                                        line=dict(color=color, width=grosor), legendgroup=fecha,
                                         opacity=opacity))
             fig1_b.add_trace(go.Scatter(x=dfs['incr_checksum_b'][fecha], y=dfs['incr_checksum_b'].index, mode="lines",
                                         name=f"{fecha} - Incr CheckSum B",
-                                        line=dict(c=color, width=grosor), legendgroup=fecha,
+                                        line=dict(color=color, width=grosor), legendgroup=fecha,
                                         opacity=opacity))
         fig_3 = grafico_violines(dfs[estadistica], fecha_seleccionada)
 
@@ -1645,25 +1615,26 @@ def register_callbacks(app):
             fig.update_layout(
                 yaxis=dict(
                     autorange="reversed",
-                    gridc='lightgray', gridwidth=1, griddash='dash',
+                    gridcolor='lightgray', gridwidth=1, griddash='dash',
                     anchor='free',
                     position=0,  # Posicionar el eje Y en x=0
                     showline=False,  # Asegurarse de que no se muestra la línea vertical del eje Y
                 ),
                 xaxis=dict(
-                    gridc='lightgray', gridwidth=1, griddash='dash',
+                    gridcolor='lightgray', gridwidth=1, griddash='dash',
                     showline=True,  # Mostrar la línea del borde inferior (eje X)
-                    linec='darkgray',  # Color del borde inferior
+                    linecolor='darkgray',  # Color del borde inferior
                     linewidth=1,  # Grosor del borde inferior
-                    zeroline=True, zerolinec='darkgray', zerolinewidth=1  # muestra el eje vertical en x=0
+                    zeroline=True, zerolinecolor='darkgray', zerolinewidth=1  # muestra el eje vertical en x=0
                 ),
-                showlegend=False, height=alto_graficos, title_x=0.5, plot_bgc='white'
+                showlegend=False, height=alto_graficos, title_x=0.5, plot_bgcolor='white',
+                autosize=False  # CRÍTICO: Evita bucle de redimensionado
             )
         # títulos
         #fig1_a.update_layout(xaxis_title='CheckSum A')
         #fig1_b.update_layout(xaxis_title='CheckSum B')
         # Control de ejecución
-        debug_funcion('graficos_spike')
+        # debug_funcion('graficos_spike')
 
         return fig1_a, fig1_b, fig_3
 
@@ -1765,7 +1736,7 @@ def register_callbacks(app):
         depths = [item['depth'] for key, value in data.items() if 'calc' in value for item in value['calc']]
         # Obtener valores únicos y ordenarlos
         unique_depths = sorted(set(depths))
-        return [{'value': depth, 'label': f"{depth} m"} for depth in unique_depths]
+        return [{'value': str(depth), 'label': f"{depth} m"} for depth in unique_depths]
 
     # Load temporal data for selected depths and show in modal
     # Load temporal data for selected depths and show in modal
@@ -1827,9 +1798,11 @@ def register_callbacks(app):
             var_index = 0
             for var in selected_vars:
                 for depth in selected_depths:
+                    # Convertir depth a float (viene como string del MultiSelect)
+                    depth_float = float(depth)
                     # Extraer las fechas y los valores para 'depth'
                     fechas_data = dfs[var].columns
-                    valores = dfs[var].loc[depth]
+                    valores = dfs[var].loc[depth_float]
 
                     # Color para esta serie
                     color = color_palette[var_index % len(color_palette)]
@@ -1840,8 +1813,8 @@ def register_callbacks(app):
                         y=valores,
                         mode='lines+markers',
                         name=f'{var} - Profundidad {depth}',
-                        line=dict(c=color, width=2),
-                        marker=dict(size=5, c=color),
+                        line=dict(color=color, width=2),
+                        marker=dict(size=5, color=color),
                         hovertemplate='<b>%{fullData.name}</b><br>' +
                                       'Fecha: %{x}<br>' +
                                       'Valor: %{y:.4f}<br>' +
@@ -1865,9 +1838,9 @@ def register_callbacks(app):
                             mode='markers',
                             marker=dict(
                                 size=10,
-                                c='rgba(255, 255, 255, 0.9)',  # Blanco semi-transparente
+                                color='rgba(255, 255, 255, 0.9)',  # Blanco semi-transparente
                                 symbol='diamond',
-                                line=dict(width=2, c=color)  # Borde del mismo color que la serie
+                                line=dict(width=2, color=color)  # Borde del mismo color que la serie
                             ),
                             hovertemplate='<b>REFERENCIA</b><br>' +
                                           f'{var} - Profundidad {depth}<br>' +
@@ -1892,20 +1865,20 @@ def register_callbacks(app):
                     title_font={'size': 12, 'color': '#34495e'},
                     showgrid=True,
                     gridwidth=0.5,
-                    gridc='rgba(128, 128, 128, 0.1)',
+                    gridcolor='rgba(128, 128, 128, 0.1)',
                     showline=True,
                     linewidth=1,
-                    linec='rgba(128, 128, 128, 0.3)'
+                    linecolor='rgba(128, 128, 128, 0.3)'
                 ),
                 yaxis=dict(
                     title="Valor",
                     title_font={'size': 12, 'color': '#34495e'},
                     showgrid=True,
                     gridwidth=0.5,
-                    gridc='rgba(128, 128, 128, 0.1)',
+                    gridcolor='rgba(128, 128, 128, 0.1)',
                     showline=True,
                     linewidth=1,
-                    linec='rgba(128, 128, 128, 0.3)'
+                    linecolor='rgba(128, 128, 128, 0.3)'
                 ),
                 template='plotly_white',
                 hovermode='closest',
@@ -1915,14 +1888,15 @@ def register_callbacks(app):
                     y=0.98,
                     xanchor="left",
                     x=1.02,
-                    bgc="rgba(255, 255, 255, 0.95)",
-                    borderc="rgba(128, 128, 128, 0.2)",
+                    bgcolor="rgba(255, 255, 255, 0.95)",
+                    bordercolor="rgba(128, 128, 128, 0.2)",
                     borderwidth=1,
                     font={'size': 10}
                 ),
                 margin=dict(l=60, r=140, t=50, b=50),
-                plot_bgc='white',
-                paper_bgc='white'
+                plot_bgcolor='white',
+                paper_bgcolor='white',
+                autosize=False  # CRÍTICO: Evita bucle de redimensionado
             )
 
             return True, figure
@@ -2124,8 +2098,8 @@ def register_callbacks(app):
         df_bias_corr['desp_b_corr'] = df_bias_corr['index'].map(desp_values['desp_b']) + df_bias_corr['corr_b']
 
         # Reemplazar posibles NaN con 0 en caso de índices no coincidentes
-        df_bias_corr['desp_a_corr'].fillna(df_bias_corr['corr_a'], inplace=True)
-        df_bias_corr['desp_b_corr'].fillna(df_bias_corr['corr_b'], inplace=True)
+        df_bias_corr['desp_a_corr'] = df_bias_corr['desp_a_corr'].fillna(df_bias_corr['corr_a'])
+        df_bias_corr['desp_b_corr'] = df_bias_corr['desp_b_corr'].fillna(df_bias_corr['corr_b'])
 
 
         # Convierte el DataFrame actualizado en una lista de diccionarios
@@ -2143,7 +2117,7 @@ def register_callbacks(app):
 
 
         # Control de ejecución
-        debug_funcion('cambios_json_bias')
+        # debug_funcion('cambios_json_bias')
 
         return dict_df_bias_final, dash.no_update
 
@@ -2165,15 +2139,17 @@ def register_callbacks(app):
 
         # control primeras cargas
         if not json_bias:
-            return go.Figure(), go.Figure(), go.Figure(), go.Figure()
+            fig_vacia = go.Figure()
+            fig_vacia.update_layout(autosize=False, height=600)
+            return fig_vacia, fig_vacia, fig_vacia, fig_vacia
 
         # Paso json_bias a un df para poder graficar
-        print('estamos en gráficos -----------------------------')
+        # print('estamos en gráficos -----------------------------')
 
         df_bias = pd.DataFrame(json_bias[list(json_bias.keys())[0]]['calc'])
 
         # Control de ejecución
-        debug_funcion('graficos_bias')
+        # debug_funcion('graficos_bias')
 
         # 6. Crear gráficos
         fig_a = go.Figure()
@@ -2199,14 +2175,14 @@ def register_callbacks(app):
             x=df_bias['corr_a'],
             y=df_bias['depth'],
             mode='lines',
-            line=dict(c='red', dash='dash', width=3),
+            line=dict(color='red', dash='dash', width=3),
             name='Despl. A_corr'
         ))
         fig_b.add_trace(go.Scatter(
             x=df_bias['corr_b'],
             y=df_bias['depth'],
             mode='lines',
-            line=dict(c='red', dash='dash', width=3),
+            line=dict(color='red', dash='dash', width=3),
             name='Despl. B_corr'
         ))
         # Añado la recta de abatimiento
@@ -2214,7 +2190,7 @@ def register_callbacks(app):
             x=df_bias['recta_a'],
             y=df_bias['depth'],
             mode='lines',
-            line=dict(c='red', dash='dash', width=3),
+            line=dict(color='red', dash='dash', width=3),
             name='Abat_A'
         ))
         # Añado la recta de abatimiento
@@ -2222,7 +2198,7 @@ def register_callbacks(app):
             x=df_bias['recta_b'],
             y=df_bias['depth'],
             mode='lines',
-            line=dict(c='red', dash='dash', width=3),
+            line=dict(color='red', dash='dash', width=3),
             name='Abat_B'
         ))
 
@@ -2233,14 +2209,14 @@ def register_callbacks(app):
             y=df_bias['depth'],
             name='avg_Incr_A',
             orientation='h',  # Barras horizontales
-            marker=dict(c='rgb(100, 149, 237)')  # Azul intermedio (Cornflower Blue)
+            marker=dict(color='rgb(100, 149, 237)')  # Azul intermedio (Cornflower Blue)
         ))
         fig_b_estad.add_trace(go.Bar(
             x=df_bias['avg_Incr_B'],
             y=df_bias['depth'],
             name='avg_Incr_B',
             orientation='h',  # Barras horizontales
-            marker=dict(c='rgb(100, 149, 237)')  # Azul intermedio (Cornflower Blue)
+            marker=dict(color='rgb(100, 149, 237)')  # Azul intermedio (Cornflower Blue)
         ))
         # Scatter para incr_checksum_a vs depth
         fig_a_estad.add_trace(go.Scatter(
@@ -2248,7 +2224,7 @@ def register_callbacks(app):
             y=df_bias['depth'],
             mode='markers',
             name='incr_checksum_a',
-            marker=dict(c='rgb(255, 127, 80)', size=8),  # Coral
+            marker=dict(color='rgb(255, 127, 80)', size=8),  # Coral
             xaxis='x2'  # Asocia esta serie a la segunda escala horizontal
         ))
         fig_b_estad.add_trace(go.Scatter(
@@ -2256,7 +2232,7 @@ def register_callbacks(app):
             y=df_bias['depth'],
             mode='markers',
             name='incr_checksum_b',
-            marker=dict(c='rgb(255, 127, 80)', size=8),  # Coral
+            marker=dict(color='rgb(255, 127, 80)', size=8),  # Coral
             xaxis='x2'  # Asocia esta serie a la segunda escala horizontal
         ))
         # Agregar la línea vertical en la media
@@ -2265,7 +2241,7 @@ def register_callbacks(app):
             y=[df_bias['depth'].iloc[0], df_bias['depth'].iloc[-1]],  # Extremos del rango en el eje Y
             mode='lines',
             name=f'Incr_Checksum',
-            line=dict(c='rgb(255, 69, 0)', dash='dash'),  # Rojo oscuro con línea discontinua
+            line=dict(color='rgb(255, 69, 0)', dash='dash'),  # Rojo oscuro con línea discontinua
             xaxis='x2'  # Asocia esta serie a la segunda escala horizontal
         ))
         fig_b_estad.add_trace(go.Scatter(
@@ -2273,7 +2249,7 @@ def register_callbacks(app):
             y=[df_bias['depth'].iloc[0], df_bias['depth'].iloc[-1]],  # Extremos del rango en el eje Y
             mode='lines',
             name=f'Incr_Checksum',
-            line=dict(c='rgb(255, 69, 0)', dash='dash'),  # Rojo oscuro con línea discontinua
+            line=dict(color='rgb(255, 69, 0)', dash='dash'),  # Rojo oscuro con línea discontinua
             xaxis='x2'  # Asocia esta serie a la segunda escala horizontal
         ))
 
@@ -2290,7 +2266,8 @@ def register_callbacks(app):
                 template='plotly_white',
                 margin=dict(l=40, r=20, t=40, b=20),
                 height=600,
-                showlegend=False  # Oculta la leyenda
+                showlegend=False,  # Oculta la leyenda
+                autosize=False  # CRÍTICO: Evita bucle de redimensionado
             )
         # Configurar escala horizontal en desplazamiento
         for fig in [fig_a, fig_b]:
@@ -2312,22 +2289,23 @@ def register_callbacks(app):
                 ),
                 xaxis=dict(
                     title= titulo,
-                    title_font=dict(c='blue'),  # Título del eje principal en azul
+                    title_font=dict(color='blue'),  # Título del eje principal en azul
                     zeroline=True,  # Asegura que la línea cero del eje x esté visible
-                    zerolinec='gray',  # Color de la línea cero
+                    zerolinecolor='gray',  # Color de la línea cero
                     zerolinewidth=2  # Grosor de la línea cero
                 ),
                 xaxis2=dict(
                     title= titulo_2,
                     overlaying='x',  # Superpone este eje sobre el eje 'x'
                     side='top',  # Coloca el eje en la parte superior
-                    title_font=dict(c='red'),  # Título del segundo eje en rojo
+                    title_font=dict(color='red'),  # Título del segundo eje en rojo
                     zeroline=False  # Este eje no necesita una línea cero porque comparte la del principal
                 ),
                 template='plotly_white',
                 margin=dict(l=40, r=20, t=40, b=20),
                 height=600,
-                showlegend=False  # Oculta la leyenda
+                showlegend=False,  # Oculta la leyenda
+                autosize=False  # CRÍTICO: Evita bucle de redimensionado
             )
 
 
@@ -2421,11 +2399,12 @@ def register_callbacks(app):
             title="Gráfico",
             xaxis_title="Fecha",
             yaxis_title="Valores",
-            template="plotly_white"
+            template="plotly_white",
+            autosize=False  # CRÍTICO: Evita bucle de redimensionado
         )
 
         # Control de ejecución
-        debug_funcion('emergente_bias')
+        # debug_funcion('emergente_bias')
 
         return True, fig
 
@@ -2452,7 +2431,9 @@ def register_callbacks(app):
         #kilo
         # Si no se ha hecho clic en el botón o faltan datos, no actualizar
         if not n_clicks or not corregir_tubo or not json_spikes or not fecha_selec:  # or not selected_vars:
-            return False, go.Figure()
+            fig_vacia = go.Figure()
+            fig_vacia.update_layout(autosize=False)
+            return False, fig_vacia
         # Manejo de estado vacío: si no se seleccionan variables, devolver gráfico vacío
 
         # Paso 1. Pasamos los diccionarios a df
@@ -2490,11 +2471,12 @@ def register_callbacks(app):
             xaxis_title="Fecha",
             yaxis_title="Valores",
             template="plotly_white",
-            hovermode='x unified'
+            hovermode='x unified',
+            autosize=False  # CRÍTICO: Evita bucle de redimensionado
         )
 
         # Control de ejecución
-        debug_funcion('emergente_bias_std')
+        # debug_funcion('emergente_bias_std')
 
         return True, fig
 
@@ -2620,4 +2602,9 @@ def register_callbacks(app):
 
         elif trigger_id == "cerrar-guardar-modal":
             return False, dash.no_update  # Cierra el modal sin cambiar el mensaje
+
+
+
+
+
 

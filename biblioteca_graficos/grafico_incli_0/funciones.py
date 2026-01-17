@@ -374,7 +374,14 @@ def agregar_umbrales(ax, data, leyenda_umbrales, eje, sensor, fecha_slider, incl
         deformadas_mostradas.add(deformada)
 
         # Obtener el color
-        color_espanol = leyenda_umbrales.get(deformada, "gray")
+        valor_umbral = leyenda_umbrales.get(deformada, "gray")
+        if isinstance(valor_umbral, dict):
+            color_espanol = valor_umbral.get('color', 'gray')
+            # Si el color es None (puede pasar), usar gray
+            if not color_espanol:
+                color_espanol = 'gray'
+        else:
+            color_espanol = valor_umbral
 
         # Si el color es "Ninguno", no se grafica esta serie
         if color_espanol == "Ninguno":

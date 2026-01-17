@@ -1,3 +1,10 @@
+# app.py
+
+# ejecución en windows
+# .\venv\Scripts\Activate.ps1
+# python app.py
+
+
 import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output
@@ -74,12 +81,14 @@ app.layout = dmc.MantineProvider(
 # Registra los callbacks de todas las páginas
 importar.register_callbacks(app)
 # info.register_callbacks(app)
-graficar.register_callbacks(app)
+graficar.register_callbacks(app)  # CORREGIDO: Con fix de responsive=False y autosize=False
+# graficar_debug.register_callbacks(app)  # DEBUG ya no necesario
 correcciones.register_callbacks(app)
 importar_umbrales.register_callbacks(app)
 # configuraciones.register_callbacks(app)
 # configuracion_plantilla_gpt.register_callbacks(app)
 configuracion_plantilla_claude.register_callbacks(app)
+# graficar_debug.register_callbacks(app)  # Ya registrado arriba
 
 
 # Callback de enrutado de páginas

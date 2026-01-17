@@ -191,14 +191,23 @@ def layout():
                                 {"value": "depth", "label": "profundidad"}
                             ],
                             value="cota_abs",
-                            style={"width": "150px", "marginRight": "20px"}
+                            style={"width": "150px"}
                         ),
-                        dmc.Checkbox(
-                            id="orden",
-                            label="Ascendente",
-                            checked=True
-                        )
-                    ], style={"marginBottom": "50px"}),
+                    ], style={"marginBottom": "20px"}),
+                    dmc.Text("Orden del eje vertical", fw="bold", style={"marginBottom": "10px"}),
+                    dmc.SegmentedControl(
+                        id="orden",
+                        value="ascendente",
+                        data=[
+                            {"value": "ascendente", "label": "↑ Ascendente"},
+                            {"value": "descendente", "label": "↓ Descendente"},
+                        ],
+                        fullWidth=True,
+                        color="blue",
+                        radius="xl",
+                        size="md",
+                        style={"marginBottom": "50px"}
+                    ),
                     dmc.Text("Seleccionar estilo de colores", fw="bold", style={"marginBottom": "10px"}),
                     dmc.RadioGroup(
                         id="color_scheme_selector",
@@ -364,11 +373,11 @@ def layout():
                             html.Div([
                                 dmc.Grid([
                                     dmc.GridCol([
-                                        dcc.Graph(id='grafico_incli_1_a'),
+                                        dcc.Graph(id='grafico_incli_1_a', config={'responsive': False}, style={'height': '600px'}),
                                         dmc.Text("Desplazamiento A", ta="center")
                                     ], span=6, style={'padding': '0', 'margin': '0'}),
                                     dmc.GridCol([
-                                        dcc.Graph(id='grafico_incli_1_b'),
+                                        dcc.Graph(id='grafico_incli_1_b', config={'responsive': False}, style={'height': '600px'}),
                                         dmc.Text("Desplazamiento B", ta="center")
                                     ], span=6, style={'padding': '0', 'margin': '0'}),
                                 ])
@@ -379,11 +388,11 @@ def layout():
                             html.Div([
                                 dmc.Grid([
                                     dmc.GridCol([
-                                        dcc.Graph(id='grafico_incli_2_a'),
+                                        dcc.Graph(id='grafico_incli_2_a', config={'responsive': False}, style={'height': '600px'}),
                                         dmc.Text("Incremental A", ta="center")
                                     ], span=6, style={'padding': '0', 'margin': '0'}),
                                     dmc.GridCol([
-                                        dcc.Graph(id='grafico_incli_2_b'),
+                                        dcc.Graph(id='grafico_incli_2_b', config={'responsive': False}, style={'height': '600px'}),
                                         dmc.Text("Incremental B", ta="center")
                                     ], span=6, style={'padding': '0', 'margin': '0'}),
                                 ])
@@ -394,11 +403,11 @@ def layout():
                             html.Div([
                                 dmc.Grid([
                                     dmc.GridCol([
-                                        dcc.Graph(id='grafico_incli_chk_a'),
+                                        dcc.Graph(id='grafico_incli_chk_a', config={'responsive': False}, style={'height': '600px'}),
                                         dmc.Text("Checksum A", ta="center")
                                     ], span=6, style={'padding': '0', 'margin': '0'}),
                                     dmc.GridCol([
-                                        dcc.Graph(id='grafico_incli_chk_b'),
+                                        dcc.Graph(id='grafico_incli_chk_b', config={'responsive': False}, style={'height': '600px'}),
                                         dmc.Text("Checksum B", ta="center")
                                     ], span=6, style={'padding': '0', 'margin': '0'}),
                                 ])
@@ -409,15 +418,15 @@ def layout():
                             html.Div([
                                 dmc.Grid([
                                     dmc.GridCol([
-                                        dcc.Graph(id='grafico_incli_3_a'),
+                                        dcc.Graph(id='grafico_incli_3_a', config={'responsive': False}, style={'height': '600px'}),
                                         dmc.Text("Desplazamiento A", ta="center")
                                     ], span=4, style={'padding': '0', 'margin': '0'}),
                                     dmc.GridCol([
-                                        dcc.Graph(id='grafico_incli_3_b'),
+                                        dcc.Graph(id='grafico_incli_3_b', config={'responsive': False}, style={'height': '600px'}),
                                         dmc.Text("Desplazamiento B", ta="center")
                                     ], span=4, style={'padding': '0', 'margin': '0'}),
                                     dmc.GridCol([
-                                        dcc.Graph(id='grafico_incli_3_total'),
+                                        dcc.Graph(id='grafico_incli_3_total', config={'responsive': False}, style={'height': '600px'}),
                                         dmc.Text("Desplazamientos Totales", ta="center")
                                     ], span=4, style={'padding': '0', 'margin': '0'}),
                                 ])
@@ -454,7 +463,7 @@ def layout():
             dmc.Divider(style={"marginTop": "20px", "marginBottom": "20px"}),
             dmc.Grid([
                 dmc.GridCol(
-                    dcc.Graph(id='grafico_temporal'),
+                    dcc.Graph(id='grafico_temporal', config={'responsive': False}, style={'height': '400px'}),
                     span=9  # Ocupa el 70% de la fila
                 ),
                 dmc.GridCol([
@@ -1026,7 +1035,7 @@ def register_callbacks(app):
          Output("grafico_incli_3_total", "figure")],
         [Input("fechas_multiselect", "value"),
          #Input("fechas_multiselect", "data"),
-         Input("slider_fecha_tooltip", "children"),
+         Input("slider_fechas", "value"),  # CORREGIDO: Usar slider directamente en vez del tooltip para evitar bucle
          Input("graficar-tubo", "data"),
          Input("alto_graficos_slider", "value"),
          Input("color_scheme_selector", "value"),
@@ -1038,7 +1047,7 @@ def register_callbacks(app):
          Input("valor_negativo_incremento", "value"),
          Input("leyenda_umbrales", "data"),
          Input("unidades_eje","value"),
-         Input("orden", "checked")]
+         Input("orden", "value")]
     )
     #def actualizar_graficos(fechas_seleccionadas, fechas_colores, slider_value, data, alto_graficos, color_scheme,
     #                        escala_desplazamiento, escala_incremento,
@@ -1053,7 +1062,14 @@ def register_callbacks(app):
                             eje, orden):
 
         if not fechas_seleccionadas or not data:
-            return [go.Figure() for _ in range(9)]
+            # CRÍTICO: Las figuras vacías también deben tener autosize=False
+            fig_vacia = go.Figure()
+            fig_vacia.update_layout(
+                autosize=False,
+                height=alto_graficos,
+                uirevision='constant'
+            )
+            return [fig_vacia for _ in range(9)]
 
         # RECONSTRUIR fechas_colores internamente en lugar de recibirlo como parámetro
         total_colors = len(fechas_seleccionadas)
@@ -1078,7 +1094,24 @@ def register_callbacks(app):
         fig3_total = go.Figure()
 
         # Obtener la fecha seleccionada en el slider
-        fecha_slider = obtener_fecha_desde_slider(slider_value)
+        # CORREGIDO: Ahora slider_value es el valor numérico del slider, no el texto del tooltip
+        # Necesitamos convertirlo a fecha usando la misma lógica que update_slider_tooltip
+        fecha_slider = None
+        if fechas_seleccionadas and slider_value is not None:
+            try:
+                fechas_dt = sorted([datetime.fromisoformat(f) for f in fechas_seleccionadas])
+                fecha_inicial = fechas_dt[0]
+                fecha_calculada = fecha_inicial + timedelta(days=slider_value)
+                fecha_cercana = min(fechas_dt, key=lambda x: abs((x - fecha_calculada).days))
+                fecha_slider = fecha_cercana.strftime('%Y-%m-%dT%H:%M:%S')
+                # Buscar formato exacto en fechas_seleccionadas
+                for f in fechas_seleccionadas:
+                    if f.startswith(fecha_slider[:10]):
+                        fecha_slider = f
+                        break
+            except Exception as e:
+                print(f"Error calculando fecha_slider: {e}")
+                fecha_slider = fechas_seleccionadas[-1] if fechas_seleccionadas else None
 
         # BLOQUE 1: Primero agregar todas las series no seleccionadas
         for fecha in fechas_seleccionadas:
@@ -1282,7 +1315,7 @@ def register_callbacks(app):
                     range=[-1, 1],  # Establece el rango mínimo a ±1
                     tickmode='linear',  # Modo de ticks lineal
                     dtick=0.5,  # Espacio entre ticks (0.5 para divisiones intermedias)
-                    autorange=True,  # Permitir autoajuste si los datos exceden ±1
+                    autorange=False,  # CORREGIDO: No autorange si ya hay un rango fijo (evita conflicto)
                     tick0=0,  # Empezar en 0
                     constrain='domain'  # Mantener la restricción en el dominio
                 )
@@ -1301,11 +1334,12 @@ def register_callbacks(app):
             else:
                 titulo_eje_y = ""
             fig.update_layout(
-                uirevision='constant',
+                uirevision=f'constant_{orden}_{eje}',  # CAMBIADO: Forzar reset UI al cambiar orden o eje
                 yaxis=dict(
                     type='linear',
                     title=titulo_eje_y,
-                    autorange=True if orden else 'reversed',
+                    autorange='reversed' if orden == 'descendente' else True,  # MODIFICADO: Lógica para SegmentedControl
+                    fixedrange=False,  # Permitir zoom pero sin auto-redimensionado continuo
                     gridcolor='lightgray', gridwidth=1, griddash='dash',
                     anchor='free',
                     #position=0,  # Posicionar el eje Y en x=0
@@ -1319,7 +1353,8 @@ def register_callbacks(app):
                     linewidth=1,  # Grosor del borde inferior
                     zeroline=True, zerolinecolor='darkgray', zerolinewidth=1 # muestra el eje vertical en x=0
                 ),
-                showlegend=False, height=alto_graficos, title_x=0.5, plot_bgcolor='white'
+                showlegend=False, height=alto_graficos, title_x=0.5, plot_bgcolor='white',
+                autosize=False  # CRÍTICO: Desactiva autosize para evitar bucle de redimensionado
             )
 
         return [fig1_a, fig1_b, fig2_a, fig2_b,fig_chk_a, fig_chk_b, fig3_a, fig3_b, fig3_total]
@@ -1340,7 +1375,9 @@ def register_callbacks(app):
     def actualizar_grafico_temporal(profundidades_seleccionadas, data, desplazamientos_seleccionados, start_date, end_date,
                                     escala_temporal, valor_positivo_temporal, valor_negativo_temporal, eje):
         if not profundidades_seleccionadas or not data or not desplazamientos_seleccionados:
-            return go.Figure()
+            fig_vacia = go.Figure()
+            fig_vacia.update_layout(autosize=False, uirevision='constant')
+            return fig_vacia
 
         fig_temporal = go.Figure()
 
@@ -1402,7 +1439,9 @@ def register_callbacks(app):
                 linewidth=2,
             ),
             showlegend=True,
-            plot_bgcolor='white'
+            plot_bgcolor='white',
+            autosize=False,  # CRÍTICO: Desactiva autosize para evitar bucle
+            uirevision='constant'  # Mantener estado UI
         )
 
         return fig_temporal

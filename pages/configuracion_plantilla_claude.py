@@ -15,6 +15,8 @@ from datetime import datetime
 
 from utils.funciones_configuracion_plantilla import actualizar_orientacion_y_reglas
 
+
+
 # Constantes
 
 A4_PORTRAIT_WIDTH = 595  # Ancho A4 vertical en puntos (21 cm)
@@ -59,7 +61,7 @@ def layout():
             dmc.Paper(p="md", withBorder=True, shadow="sm", radius="md", mb=20, children=[
                 dmc.Grid([
                     # Primera fila - Configuración general
-                    dmc.Col([
+                    dmc.GridCol([
                         dmc.Group([
                             dmc.TextInput(
                                 id="ep-template-name",
@@ -92,13 +94,13 @@ def layout():
                                     "←",
                                     id="ep-prev-page-btn",
                                     variant="outline",
-                                    compact=True
+                                    size="xs"
                                 ),
                                 dmc.Button(
                                     "→",
                                     id="ep-next-page-btn",
                                     variant="outline",
-                                    compact=True
+                                    size="xs"
                                 ),
                                 dmc.Button(
                                     "Añadir página",
@@ -112,7 +114,7 @@ def layout():
                     ], span=12, mb=10),
 
                     # NUEVA FILA - Área para arrastrar y soltar archivos JSON
-                    dmc.Col([
+                    dmc.GridCol([
                         dcc.Upload(
                             id='ep-upload-json',
                             children=dmc.Paper(
@@ -143,7 +145,7 @@ def layout():
                     ], span=12, mb=20),
 
                     # Tercera fila - Botones de elementos (corregido el duplicado)
-                    dmc.Col([
+                    dmc.GridCol([
                         dmc.Group([
                             dmc.Button(
                                 "Guardar JSON",
@@ -220,7 +222,7 @@ def layout():
                         # Tres columnas principales
                         dmc.Grid([
                             # Columna 1: Coordenadas en formato tabla (más compacta)
-                            dmc.Col([
+                            dmc.GridCol([
                                 dmc.Text("Coordenadas", fw="bold", ta="center", mb=10),
                                 # Centro la tabla con un div
                                 html.Div(
@@ -245,7 +247,7 @@ def layout():
                                                             min=0,
                                                             max=30,
                                                             step=0.01,
-                                                            precision=2,
+                                                            decimalScale=2,
                                                             value=1.0,
                                                             style={"width": "80px"}
                                                         ),
@@ -257,7 +259,7 @@ def layout():
                                                             min=0,
                                                             max=30,
                                                             step=0.01,
-                                                            precision=2,
+                                                            decimalScale=2,
                                                             value=1.0,
                                                             style={"width": "80px"}
                                                         ),
@@ -273,7 +275,7 @@ def layout():
                                                             min=0,
                                                             max=30,
                                                             step=0.01,
-                                                            precision=2,
+                                                            decimalScale=2,
                                                             value=1.0,
                                                             style={"width": "80px"}
                                                         ),
@@ -285,7 +287,7 @@ def layout():
                                                             min=0,
                                                             max=30,
                                                             step=0.01,
-                                                            precision=2,
+                                                            decimalScale=2,
                                                             value=1.0,
                                                             style={"width": "80px"}
                                                         ),
@@ -295,12 +297,12 @@ def layout():
                                             ])
                                         ],
                                         # Propiedades estéticas de Mantine para la tabla
-                                        highlightOnHover=True,  # Resalta las filas al pasar el ratón
-                                        horizontalgap="1",  # Espaciado horizontal medio
-                                        verticalgap="1",  # Espaciado vertical pequeño
-                                        withColumnBorders=True,  # Añade líneas verticales entre columnas
-                                        withBorder=False,  # Sin borde exterior
-                                        striped=False,  # Sin filas alternadas
+                                        highlightOnHover=True,
+                                        horizontalSpacing="xs",
+                                        verticalSpacing="xs",
+                                        withColumnBorders=True,
+                                        withTableBorder=False,
+                                        striped=False,
                                         style={"borderCollapse": "collapse", "width": "auto", "margin": "0 auto"}
                                     ),style={"display": "flex", "justifyContent": "center"}  # Centrado
                                 )
@@ -308,21 +310,21 @@ def layout():
 
                             # Columna 2: Grosor y Color (selectores más anchos)
                             # Columna 2: Propiedades de línea (reorganizado en filas)
-                            dmc.Col([
+                            dmc.GridCol([
                                 dmc.Text("Propiedades de Línea", fw="bold", ta="center", mb=15),
 
                                 # Fila para Grosor
                                 dmc.Grid([
-                                    dmc.Col([
+                                    dmc.GridCol([
                                         dmc.Text("Grosor de línea (px):", size="sm", fw="bold", pt=8),
                                     ], span=5),
-                                    dmc.Col([
+                                    dmc.GridCol([
                                         dmc.NumberInput(
                                             id="line-grosor",
                                             min=0.1,
                                             max=10,
                                             step=0.1,
-                                            precision=1,
+                                            decimalScale=1,
                                             value=1,
                                             style={"width": "100%"}
                                         ),
@@ -331,10 +333,10 @@ def layout():
 
                                 # Fila para Color
                                 dmc.Grid([
-                                    dmc.Col([
+                                    dmc.GridCol([
                                         dmc.Text("Color de línea:", size="sm", fw="bold", pt=8),
                                     ], span=5),
-                                    dmc.Col([
+                                    dmc.GridCol([
                                         dmc.ColorInput(
                                             id="line-color",
                                             value="#000000",
@@ -350,12 +352,12 @@ def layout():
 
                                 # Fila para Z-Index
                                 dmc.Grid([
-                                    dmc.Col([
+                                    dmc.GridCol([
                                         dmc.Text("Orden (Z-Index):", size="sm", fw="bold", pt=8),
                                     ], span=5),
-                                    dmc.Col([
+                                    dmc.GridCol([
                                         dmc.Grid([
-                                            dmc.Col([
+                                            dmc.GridCol([
                                                 dmc.NumberInput(
                                                     id="line-zindex",
                                                     min=1,
@@ -365,7 +367,7 @@ def layout():
                                                     style={"width": "100%"}
                                                 ),
                                             ], span=7),
-                                            dmc.Col([
+                                            dmc.GridCol([
                                                 dmc.Text("Mayor = encima", size="xs", pt=8, c="gray"),
                                             ], span=5),
                                         ], gutter="xs"),
@@ -386,7 +388,7 @@ def layout():
                             ], span=4),
 
                             # Columna 3: Nombre y Botones (actualizado para igualar al drawer de rectángulo)
-                            dmc.Col([
+                            dmc.GridCol([
                                 # Nombre centrado
                                 html.Div(
                                     dmc.Group([
@@ -453,7 +455,7 @@ def layout():
                         # Tres columnas principales
                         dmc.Grid([
                             # Columna 1: Posición y dimensiones en dos tablas verticales
-                            dmc.Col([
+                            dmc.GridCol([
                                 # Tabla de Posición
                                 dmc.Text("Esquina superior izquierda", fw="bold", ta="center", mb=10),
                                 html.Div(
@@ -475,7 +477,7 @@ def layout():
                                                             min=0,
                                                             max=30,
                                                             step=0.01,
-                                                            precision=2,
+                                                            decimalScale=2,
                                                             value=1.0,
                                                             style={"width": "80px"}
                                                         )
@@ -486,7 +488,7 @@ def layout():
                                                             min=0,
                                                             max=30,
                                                             step=0.01,
-                                                            precision=2,
+                                                            decimalScale=2,
                                                             value=1.0,
                                                             style={"width": "80px"}
                                                         )
@@ -495,10 +497,10 @@ def layout():
                                             ])
                                         ],
                                         highlightOnHover=True,
-                                        horizontalgap="1",
-                                        verticalgap="1",
+                                        horizontalSpacing="xs",
+                                        verticalSpacing="xs",
                                         withColumnBorders=True,
-                                        withBorder=False,
+                                        withTableBorder=False,
                                         striped=False,
                                         style={"borderCollapse": "collapse", "width": "auto", "margin": "0 auto",
                                                "marginBottom": "15px"}
@@ -527,7 +529,7 @@ def layout():
                                                             min=0,
                                                             max=30,
                                                             step=0.01,
-                                                            precision=2,
+                                                            decimalScale=2,
                                                             value=1.0,
                                                             style={"width": "80px"}
                                                         )
@@ -538,7 +540,7 @@ def layout():
                                                             min=0,
                                                             max=30,
                                                             step=0.01,
-                                                            precision=2,
+                                                            decimalScale=2,
                                                             value=1.0,
                                                             style={"width": "80px"}
                                                         )
@@ -547,10 +549,10 @@ def layout():
                                             ])
                                         ],
                                         highlightOnHover=True,
-                                        horizontalgap="1",
-                                        verticalgap="1",
+                                        horizontalSpacing="xs",
+                                        verticalSpacing="xs",
                                         withColumnBorders=True,
-                                        withBorder=False,
+                                        withTableBorder=False,
                                         striped=False,
                                         style={"borderCollapse": "collapse", "width": "auto", "margin": "0 auto"}
                                     ),
@@ -559,18 +561,18 @@ def layout():
                             ], span=4),
 
                             # Columna 2: Estilo - Optimizada con mejor distribución de espacio
-                            dmc.Col([
+                            dmc.GridCol([
                                 dmc.Text("Estilo", fw="bold", ta="center", mb=15),
 
                                 # Fila de Borde - Nueva proporción 1/4 para título, 3/4 para controles
                                 dmc.Grid([
                                     # Título (1/4)
-                                    dmc.Col([
+                                    dmc.GridCol([
                                         dmc.Text("Borde:", fw="bold", size="sm", ta="left", pt=8),
                                     ], span=3, style={"paddingLeft": "10px"}),
 
                                     # Controles (3/4)
-                                    dmc.Col([
+                                    dmc.GridCol([
                                         dmc.Group([
                                             dmc.Text("Grosor:", size="sm", pt=8, style={"minWidth": "55px"}),
                                             dmc.NumberInput(
@@ -578,7 +580,7 @@ def layout():
                                                 min=0,
                                                 max=10,
                                                 step=0.1,
-                                                precision=1,
+                                                decimalScale=1,
                                                 value=1,
                                                 style={"width": "65px"}
                                             ),
@@ -601,12 +603,12 @@ def layout():
                                 # Fila de Relleno - Nueva proporción 1/4 para título, 3/4 para controles
                                 dmc.Grid([
                                     # Título (1/4)
-                                    dmc.Col([
+                                    dmc.GridCol([
                                         dmc.Text("Relleno:", fw="bold", size="sm", ta="left", pt=8),
                                     ], span=3, style={"paddingLeft": "10px"}),
 
                                     # Controles (3/4)
-                                    dmc.Col([
+                                    dmc.GridCol([
                                         dmc.Group([
                                             dmc.Text("Color:", size="sm", pt=8, style={"minWidth": "45px"}),
                                             dmc.ColorInput(
@@ -639,12 +641,12 @@ def layout():
                                 # Fila de Z-Index - Nueva adición
                                 dmc.Grid([
                                     # Título (1/4)
-                                    dmc.Col([
+                                    dmc.GridCol([
                                         dmc.Text("Orden:", fw="bold", size="sm", ta="left", pt=8),
                                     ], span=3, style={"paddingLeft": "10px"}),
 
                                     # Controles (3/4)
-                                    dmc.Col([
+                                    dmc.GridCol([
                                         dmc.Group([
                                             dmc.Text("Z-Index:", size="sm", pt=8, style={"minWidth": "55px"}),
                                             dmc.NumberInput(
@@ -662,7 +664,7 @@ def layout():
                             ], span=4),
 
                             # Columna 3: Nombre y Botones (sin cambios)
-                            dmc.Col([
+                            dmc.GridCol([
                                 # Nombre centrado
                                 html.Div(
                                     dmc.Group([
@@ -729,7 +731,7 @@ def layout():
                         # Tres columnas principales
                         dmc.Grid([
                             # Columna 1: Posición y dimensiones
-                            dmc.Col([
+                            dmc.GridCol([
                                 # Tabla de Posición
                                 dmc.Text("Esquina superior izquierda", fw="bold", ta="center", mb=10),
                                 html.Div(
@@ -751,7 +753,7 @@ def layout():
                                                             min=0,
                                                             max=30,
                                                             step=0.01,
-                                                            precision=2,
+                                                            decimalScale=2,
                                                             value=1.0,
                                                             style={"width": "80px"}
                                                         )
@@ -762,7 +764,7 @@ def layout():
                                                             min=0,
                                                             max=30,
                                                             step=0.01,
-                                                            precision=2,
+                                                            decimalScale=2,
                                                             value=1.0,
                                                             style={"width": "80px"}
                                                         )
@@ -771,10 +773,10 @@ def layout():
                                             ])
                                         ],
                                         highlightOnHover=True,
-                                        horizontalgap="1",
-                                        verticalgap="1",
+                                        horizontalSpacing="xs",
+                                        verticalSpacing="xs",
                                         withColumnBorders=True,
-                                        withBorder=False,
+                                        withTableBorder=False,
                                         striped=False,
                                         style={"borderCollapse": "collapse", "width": "auto", "margin": "0 auto",
                                                "marginBottom": "15px"}
@@ -803,7 +805,7 @@ def layout():
                                                             min=0,
                                                             max=30,
                                                             step=0.01,
-                                                            precision=2,
+                                                            decimalScale=2,
                                                             value=5.0,
                                                             style={"width": "80px"}
                                                         )
@@ -814,7 +816,7 @@ def layout():
                                                             min=0,
                                                             max=30,
                                                             step=0.01,
-                                                            precision=2,
+                                                            decimalScale=2,
                                                             value=2.0,
                                                             style={"width": "80px"}
                                                         )
@@ -823,10 +825,10 @@ def layout():
                                             ])
                                         ],
                                         highlightOnHover=True,
-                                        horizontalgap="1",
-                                        verticalgap="1",
+                                        horizontalSpacing="xs",
+                                        verticalSpacing="xs",
                                         withColumnBorders=True,
-                                        withBorder=False,
+                                        withTableBorder=False,
                                         striped=False,
                                         style={"borderCollapse": "collapse", "width": "auto", "margin": "0 auto"}
                                     ),
@@ -850,7 +852,7 @@ def layout():
                             ], span=4),
 
                             # Columna 2: Propiedades de texto
-                            dmc.Col([
+                            dmc.GridCol([
                                 dmc.Text("Propiedades de texto", fw="bold", ta="center", mb=15),
 
                                 # Familia de fuente
@@ -969,7 +971,7 @@ def layout():
                             ], span=4),
 
                             # Columna 3: Contenido y botones
-                            dmc.Col([
+                            dmc.GridCol([
                                 # Nombre del identificador
                                 html.Div(
                                     dmc.Group([
@@ -1061,7 +1063,7 @@ def layout():
                         # Tres columnas principales
                         dmc.Grid([
                             # Columna 1: Posición y dimensiones
-                            dmc.Col([
+                            dmc.GridCol([
                                 # Tabla de Posición
                                 dmc.Text("Esquina superior izquierda", fw="bold", ta="center", mb=10),
                                 html.Div(
@@ -1083,7 +1085,7 @@ def layout():
                                                             min=0,
                                                             max=30,
                                                             step=0.01,
-                                                            precision=2,
+                                                            decimalScale=2,
                                                             value=1.0,
                                                             style={"width": "80px"}
                                                         )
@@ -1094,7 +1096,7 @@ def layout():
                                                             min=0,
                                                             max=30,
                                                             step=0.01,
-                                                            precision=2,
+                                                            decimalScale=2,
                                                             value=1.0,
                                                             style={"width": "80px"}
                                                         )
@@ -1103,10 +1105,10 @@ def layout():
                                             ])
                                         ],
                                         highlightOnHover=True,
-                                        horizontalgap="1",
-                                        verticalgap="1",
+                                        horizontalSpacing="xs",
+                                        verticalSpacing="xs",
                                         withColumnBorders=True,
-                                        withBorder=False,
+                                        withTableBorder=False,
                                         striped=False,
                                         style={"borderCollapse": "collapse", "width": "auto", "margin": "0 auto",
                                                "marginBottom": "15px"}
@@ -1135,7 +1137,7 @@ def layout():
                                                             min=0,
                                                             max=30,
                                                             step=0.01,
-                                                            precision=2,
+                                                            decimalScale=2,
                                                             value=1.0,
                                                             style={"width": "80px"}
                                                         )
@@ -1146,7 +1148,7 @@ def layout():
                                                             min=0,
                                                             max=30,
                                                             step=0.01,
-                                                            precision=2,
+                                                            decimalScale=2,
                                                             value=1.0,
                                                             style={"width": "80px"}
                                                         )
@@ -1155,10 +1157,10 @@ def layout():
                                             ])
                                         ],
                                         highlightOnHover=True,
-                                        horizontalgap="1",
-                                        verticalgap="1",
+                                        horizontalSpacing="xs",
+                                        verticalSpacing="xs",
                                         withColumnBorders=True,
-                                        withBorder=False,
+                                        withTableBorder=False,
                                         striped=False,
                                         style={"borderCollapse": "collapse", "width": "auto", "margin": "0 auto"}
                                     ),
@@ -1167,15 +1169,15 @@ def layout():
                             ], span=4),
 
                             # Columna 2: Opciones de imagen (reorganizada)
-                            dmc.Col([
+                            dmc.GridCol([
                                 dmc.Text("Opciones de imagen", fw="bold", ta="center", mb=15),
 
                                 # Selector de archivo - Título y Upload en la misma línea
                                 dmc.Grid([
-                                    dmc.Col([
+                                    dmc.GridCol([
                                         dmc.Text("Seleccionar imagen:", size="sm", fw="bold", pt=10),
                                     ], span=4),
-                                    dmc.Col([
+                                    dmc.GridCol([
                                         dcc.Upload(
                                             id='image-upload',
                                             children=dmc.Paper(
@@ -1203,14 +1205,14 @@ def layout():
 
                                 # URL de imagen
                                 dmc.Grid([
-                                    dmc.Col([
+                                    dmc.GridCol([
                                         dmc.Text("URL de imagen:", size="sm", fw="bold", pt=10),
                                     ], span=4),
-                                    dmc.Col([
+                                    dmc.GridCol([
                                         dmc.TextInput(
                                             id="image-url",
                                             placeholder="https://ejemplo.com/imagen.jpg",
-                                            icon=DashIconify(icon="mdi:link-variant"),
+                                            leftSection=DashIconify(icon="mdi:link-variant"),
                                             size="sm",
                                         ),
                                     ], span=8),
@@ -1226,10 +1228,10 @@ def layout():
 
                                 # Opacidad
                                 dmc.Grid([
-                                    dmc.Col([
+                                    dmc.GridCol([
                                         dmc.Text("Opacidad:", size="sm", fw="bold", pt=8),
                                     ], span=3),
-                                    dmc.Col([
+                                    dmc.GridCol([
                                         dmc.Slider(
                                             id="image-opacity",
                                             min=0,
@@ -1248,10 +1250,10 @@ def layout():
                                 # Reducción y Z-Index en la misma línea
                                 dmc.Grid([
                                     # Columna para Reducción
-                                    dmc.Col([
+                                    dmc.GridCol([
                                         dmc.Text("Reducción:", size="sm", fw="bold", pt=8),
                                         dmc.Grid([
-                                            dmc.Col([
+                                            dmc.GridCol([
                                                 dmc.NumberInput(
                                                     id="image-reduction",
                                                     min=0,
@@ -1261,17 +1263,17 @@ def layout():
                                                     style={"width": "100%"}
                                                 ),
                                             ], span=8),
-                                            dmc.Col([
+                                            dmc.GridCol([
                                                 dmc.Text("px", size="xs", pt=8, c="gray"),
                                             ], span=4),
                                         ], gutter="xs", style={"marginTop": "5px"}),
                                     ], span=6),
 
                                     # Columna para Z-Index
-                                    dmc.Col([
+                                    dmc.GridCol([
                                         dmc.Text("Z-Index:", size="sm", fw="bold", pt=8),
                                         dmc.Grid([
-                                            dmc.Col([
+                                            dmc.GridCol([
                                                 dmc.NumberInput(
                                                     id="image-zindex",
                                                     min=1,
@@ -1281,7 +1283,7 @@ def layout():
                                                     style={"width": "100%"}
                                                 ),
                                             ], span=8),
-                                            dmc.Col([
+                                            dmc.GridCol([
                                                 dmc.Text(">", size="xs", pt=8, c="gray"),
                                             ], span=4),
                                         ], gutter="xs", style={"marginTop": "5px"}),
@@ -1293,7 +1295,7 @@ def layout():
                                 dmc.Tooltip(
                                     label="Reducción: espacio en píxeles a reducir en cada borde para insertar en rectángulos. Z-Index: mayor valor = encima.",
                                     withArrow=True,
-                                    width=300,
+                                    w=300,
                                     multiline=True,
                                     children=[
                                         dmc.Badge(
@@ -1309,7 +1311,7 @@ def layout():
                             ], span=4),
 
                             # Columna 3: Nombre y Botones
-                            dmc.Col([
+                            dmc.GridCol([
                                 # Nombre centrado
                                 html.Div(
                                     dmc.Group([
@@ -1376,7 +1378,7 @@ def layout():
                         # Tres columnas principales
                         dmc.Grid([
                             # Columna 1: Posición y dimensiones
-                            dmc.Col([
+                            dmc.GridCol([
                                 # Tabla de Posición
                                 dmc.Text("Esquina superior izquierda", fw="bold", ta="center", mb=10),
                                 html.Div(
@@ -1398,7 +1400,7 @@ def layout():
                                                             min=0,
                                                             max=30,
                                                             step=0.01,
-                                                            precision=2,
+                                                            decimalScale=2,
                                                             value=1.0,
                                                             style={"width": "80px"}
                                                         )
@@ -1409,7 +1411,7 @@ def layout():
                                                             min=0,
                                                             max=30,
                                                             step=0.01,
-                                                            precision=2,
+                                                            decimalScale=2,
                                                             value=1.0,
                                                             style={"width": "80px"}
                                                         )
@@ -1418,10 +1420,10 @@ def layout():
                                             ])
                                         ],
                                         highlightOnHover=True,
-                                        horizontalgap="1",
-                                        verticalgap="1",
+                                        horizontalSpacing="xs",
+                                        verticalSpacing="xs",
                                         withColumnBorders=True,
-                                        withBorder=False,
+                                        withTableBorder=False,
                                         striped=False,
                                         style={"borderCollapse": "collapse", "width": "auto", "margin": "0 auto",
                                                "marginBottom": "15px"}
@@ -1450,7 +1452,7 @@ def layout():
                                                             min=0,
                                                             max=30,
                                                             step=0.01,
-                                                            precision=2,
+                                                            decimalScale=2,
                                                             value=8.0,
                                                             style={"width": "80px"}
                                                         )
@@ -1461,7 +1463,7 @@ def layout():
                                                             min=0,
                                                             max=30,
                                                             step=0.01,
-                                                            precision=2,
+                                                            decimalScale=2,
                                                             value=6.0,
                                                             style={"width": "80px"}
                                                         )
@@ -1470,10 +1472,10 @@ def layout():
                                             ])
                                         ],
                                         highlightOnHover=True,
-                                        horizontalgap="1",
-                                        verticalgap="1",
+                                        horizontalSpacing="xs",
+                                        verticalSpacing="xs",
                                         withColumnBorders=True,
-                                        withBorder=False,
+                                        withTableBorder=False,
                                         striped=False,
                                         style={"borderCollapse": "collapse", "width": "auto", "margin": "0 auto"}
                                     ),
@@ -1482,7 +1484,7 @@ def layout():
                             ], span=4),
 
                             # Columna 2: Configuración del gráfico
-                            dmc.Col([
+                            dmc.GridCol([
                                 dmc.Text("Configuración del gráfico", fw="bold", ta="center", mb=15),
 
                                 # Script que realiza el gráfico
@@ -1546,10 +1548,10 @@ def layout():
 
                                 # Opacidad
                                 dmc.Grid([
-                                    dmc.Col([
+                                    dmc.GridCol([
                                         dmc.Text("Opacidad:", size="sm", fw="bold", pt=8),
                                     ], span=3),
-                                    dmc.Col([
+                                    dmc.GridCol([
                                         dmc.Slider(
                                             id="graph-opacity",
                                             min=0,
@@ -1568,10 +1570,10 @@ def layout():
                                 # Reducción y Z-Index en la misma línea
                                 dmc.Grid([
                                     # Columna para Reducción
-                                    dmc.Col([
+                                    dmc.GridCol([
                                         dmc.Text("Reducción:", size="sm", fw="bold", pt=8),
                                         dmc.Grid([
-                                            dmc.Col([
+                                            dmc.GridCol([
                                                 dmc.NumberInput(
                                                     id="graph-reduction",
                                                     min=0,
@@ -1581,17 +1583,17 @@ def layout():
                                                     style={"width": "100%"}
                                                 ),
                                             ], span=8),
-                                            dmc.Col([
+                                            dmc.GridCol([
                                                 dmc.Text("px", size="xs", pt=8, c="gray"),
                                             ], span=4),
                                         ], gutter="xs", style={"marginTop": "5px"}),
                                     ], span=6),
 
                                     # Columna para Z-Index
-                                    dmc.Col([
+                                    dmc.GridCol([
                                         dmc.Text("Z-Index:", size="sm", fw="bold", pt=8),
                                         dmc.Grid([
-                                            dmc.Col([
+                                            dmc.GridCol([
                                                 dmc.NumberInput(
                                                     id="graph-zindex",
                                                     min=1,
@@ -1601,7 +1603,7 @@ def layout():
                                                     style={"width": "100%"}
                                                 ),
                                             ], span=8),
-                                            dmc.Col([
+                                            dmc.GridCol([
                                                 dmc.Text(">", size="xs", pt=8, c="gray"),
                                             ], span=4),
                                         ], gutter="xs", style={"marginTop": "5px"}),
@@ -1611,7 +1613,7 @@ def layout():
                             ], span=4),
 
                             # Columna 3: Nombre y Botones
-                            dmc.Col([
+                            dmc.GridCol([
                                 # Nombre centrado
                                 html.Div(
                                     dmc.Group([
@@ -1818,13 +1820,10 @@ def layout():
                 dmc.Text("Contenido del Store:", fw=500, mb=5, mt=15),
                 dmc.Card(
                     children=[
-                        dmc.Prism(
+                        dmc.Code(
                             id="json-viewer",
-                            language="json",
-                            withLineNumbers=True,
-                            copyLabel="Copiar",
-                            copiedLabel="¡Copiado!",
-                            style={"maxHeight": "400px", "overflow": "auto"},
+                            block=True,
+                            style={"maxHeight": "400px", "overflow": "auto", "whiteSpace": "pre"},
                             children=""  # Añadir un string vacío como contenido inicial
                         )
                     ],

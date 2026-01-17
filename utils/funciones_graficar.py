@@ -361,7 +361,7 @@ def generar_seccion_grafico(num_pagina, nombre_elemento, elemento, scripts_dispo
     # Selector de script
     contenido_acordeon.append(
         dmc.Group([
-            dmc.Text("Script:", weight="bold", style={"width": "15%"}),
+            dmc.Text("Script:", fw="bold", style={"width": "15%"}),
             html.Div([
                 dmc.Select(
                     id={"type": "script-grafico", "pagina": num_pagina, "elemento": nombre_elemento},
@@ -370,7 +370,7 @@ def generar_seccion_grafico(num_pagina, nombre_elemento, elemento, scripts_dispo
                     placeholder="Seleccione un script",
                     style={"width": "100%", "marginBottom": "5px"}
                 ),
-                dmc.Text(script_status, color=status_color, size="sm")
+                dmc.Text(script_status, c=status_color, size="sm")
             ], style={"width": "85%"})
         ], style={"marginBottom": "15px"})
     )
@@ -402,7 +402,7 @@ def generar_campos_parametros(num_pagina, nombre_elemento, parametros_json, curr
     if not parametros_json:
         return [
             dmc.Stack([
-                dmc.Text("No hay parámetros configurados", color="dimmed", style={"padding": "10px 0"}),
+                dmc.Text("No hay parámetros configurados", c="dimmed", style={"padding": "10px 0"}),
                 dmc.Button(
                     "Añadir parámetros por defecto",
                     id={"type": "btn-add-params", "pagina": num_pagina, "elemento": nombre_elemento},
@@ -414,7 +414,7 @@ def generar_campos_parametros(num_pagina, nombre_elemento, parametros_json, curr
         ]
 
     campos_parametros = [
-        dmc.Text("Parámetros:", weight="bold", style={"marginTop": "10px", "marginBottom": "10px"})
+        dmc.Text("Parámetros:", fw="bold", style={"marginTop": "10px", "marginBottom": "10px"})
     ]
 
     for param_nombre, param_valor in parametros_json.items():
