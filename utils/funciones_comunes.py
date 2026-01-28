@@ -7,8 +7,6 @@ import os
 import random
 import bisect
 
-from win32gui import LR_SHARED
-
 
 # función para los calculados directos de cada profundidad
 def debug_funcion(texto):
