@@ -29,7 +29,15 @@ def calcular_fechas_seleccionadas(data, fecha_inicial, fecha_final, total_camp, 
         return []
 
     # Obtener todas las fechas disponibles (excluyendo claves especiales)
-    fechas = [fecha for fecha in data.keys() if fecha != "info" and fecha != "umbrales"]
+    # NOTA: Excluimos claves que pueden venir del data_source pero no son fechas ISO
+    claves_especiales = {"info", "umbrales", "fecha_seleccionada", "ultimas_camp", 
+                         "fecha_inicial", "fecha_final", "total_camp", "cadencia_dias",
+                         "eje", "orden", "color_scheme", "escala_desplazamiento", 
+                         "escala_incremento", "sensor", "nombre_sensor", "leyenda_umbrales",
+                         "valor_positivo_desplazamiento", "valor_negativo_desplazamiento",
+                         "valor_positivo_incremento", "valor_negativo_incremento",
+                         "escala_temporal", "valor_positivo_temporal", "valor_negativo_temporal"}
+    fechas = [fecha for fecha in data.keys() if fecha not in claves_especiales]
 
     if not fechas:
         return []
@@ -350,11 +358,21 @@ def seleccionar_profundidades_distribuidas(data, eje, num_profundidades=5):
         return []
 
     try:
+        # Definir claves especiales que no son fechas
+        claves_especiales = {"info", "umbrales", "fecha_seleccionada", "ultimas_camp", 
+                             "fecha_inicial", "fecha_final", "total_camp", "cadencia_dias",
+                             "eje", "orden", "color_scheme", "escala_desplazamiento", 
+                             "escala_incremento", "sensor", "nombre_sensor", "leyenda_umbrales",
+                             "valor_positivo_desplazamiento", "valor_negativo_desplazamiento",
+                             "valor_positivo_incremento", "valor_negativo_incremento",
+                             "escala_temporal", "valor_positivo_temporal", "valor_negativo_temporal"}
+        
         # Obtener todas las profundidades disponibles de cualquier fecha
         profundidades_set = set()
 
         for fecha, valor in data.items():
-            if fecha not in ["info", "umbrales"] and "calc" in valor:
+            # Filtrar claves especiales y verificar que valor es un diccionario con 'calc'
+            if fecha not in claves_especiales and isinstance(valor, dict) and "calc" in valor:
                 for punto in valor["calc"]:
                     if eje in punto:
                         profundidades_set.add(punto[eje])

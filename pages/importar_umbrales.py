@@ -23,7 +23,7 @@ def round_numbers_in_dict(obj, decimals=2):
 
 def layout():
     return dmc.MantineProvider(
-        theme={"colorScheme": "light"},
+        forceColorScheme="light",
         children=dmc.Container([
             dmc.Title("Insertar Umbrales en JSON", order=1, mb=20),
             dcc.Store(id='i-stored-json-data', storage_type='memory'),
@@ -66,12 +66,10 @@ def layout():
             # Paso 3: Configurar tipo de flanco y renombrar cada deformada
             dmc.Paper(p="md", withBorder=True, shadow="sm", radius="md", mb=20, children=[
                 dmc.Text("Paso 3: Configurar propiedades de cada deformada", fw=500, mb=10),
-                dmc.LoadingOverlay(
-                    html.Div(id='i-flancos-container', children=[])
-                ),
+                html.Div(id='i-flancos-container', children=[]),
                 dmc.Button(
                     "Confirmar configuración", id='i-confirm-flancos', disabled=True,
-                    c='blue', leftSection=DashIconify(icon="mdi:check-bold"), mt=10
+                    color='blue', leftSection=DashIconify(icon="mdi:check-bold"), mt=10
                 ),
                 dmc.Alert(id='i-flancos-status', title="", c="blue", hide=True)
             ]),
@@ -81,7 +79,7 @@ def layout():
                 dmc.Text("Paso 4: Guardar cambios en el archivo JSON original", fw=500, mb=10),
                 dmc.Button(
                     "Guardar cambios", id='i-save-json', disabled=True,
-                    c='blue', leftSection=DashIconify(icon="fa6-solid:floppy-disk")
+                    color='blue', leftSection=DashIconify(icon="fa6-solid:floppy-disk")
                 ),
                 dmc.Alert(id='i-save-status', title="", c="blue", hide=True)
             ]),
@@ -90,9 +88,7 @@ def layout():
             dmc.Paper(p="md", withBorder=True, shadow="sm", radius="md", children=[
                 dmc.Text("Vista previa de umbrales", fw=500, mb=10),
                 dmc.Divider(mb=10),
-                dmc.LoadingOverlay(
-                    dmc.Prism(id='i-umbrales-output', language="json", withLineNumbers=True, noCopy=True, children="{}")
-                )
+                dmc.Code(id='i-umbrales-output', block=True, children="{}")
             ])
         ], fluid=True)
     )
@@ -185,11 +181,7 @@ def register_callbacks(app):
                             dmc.Text(f"Configuración para: {deformada}", fw=600, size="sm", mb=10),
                             dmc.SimpleGrid(
                                 cols=3,
-                                gap="1",
-                                breakpoints=[
-                                    {"maxWidth": 1200, "cols": 2, "spacing": "sm"},
-                                    {"maxWidth": 768, "cols": 1, "spacing": "xs"}
-                                ],
+                                spacing="sm",
                                 children=[
                                     # Primera fila
                                     dmc.TextInput(

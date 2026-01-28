@@ -11,3 +11,36 @@
 .slider-ocultar-tooltip-marks .rc-slider-mark-text {
     display: none !important;
 }
+
+/* ========================================
+   ESTILOS PÁGINA INICIO (info.py)
+   ======================================== */
+
+/* Efecto hover para tarjetas de navegación */
+.hover-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+    border-color: var(--mantine-color-blue-4) !important;
+}
+
+/* Transición suave para todas las tarjetas */
+.hover-card {
+    transition: all 0.2s ease-in-out !important;
+}
+
+/* Estilo para tarjetas de documentación */
+.mantine-Paper-root:hover {
+    transition: all 0.2s ease;
+}
+
+/* Mejora visual de los acordeones */
+.mantine-Accordion-control:hover {
+    background-color: var(--mantine-color-gray-1);
+}
+
+/* Código con mejor legibilidad */
+.mantine-Code-root {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 12px;
+    line-height: 1.5;
+}

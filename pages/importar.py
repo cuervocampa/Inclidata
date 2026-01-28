@@ -38,7 +38,6 @@ def layout():
             withBorder=True,
             shadow="md",
             mb=20,
-            style={"backgroundColor": "#f8fbff"},
             children=[
                 Group([
                     DashIconify(icon="mdi:inclinometer", width=40, color="#1976d2"),
@@ -54,7 +53,6 @@ def layout():
             shadow="md",
             radius="lg",
             mb=20,
-            style={"backgroundColor": "#f8f9fa"},
             id='import-step-1',
             children=[
                 Group([
@@ -79,7 +77,7 @@ def layout():
                     "Continuar",
                     id='import-first-button',
                     variant="filled",
-                    c="blue",
+                    color="blue",
                     radius="md",
                     leftSection=DashIconify(icon="mdi:arrow-right-circle")
                 ),
@@ -152,7 +150,6 @@ def register_callbacks(app):
                     shadow="md",
                     radius="lg",
                     mb=20,
-                    style={"backgroundColor": "#f8f9fa"},
                     children=[
                         Group([
                             DashIconify(icon="mdi:tools", width=24, color="#1976d2"),
@@ -248,7 +245,7 @@ def register_callbacks(app):
                             "Continuar",
                             id='import-second-button',
                             variant="filled",
-                            c="blue",
+                            color="blue",
                             radius="md",
                             leftSection=DashIconify(icon="mdi:arrow-right-circle")
                         )
@@ -285,7 +282,6 @@ def register_callbacks(app):
                 shadow="md",
                 radius="lg",
                 mb=20,
-                style={"backgroundColor": "#f8f9fa"},
                 children=[
                     Group([
                         DashIconify(icon="mdi:file-upload", width=24, color="#1976d2"),
@@ -319,7 +315,7 @@ def register_callbacks(app):
                                     Button(
                                         "Seleccionar archivos",
                                         variant="outline",
-                                        c="blue",
+                                        color="blue",
                                         radius="md",
                                         size="sm",  # v2: sustituye a compact=True
                                         mt=5
@@ -361,7 +357,7 @@ def register_callbacks(app):
                         "Continuar",
                         id='import-third-button',
                         variant="filled",
-                        c="blue",
+                        color="blue",
                         radius="md",
                         leftSection=DashIconify(icon="mdi:arrow-right-circle"),
                         mt=15
@@ -539,7 +535,7 @@ def register_callbacks(app):
                                     id={'type': 'date-input', 'index': i},
                                     value=datetime.strptime(fecha, "%Y-%m-%dT%H:%M:%S").strftime("%Y-%m-%d"),
                                     placeholder="YYYY-MM-DD",
-                                    size="sm", style={"width": "100%"}, type="text"
+                                    size="sm", style={"width": "100%"}
                                 )
                             ]),
                             dmc.GridCol(span=1, children=[
@@ -552,17 +548,17 @@ def register_callbacks(app):
                             dmc.GridCol(span=1, children=[
                                 Select(
                                     id={'type': 'active-dropdown', 'index': i},
-                                    data=[{"label": "Activo", "value": True},
-                                          {"label": "Inactivo", "value": False}],
-                                    value=True, size="sm", style={"width": "100%"}
+                                    data=[{"label": "Activo", "value": "true"},
+                                          {"label": "Inactivo", "value": "false"}],
+                                    value="true", size="sm", style={"width": "100%"}
                                 )
                             ]),
                             dmc.GridCol(span=1, children=[
                                 Select(
                                     id={'type': 'quarentine-dropdown', 'index': i},
-                                    data=[{"label": "En cuarentena", "value": True},
-                                          {"label": "Normal", "value": False}],
-                                    value=False, size="sm", style={"width": "100%"}
+                                    data=[{"label": "En cuarentena", "value": "true"},
+                                          {"label": "Normal", "value": "false"}],
+                                    value="false", size="sm", style={"width": "100%"}
                                 )
                             ]),
                             dmc.GridCol(span=4, children=[
@@ -576,9 +572,9 @@ def register_callbacks(app):
                             dmc.GridCol(span=2, children=[
                                 Select(
                                     id={'type': 'upload-dropdown', 'index': i},
-                                    data=[{"label": "Subir", "value": True},
-                                          {"label": "Ignorar", "value": False}],
-                                    value=True, size="sm", style={"width": "100%"}
+                                    data=[{"label": "Subir", "value": "true"},
+                                          {"label": "Ignorar", "value": "false"}],
+                                    value="true", size="sm", style={"width": "100%"}
                                 )
                             ])
                         ], gutter="xs", mb=10, ta="center")
@@ -587,7 +583,6 @@ def register_callbacks(app):
                 return (
                     Paper(
                         p="md", withBorder=True, shadow="md", radius="lg", mb=20,
-                        style={"backgroundColor": "#f8f9fa"},
                         children=[
                             Group([
                                 DashIconify(icon="mdi:clipboard-check", width=24, color="#1976d2"),
@@ -633,7 +628,7 @@ def register_callbacks(app):
                                 "Guardar campañas",
                                 id='import-fourth-button',
                                 variant="filled",
-                                c="blue",
+                                color="blue",
                                 radius="md",
                                 leftSection=DashIconify(icon="mdi:content-save"),
                                 mt=10
@@ -718,12 +713,12 @@ def register_callbacks(app):
             for i, fecha in enumerate(camp_added_formateado.keys()):
                 camp_added_formateado[fecha]['campaign_info']['alarm'] = parse_alarm_val(alarm_values[i])
 
-            # Iterar para active/quarentine/upload
+            # Iterar para active/quarentine/upload (convertir strings a booleanos)
             for i, fecha in enumerate(camp_added_formateado.keys()):
                 opciones_seleccionadas[fecha] = {
-                    'Active':     active_values[i],
-                    'Quarentine': quarentine_values[i],
-                    'Upload':     upload_values[i]
+                    'Active':     active_values[i] == "true",
+                    'Quarentine': quarentine_values[i] == "true",
+                    'Upload':     upload_values[i] == "true"
                 }
 
             print("Opciones de campaña actualizadas:")

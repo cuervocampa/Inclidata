@@ -62,33 +62,33 @@ def creacion_df_bias(calc_ref, calc_corr):
     # calcula el df_bias para la corrección posterior:
     # calc_ref y calc_corr: datos de ['calc'] en las campañas selecc y ref
     # Output: df_bias
-
-    # 3.a. extrae los valores del diccionario json
-    indexs = [entry['index'] for entry in calc_corr]
-    cota_abss = [entry['cota_abs'] for entry in calc_corr]
-    depths = [entry['depth'] for entry in calc_corr]
-    dev_a_ref = [entry['dev_a'] for entry in calc_ref]
-    dev_b_ref = [entry['dev_b'] for entry in calc_ref]
-    dev_a_corr = [entry['dev_a'] for entry in calc_corr]
-    dev_b_corr = [entry['dev_b'] for entry in calc_corr]
-    checksum_a_ref = [entry['checksum_a'] for entry in calc_ref]
-    checksum_b_ref = [entry['checksum_b'] for entry in calc_ref]
-    checksum_a_corr = [entry['checksum_a'] for entry in calc_corr]
-    checksum_b_corr = [entry['checksum_b'] for entry in calc_corr]
-    # 3.b. inserta los valores en df_bias
-    df_bias = pd.DataFrame({
-        'index': indexs,
-        'cota_abs': cota_abss,
-        'depth': depths,
-        'dev_a_ref': dev_a_ref,
-        'dev_b_ref': dev_b_ref,
-        'dev_a_corr': dev_a_corr,
-        'dev_b_corr': dev_b_corr,
-        'checksum_a_ref': [entry[0] if isinstance(entry, list) else entry for entry in checksum_a_ref],
-        'checksum_b_ref': [entry[0] if isinstance(entry, list) else entry for entry in checksum_b_ref],
-        'checksum_a_corr': [entry[0] if isinstance(entry, list) else entry for entry in checksum_a_corr],
-        'checksum_b_corr': [entry[0] if isinstance(entry, list) else entry for entry in checksum_b_corr],
-    })
+    
+    # Crear DataFrames separados para referencia y corrección
+    df_ref = pd.DataFrame(calc_ref)
+    df_corr = pd.DataFrame(calc_corr)
+    
+    # Renombrar columnas del DataFrame de referencia para evitar conflictos
+    columns_to_rename = ['dev_a', 'dev_b', 'checksum_a', 'checksum_b']
+    rename_dict = {col: f'{col}_ref' if col in columns_to_rename else col for col in df_ref.columns}
+    df_ref = df_ref.rename(columns=rename_dict)
+    
+    # Renombrar columnas del DataFrame de corrección
+    rename_dict_corr = {col: f'{col}_corr' if col in columns_to_rename else col for col in df_corr.columns}
+    df_corr = df_corr.rename(columns=rename_dict_corr)
+    
+    # Hacer merge por 'depth' para alinear las campañas correctamente
+    # Esto maneja el caso cuando tienen diferentes longitudes
+    df_bias = pd.merge(
+        df_corr[['index', 'cota_abs', 'depth', 'dev_a_corr', 'dev_b_corr', 'checksum_a_corr', 'checksum_b_corr']],
+        df_ref[['depth', 'dev_a_ref', 'dev_b_ref', 'checksum_a_ref', 'checksum_b_ref']],
+        on='depth',
+        how='inner'  # Solo mantener profundidades que existan en ambas campañas
+    )
+    
+    # Manejar el caso de listas en checksum (por compatibilidad)
+    for col in ['checksum_a_ref', 'checksum_b_ref', 'checksum_a_corr', 'checksum_b_corr']:
+        if col in df_bias.columns:
+            df_bias[col] = df_bias[col].apply(lambda x: x[0] if isinstance(x, list) else x)
 
     # 4. Añadir columnas incrementales y desplazamientos
     df_bias['incr_dev_a'] = (df_bias['dev_a_corr'] - df_bias['dev_a_ref']).round(2)
@@ -105,6 +105,9 @@ def creacion_df_bias(calc_ref, calc_corr):
     # Invertir las filas, calcular promedio acumulativo y volver a invertir
     df_bias['avg_Incr_A'] = df_bias['incr_dev_a'][::-1].expanding().mean()[::-1]
     df_bias['avg_Incr_B'] = df_bias['incr_dev_b'][::-1].expanding().mean()[::-1]
+    
+    # Resetear el índice para mantener consistencia
+    df_bias = df_bias.reset_index(drop=True)
 
     return df_bias
 def calculos_bias(df_bias,

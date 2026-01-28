@@ -1,0 +1,403 @@
+/* assets/custom.css - Estilos personalizados para modo oscuro */
+
+/* --- Estilos Generales para Modo Oscuro --- */
+[data-mantine-color-scheme="dark"] body {
+    background-color: #141517;
+    color: #c1c2c5;
+}
+
+/* --- Dash Core Components (dcc.Dropdown) --- */
+[data-mantine-color-scheme="dark"] .Select-control,
+[data-mantine-color-scheme="dark"] .Select-menu-outer,
+[data-mantine-color-scheme="dark"] .Select-option {
+    background-color: #25262b !important;
+    border-color: #373a40 !important;
+    color: #c1c2c5 !important;
+}
+
+[data-mantine-color-scheme="dark"] .Select-value-label,
+[data-mantine-color-scheme="dark"] .Select-placeholder,
+[data-mantine-color-scheme="dark"] .Select-input>input {
+    color: #c1c2c5 !important;
+}
+
+[data-mantine-color-scheme="dark"] .Select-option:hover {
+    background-color: #373a40 !important;
+}
+
+/* --- Dash Mantine Components (dmc.Select, dmc.MultiSelect) --- */
+/* Forzar background oscuro en inputs Mantine */
+[data-mantine-color-scheme="dark"] .mantine-Select-input,
+[data-mantine-color-scheme="dark"] .mantine-MultiSelect-input,
+[data-mantine-color-scheme="dark"] .mantine-Input-input,
+[data-mantine-color-scheme="dark"] input.mantine-Select-input,
+[data-mantine-color-scheme="dark"] input.mantine-MultiSelect-input {
+    background-color: #25262b !important;
+    color: #c1c2c5 !important;
+    border-color: #373a40 !important;
+}
+
+/* Dropdown menu */
+[data-mantine-color-scheme="dark"] .mantine-Select-dropdown,
+[data-mantine-color-scheme="dark"] .mantine-MultiSelect-dropdown,
+[data-mantine-color-scheme="dark"] .mantine-Menu-dropdown,
+[data-mantine-color-scheme="dark"] .mantine-Popover-dropdown {
+    background-color: #25262b !important;
+    border-color: #373a40 !important;
+    color: #c1c2c5 !important;
+}
+
+/* Items */
+[data-mantine-color-scheme="dark"] .mantine-Select-item,
+[data-mantine-color-scheme="dark"] .mantine-MultiSelect-item {
+    color: #c1c2c5 !important;
+}
+
+[data-mantine-color-scheme="dark"] .mantine-Select-item:hover,
+[data-mantine-color-scheme="dark"] .mantine-MultiSelect-item:hover,
+[data-mantine-color-scheme="dark"] .mantine-Select-item[data-selected],
+[data-mantine-color-scheme="dark"] .mantine-MultiSelect-item[data-selected] {
+    background-color: #373a40 !important;
+    color: #ffffff !important;
+}
+
+/* Pills */
+[data-mantine-color-scheme="dark"] .mantine-MultiSelect-pill {
+    background-color: #373a40 !important;
+    color: #c1c2c5 !important;
+}
+
+/* --- Inputs Genéricos en dark mode --- */
+[data-mantine-color-scheme="dark"] input[type="text"],
+[data-mantine-color-scheme="dark"] input[type="number"],
+[data-mantine-color-scheme="dark"] select {
+    background-color: #25262b !important;
+    color: #c1c2c5 !important;
+    border-color: #373a40 !important;
+}
+
+
+/* --- Gráficos Plotly --- */
+[data-mantine-color-scheme="dark"] .js-plotly-plot .plotly .main-svg {
+    background-color: transparent !important;
+}
+
+[data-mantine-color-scheme="dark"] .js-plotly-plot .plotly .bg {
+    fill: transparent !important;
+}
+
+[data-mantine-color-scheme="dark"] .modebar {
+    background-color: transparent !important;
+}
+
+[data-mantine-color-scheme="dark"] .legend {
+    background-color: transparent !important;
+}
+
+[data-mantine-color-scheme="dark"] .legendtext {
+    fill: #c1c2c5 !important;
+}
+
+/* --- AgGrid (Fallback si callback falla) --- */
+/* Forzamos estilos aunque la clase sea ag-theme-alpine */
+[data-mantine-color-scheme="dark"] .ag-theme-alpine {
+    --ag-background-color: #25262b !important;
+    --ag-foreground-color: #c1c2c5 !important;
+    --ag-header-background-color: #1a1b1e !important;
+    --ag-odd-row-background-color: #2c2e33 !important;
+    --ag-row-hover-color: #373a40 !important;
+    --ag-border-color: #373a40 !important;
+    --ag-header-foreground-color: #c1c2c5 !important;
+    --ag-secondary-border-color: #373a40 !important;
+    --ag-row-border-color: #373a40 !important;
+}
+
+/* --- Bootstrap override --- */
+[data-mantine-color-scheme="dark"] .card,
+[data-mantine-color-scheme="dark"] .alert,
+[data-mantine-color-scheme="dark"] .modal-content {
+    background-color: #25262b !important;
+    color: #c1c2c5 !important;
+    border-color: #373a40 !important;
+}
+
+[data-mantine-color-scheme="dark"] .close {
+    color: #c1c2c5 !important;
+}
+
+/* --- Navegación --- */
+[data-mantine-color-scheme="dark"] .nav-link {
+    color: #c1c2c5 !important;
+}
+
+[data-mantine-color-scheme="dark"] .nav-link:hover {
+    color: #ffffff !important;
+}
+
+[data-mantine-color-scheme="dark"] .nav-link.active {
+    background-color: #228be6 !important;
+    color: #ffffff !important;
+}
+
+/* --- Mantine Paper Component --- */
+[data-mantine-color-scheme="dark"] .mantine-Paper-root {
+    background-color: #141517 !important;
+    border-color: #555555 !important;
+}
+
+/* --- Mantine Card Component --- */
+[data-mantine-color-scheme="dark"] .mantine-Card-root {
+    background-color: #1a1b1e !important;
+    border-color: #555555 !important;
+}
+
+[data-mantine-color-scheme="dark"] .mantine-Card-section {
+    border-color: #555555 !important;
+}
+
+/* --- Textos y Headers --- */
+[data-mantine-color-scheme="dark"] h1,
+[data-mantine-color-scheme="dark"] h2,
+[data-mantine-color-scheme="dark"] h3,
+[data-mantine-color-scheme="dark"] h4,
+[data-mantine-color-scheme="dark"] h5,
+[data-mantine-color-scheme="dark"] h6,
+[data-mantine-color-scheme="dark"] .display-4,
+[data-mantine-color-scheme="dark"] .lead {
+    color: #ffffff !important;
+}
+
+/* Textos generales en modo oscuro */
+[data-mantine-color-scheme="dark"] p,
+[data-mantine-color-scheme="dark"] label,
+[data-mantine-color-scheme="dark"] span {
+    color: #c1c2c5 !important;
+}
+
+/* Títulos dentro de Paper y Card - Color blanco */
+[data-mantine-color-scheme="dark"] .mantine-Paper-root .mantine-Text-root[data-fw="700"],
+[data-mantine-color-scheme="dark"] .mantine-Card-root .mantine-Text-root[data-fw="700"],
+[data-mantine-color-scheme="dark"] .mantine-Paper-root .mantine-Text-root[data-fw="500"],
+[data-mantine-color-scheme="dark"] .mantine-Card-root .mantine-Text-root[data-fw="500"] {
+    color: #ffffff !important;
+}
+
+/* Pre (código) dentro de Card en modo oscuro */
+[data-mantine-color-scheme="dark"] .mantine-Card-root pre {
+    color: #c1c2c5 !important;
+    background-color: #25262b !important;
+}
+
+[data-mantine-color-scheme="dark"] hr {
+    border-color: #555555 !important;
+}
+
+/* --- dcc.Upload Component --- */
+[data-mantine-color-scheme="dark"] .dash-upload {
+    border-color: #555555 !important;
+    background-color: #1a1b1e !important;
+}
+
+/* --- Divs con bordes inline (override) --- */
+[data-mantine-color-scheme="dark"] div[style*="border"] {
+    border-color: #555555 !important;
+}
+
+/* --- Mantine Modal --- */
+[data-mantine-color-scheme="dark"] .mantine-Modal-content,
+[data-mantine-color-scheme="dark"] .mantine-Modal-header,
+[data-mantine-color-scheme="dark"] .mantine-Modal-body {
+    background-color: #1a1b1e !important;
+    color: #c1c2c5 !important;
+}
+
+[data-mantine-color-scheme="dark"] .mantine-Modal-title {
+    color: #ffffff !important;
+}
+
+[data-mantine-color-scheme="dark"] .mantine-Modal-close {
+    color: #c1c2c5 !important;
+}
+
+/* --- Mantine Drawer --- */
+[data-mantine-color-scheme="dark"] .mantine-Drawer-content,
+[data-mantine-color-scheme="dark"] .mantine-Drawer-header,
+[data-mantine-color-scheme="dark"] .mantine-Drawer-body {
+    background-color: #1a1b1e !important;
+    color: #c1c2c5 !important;
+}
+
+[data-mantine-color-scheme="dark"] .mantine-Drawer-title {
+    color: #ffffff !important;
+}
+
+/* --- Mantine Tabs --- */
+[data-mantine-color-scheme="dark"] .mantine-Tabs-tab {
+    color: #c1c2c5 !important;
+    border-color: #555555 !important;
+}
+
+[data-mantine-color-scheme="dark"] .mantine-Tabs-tab[data-active] {
+    color: #ffffff !important;
+    border-color: #228be6 !important;
+}
+
+[data-mantine-color-scheme="dark"] .mantine-Tabs-panel {
+    color: #c1c2c5 !important;
+}
+
+/* --- Mantine Tooltip --- */
+[data-mantine-color-scheme="dark"] .mantine-Tooltip-tooltip {
+    background-color: #25262b !important;
+    color: #c1c2c5 !important;
+    border-color: #555555 !important;
+}
+
+/* --- Mantine Slider --- */
+[data-mantine-color-scheme="dark"] .mantine-Slider-track {
+    background-color: #373a40 !important;
+}
+
+[data-mantine-color-scheme="dark"] .mantine-Slider-label {
+    background-color: #25262b !important;
+    color: #c1c2c5 !important;
+}
+
+[data-mantine-color-scheme="dark"] .mantine-Slider-markLabel {
+    color: #909296 !important;
+}
+
+/* --- Mantine Checkbox --- */
+[data-mantine-color-scheme="dark"] .mantine-Checkbox-label {
+    color: #c1c2c5 !important;
+}
+
+/* --- Mantine NumberInput --- */
+[data-mantine-color-scheme="dark"] .mantine-NumberInput-input {
+    background-color: #25262b !important;
+    color: #c1c2c5 !important;
+    border-color: #373a40 !important;
+}
+
+/* --- Mantine TextInput --- */
+[data-mantine-color-scheme="dark"] .mantine-TextInput-input {
+    background-color: #25262b !important;
+    color: #c1c2c5 !important;
+    border-color: #373a40 !important;
+}
+
+/* --- Mantine Accordion --- */
+[data-mantine-color-scheme="dark"] .mantine-Accordion-control {
+    background-color: #1a1b1e !important;
+    color: #c1c2c5 !important;
+}
+
+[data-mantine-color-scheme="dark"] .mantine-Accordion-content {
+    background-color: #141517 !important;
+    color: #c1c2c5 !important;
+}
+
+[data-mantine-color-scheme="dark"] .mantine-Accordion-item {
+    border-color: #555555 !important;
+}
+
+/* --- Mantine Alert --- */
+[data-mantine-color-scheme="dark"] .mantine-Alert-root {
+    background-color: #25262b !important;
+    border-color: #555555 !important;
+}
+
+[data-mantine-color-scheme="dark"] .mantine-Alert-title {
+    color: #ffffff !important;
+}
+
+[data-mantine-color-scheme="dark"] .mantine-Alert-message {
+    color: #c1c2c5 !important;
+}
+
+/* --- Mantine Table --- */
+[data-mantine-color-scheme="dark"] .mantine-Table-root {
+    background-color: #1a1b1e !important;
+}
+
+[data-mantine-color-scheme="dark"] .mantine-Table-root th {
+    background-color: #25262b !important;
+    color: #ffffff !important;
+    border-color: #555555 !important;
+}
+
+[data-mantine-color-scheme="dark"] .mantine-Table-root td {
+    color: #c1c2c5 !important;
+    border-color: #555555 !important;
+}
+
+[data-mantine-color-scheme="dark"] .mantine-Table-root tr:hover {
+    background-color: #373a40 !important;
+}
+
+/* --- Mantine Divider --- */
+[data-mantine-color-scheme="dark"] .mantine-Divider-root {
+    border-color: #555555 !important;
+}
+
+[data-mantine-color-scheme="dark"] .mantine-Divider-label {
+    color: #909296 !important;
+}
+
+/* --- Mantine Badge --- */
+[data-mantine-color-scheme="dark"] .mantine-Badge-root {
+    color: #c1c2c5 !important;
+}
+
+/* --- Mantine HoverCard --- */
+[data-mantine-color-scheme="dark"] .mantine-HoverCard-dropdown {
+    background-color: #25262b !important;
+    border-color: #555555 !important;
+    color: #c1c2c5 !important;
+}
+
+/* --- Mantine Menu --- */
+[data-mantine-color-scheme="dark"] .mantine-Menu-item {
+    color: #c1c2c5 !important;
+}
+
+[data-mantine-color-scheme="dark"] .mantine-Menu-item:hover {
+    background-color: #373a40 !important;
+}
+
+/* --- Mantine SegmentedControl --- */
+[data-mantine-color-scheme="dark"] .mantine-SegmentedControl-root {
+    background-color: #25262b !important;
+}
+
+[data-mantine-color-scheme="dark"] .mantine-SegmentedControl-label {
+    color: #c1c2c5 !important;
+}
+
+[data-mantine-color-scheme="dark"] .mantine-SegmentedControl-indicator {
+    background-color: #373a40 !important;
+}
+
+/* --- Mantine Switch --- */
+[data-mantine-color-scheme="dark"] .mantine-Switch-label {
+    color: #c1c2c5 !important;
+}
+
+/* --- Mantine Group labels y textos descriptivos --- */
+[data-mantine-color-scheme="dark"] .mantine-InputWrapper-label {
+    color: #c1c2c5 !important;
+}
+
+[data-mantine-color-scheme="dark"] .mantine-InputWrapper-description {
+    color: #909296 !important;
+}
+
+[data-mantine-color-scheme="dark"] .mantine-InputWrapper-error {
+    color: #fa5252 !important;
+}
+
+/* --- Elementos bold (b, strong) --- */
+[data-mantine-color-scheme="dark"] b,
+[data-mantine-color-scheme="dark"] strong {
+    color: #ffffff !important;
+}

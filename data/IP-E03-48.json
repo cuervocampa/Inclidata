@@ -11,8 +11,8 @@
         "disposicion": "vertical",
         "sentido_calculo": "abajo-arriba"
     },
-        "umbrales": {
+    "umbrales": {
         "deformadas": {},
         "valores": []
-    },
+    }
 }

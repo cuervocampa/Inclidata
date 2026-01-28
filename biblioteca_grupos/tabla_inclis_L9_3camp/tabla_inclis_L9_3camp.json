@@ -1,0 +1,756 @@
+{
+    "nombre": "tabla_inclis_L9_3camp",
+    "descripcion": "tabla dinámica con las tres últimas campañas",
+    "elementos": {
+        "tabla_1": {
+            "tipo": "tabla",
+            "geometria": {
+                "x": 0.6,
+                "y": 3.5,
+                "ancho_maximo": 19.4,
+                "alto_maximo": 24
+            },
+            "configuracion": {
+                "script": "tabla_datos_inc.py",
+                "parametros": {
+                    "celdas": {
+                        "N1_C1": "\"sensor\":\"$CURRENT\"",
+                        "N2_C1": "",
+                        "N2_C2": "fecha_1",
+                        "N2_C3": "fecha_2",
+                        "N2_C4": "fecha_3",
+                        "N3_C1": "Prof.",
+                        "N3_C2": "A",
+                        "N3_C3": "B",
+                        "N3_C4": "A",
+                        "N3_C5": "B",
+                        "N3_C6": "A",
+                        "N3_C7": "B",
+                        "N4_C1": "[prof]",
+                        "N4_C2": "[desp_a]",
+                        "N4_C3": "[desp_b]",
+                        "N4_C4": "[desp_a]",
+                        "N4_C5": "[desp_b",
+                        "N4_C6": "[desp_a]",
+                        "N4_C7": "[desp_b]"
+                    },
+                    "sensor": "$CURRENT",
+                    "fecha_seleccionada": "$CURRENT_fecha_seleccionada",
+                    "ultimas_camp": "$CURRENT_ultimas_camp"
+                }
+            },
+            "cuadricula": {
+                "niveles": [
+                    {
+                        "id": 1,
+                        "tipo": "estatico",
+                        "num_columnas": 1,
+                        "alto_fila": 0.5,
+                        "estilo": {
+                            "fuente": "Aptos",
+                            "tamano": 10
+                        },
+                        "columnas": [
+                            {
+                                "ancho": 19.4,
+                                "contenido": "\"sensor\":\"$CURRENT\"",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#333333",
+                                    "color_fondo": "#f8f9fa",
+                                    "alineacion": "center",
+                                    "negrita": true
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "id": 2,
+                        "tipo": "estatico",
+                        "num_columnas": 4,
+                        "alto_fila": 0.5,
+                        "estilo": {
+                            "fuente": "Aptos",
+                            "tamano": 10
+                        },
+                        "columnas": [
+                            {
+                                "ancho": 2.6,
+                                "contenido": "",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#333333",
+                                    "color_fondo": "#f8f9fa",
+                                    "alineacion": "center",
+                                    "negrita": false
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 5.6,
+                                "contenido": "fecha_1",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#333333",
+                                    "color_fondo": "#ffffff",
+                                    "alineacion": "center",
+                                    "negrita": false
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 5.6,
+                                "contenido": "fecha_2",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#333333",
+                                    "color_fondo": "#f8f9fa",
+                                    "alineacion": "center",
+                                    "negrita": false
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 5.6,
+                                "contenido": "fecha_3",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#333333",
+                                    "color_fondo": "#ffffff",
+                                    "alineacion": "center",
+                                    "negrita": false
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "id": 3,
+                        "tipo": "estatico",
+                        "num_columnas": 7,
+                        "alto_fila": 0.5,
+                        "estilo": {
+                            "fuente": "Aptos",
+                            "tamano": 10
+                        },
+                        "columnas": [
+                            {
+                                "ancho": 2.6,
+                                "contenido": "Prof.",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#333333",
+                                    "color_fondo": "#f8f9fa",
+                                    "alineacion": "center",
+                                    "negrita": false
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 2.8,
+                                "contenido": "A",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#333333",
+                                    "color_fondo": "#ffffff",
+                                    "alineacion": "center",
+                                    "negrita": false
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 2.8,
+                                "contenido": "B",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#333333",
+                                    "color_fondo": "#f8f9fa",
+                                    "alineacion": "center",
+                                    "negrita": false
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 2.8,
+                                "contenido": "A",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#333333",
+                                    "color_fondo": "#ffffff",
+                                    "alineacion": "center",
+                                    "negrita": false
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 2.8,
+                                "contenido": "B",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#333333",
+                                    "color_fondo": "#f8f9fa",
+                                    "alineacion": "center",
+                                    "negrita": false
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 2.8,
+                                "contenido": "A",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#333333",
+                                    "color_fondo": "#ffffff",
+                                    "alineacion": "center",
+                                    "negrita": false
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 2.8,
+                                "contenido": "B",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#333333",
+                                    "color_fondo": "#f8f9fa",
+                                    "alineacion": "center",
+                                    "negrita": false
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "id": 4,
+                        "tipo": "autorrelleno",
+                        "num_columnas": 7,
+                        "alto_fila": 0.5,
+                        "estilo": {
+                            "fuente": "Aptos",
+                            "tamano": 10
+                        },
+                        "configuracion_dinamica": {
+                            "sombreado_alterno": true,
+                            "color_par": "#f8f9fa",
+                            "color_impar": "#ffffff"
+                        },
+                        "columnas": [
+                            {
+                                "ancho": 2.6,
+                                "contenido": "[prof]",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#333333",
+                                    "color_fondo": "transparent",
+                                    "alineacion": "right",
+                                    "negrita": false
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 2.8,
+                                "contenido": "[desp_a]",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#333333",
+                                    "color_fondo": "transparent",
+                                    "alineacion": "right",
+                                    "negrita": false
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 2.8,
+                                "contenido": "[desp_b]",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#333333",
+                                    "color_fondo": "transparent",
+                                    "alineacion": "right",
+                                    "negrita": false
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 2.8,
+                                "contenido": "[desp_a]",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#333333",
+                                    "color_fondo": "transparent",
+                                    "alineacion": "right",
+                                    "negrita": false
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 2.8,
+                                "contenido": "[desp_b]",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#333333",
+                                    "color_fondo": "transparent",
+                                    "alineacion": "right",
+                                    "negrita": false
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 2.8,
+                                "contenido": "[desp_a]",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#333333",
+                                    "color_fondo": "transparent",
+                                    "alineacion": "right",
+                                    "negrita": false
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 2.8,
+                                "contenido": "[desp_b]",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#333333",
+                                    "color_fondo": "transparent",
+                                    "alineacion": "right",
+                                    "negrita": false
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#333333"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            "grupo": {
+                "nombre": "tabla_inclis_L9_3camp",
+                "color": "#cccccc"
+            },
+            "metadata": {
+                "zIndex": 30,
+                "visible": true,
+                "bloqueado": false
+            }
+        }
+    }
+}

@@ -332,11 +332,15 @@ def generar_seccion_grafico(num_pagina, nombre_elemento, elemento, scripts_dispo
         list: Componentes de la sección del gráfico
     """
     configuracion = elemento.get("configuracion", {})
-    script_valor = configuracion.get("script", "")
+    script_valor = configuracion.get("script")
+    # Si es None, convertir a cadena vacía
+    if script_valor is None:
+        script_valor = ""
+        
     parametros_json = configuracion.get("parametros", {})
 
     # Eliminar la extensión .py si está presente
-    if script_valor.endswith('.py'):
+    if script_valor and script_valor.endswith('.py'):
         script_valor_sin_extension = script_valor[:-3]
     else:
         script_valor_sin_extension = script_valor
@@ -388,16 +392,8 @@ def generar_seccion_grafico(num_pagina, nombre_elemento, elemento, scripts_dispo
 
 def generar_campos_parametros(num_pagina, nombre_elemento, parametros_json, current_values):
     """
-    Genera los campos de parámetros para un gráfico.
-
-    Args:
-        num_pagina (str): Número de página
-        nombre_elemento (str): Nombre del elemento
-        parametros_json (dict): Parámetros del JSON
-        current_values (dict): Valores actuales de la interfaz
-
-    Returns:
-        list: Lista de componentes para los parámetros
+    Genera los campos de parámetros para un gráfico o tabla.
+    Soporta anidamiento de un nivel (para diccionarios como 'celdas').
     """
     if not parametros_json:
         return [
@@ -418,39 +414,99 @@ def generar_campos_parametros(num_pagina, nombre_elemento, parametros_json, curr
     ]
 
     for param_nombre, param_valor in parametros_json.items():
-        # Aplicar sustitución de $CURRENT
-        valor_display = param_valor
-        if isinstance(param_valor, str) and param_valor == "$CURRENT" and param_nombre in current_values:
-            valor_display = current_values[param_nombre]
-            valor_display = str(valor_display)
-            estilo_campo = {
-                "width": "50%",
-                "backgroundColor": "#e3f2fd",
-                "border": "1px dashed #90caf9"
-            }
-        else:
-            estilo_campo = {"width": "50%"}
-            if isinstance(param_valor, bool):
-                valor_display = str(param_valor).lower()
-            else:
-                valor_display = str(param_valor)
+        # CASO 1: El valor es un diccionario (ej. "celdas": {...})
+        if isinstance(param_valor, dict):
+            campos_parametros.append(
+                dmc.Text(f"Grupo {param_nombre}:", size="sm", fw="bold", c="dimmed", style={"marginTop": "10px", "marginBottom": "5px"})
+            )
+            for sub_key, sub_val in param_valor.items():
+                # Construimos una clave compuesta para identificarlo: "celdas.N1_C1"
+                full_key = f"{param_nombre}.{sub_key}"
+                
+                valor_display = sub_val
+                estilo_campo = {"width": "50%"}
+                
+                # Detectar $CURRENT
+                is_current = False
+                key_to_lookup = sub_key
+                
+                # Regla especial: si la clave es "sensor", mapear a "nombre_sensor" si es $CURRENT
+                if sub_key == "sensor" and sub_val == "$CURRENT":
+                    key_to_lookup = "nombre_sensor"
 
-        campos_parametros.append(
-            dmc.Group([
-                dmc.Text(
-                    f"[parametros][{param_nombre}]",
-                    style={"width": "50%"}
-                ),
-                dmc.TextInput(
-                    id={"type": "param-grafico", "pagina": num_pagina,
-                        "elemento": nombre_elemento, "param": param_nombre},
-                    value=valor_display,
-                    style=estilo_campo
+                if isinstance(sub_val, str):
+                    if sub_val == "$CURRENT":
+                        is_current = True
+                    # Soporte para "$CURRENT" escapado
+                    elif '"$CURRENT"' in sub_val or "'$CURRENT'" in sub_val: 
+                        is_current = True
+                        valor_display = "$CURRENT" 
+
+                if is_current and key_to_lookup in current_values:
+                     valor_display = current_values[key_to_lookup]
+                     valor_display = str(valor_display)
+                     estilo_campo = {
+                        "width": "50%",
+                        "backgroundColor": "#e3f2fd",
+                        "border": "1px dashed #90caf9"
+                    }
+                
+                # Conversión a string para display
+                if not isinstance(valor_display, str):
+                     valor_display = str(valor_display).lower() if isinstance(valor_display, bool) else str(valor_display)
+
+                campos_parametros.append(
+                    dmc.Group([
+                        dmc.Text(
+                            f"[{sub_key}]",
+                            style={"width": "50%", "paddingLeft": "15px", "fontSize": "0.9em"}
+                        ),
+                        dmc.TextInput(
+                            id={"type": "param-grafico", "pagina": num_pagina,
+                                "elemento": nombre_elemento, "param": full_key},
+                            value=valor_display,
+                            style=estilo_campo
+                        )
+                    ], style={"marginBottom": "4px"})
                 )
-            ], style={"marginBottom": "8px"})
-        )
+
+        # CASO 2: Valor simple
+        else:
+            # Aplicar sustitución de $CURRENT
+            valor_display = param_valor
+            estilo_campo = {"width": "50%"}
+            
+            if isinstance(param_valor, str) and param_valor == "$CURRENT" and param_nombre in current_values:
+                valor_display = current_values[param_nombre]
+                valor_display = str(valor_display)
+                estilo_campo = {
+                    "width": "50%",
+                    "backgroundColor": "#e3f2fd",
+                    "border": "1px dashed #90caf9"
+                }
+            else:
+                if isinstance(param_valor, bool):
+                    valor_display = str(param_valor).lower()
+                else:
+                    valor_display = str(param_valor)
+
+            campos_parametros.append(
+                dmc.Group([
+                    dmc.Text(
+                        f"[parametros][{param_nombre}]",
+                        style={"width": "50%"}
+                    ),
+                    dmc.TextInput(
+                        id={"type": "param-grafico", "pagina": num_pagina,
+                            "elemento": nombre_elemento, "param": param_nombre},
+                        value=valor_display,
+                        style=estilo_campo
+                    )
+                ], style={"marginBottom": "8px"})
+            )
 
     return campos_parametros
+
 
 
 def hex_to_spanish_color(hex_color):

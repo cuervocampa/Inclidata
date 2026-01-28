@@ -471,21 +471,42 @@ def es_fecha_isoformat(clave):
     return bool(re.match(patron_fecha, clave))
 
 def default_value(data):
+    """
+    Extrae valores por defecto del archivo JSON.
+    Maneja correctamente archivos sin campañas (solo con 'info' y 'umbrales').
+    """
+    # Inicializar extracted_data con valores por defecto
+    extracted_data = {
+        "cota_1000": 0,
+        "adquisicion": "manual",
+        "disposicion": "vertical",
+        "sentido_calculo": "abajo-arriba",
+        "umbrales": "por_definir",
+        "latest_campaign": None,
+        "latest_reference": None,
+        "camp_anterior_referencia": None,
+        "importador": None,
+        "index_0": None
+    }
 
     try:
-        for date_str, content in data.items():
-            # Si la clave es "info", extraer la información general
-            if date_str == "info":
-                extracted_data = {
-                    "cota_1000": content.get("cota_1000", 0),
-                    "adquisicion": content.get("adquisicion", "manual"),
-                    "disposicion": content.get("disposicion", "vertical"),
-                    "sentido_calculo": content.get("sentido_calculo", "abajo-arriba"),
-                    "umbrales": content.get("umbrales", "por_definir")
-                }
+        # Extraer información de la clave "info" si existe
+        if "info" in data:
+            content = data["info"]
+            extracted_data.update({
+                "cota_1000": content.get("cota_1000", 0),
+                "adquisicion": content.get("adquisicion", "manual"),
+                "disposicion": content.get("disposicion", "vertical"),
+                "sentido_calculo": content.get("sentido_calculo", "abajo-arriba"),
+                "umbrales": content.get("umbrales", "por_definir")
+            })
 
-        # Obtener todas las claves del diccionario que parezcan fechas
+        # Obtener todas las claves del diccionario que parezcan fechas (campañas)
         fechas = sorted([clave for clave in data.keys() if isinstance(clave, str) and "T" in clave])
+
+        # Si no hay fechas (campañas), retornar los valores por defecto
+        if not fechas:
+            return extracted_data
 
         # Obtener las últimas campañas
         latest_date = None
@@ -494,13 +515,14 @@ def default_value(data):
 
         # Recorre la lista en orden inverso para encontrar la última campaña activa
         for fecha in reversed(fechas):
-            if data[fecha]["campaign_info"]["active"]:
+            if data[fecha].get("campaign_info", {}).get("active", False):
                 latest_date = fecha
                 break
 
         # Última referencia activa
         for fecha in reversed(fechas):
-            if data[fecha]["campaign_info"]["reference"] and data[fecha]["campaign_info"]["active"]:
+            campaign_info = data[fecha].get("campaign_info", {})
+            if campaign_info.get("reference", False) and campaign_info.get("active", False):
                 latest_reference = fecha
                 break
 
@@ -509,7 +531,7 @@ def default_value(data):
             try:
                 idx_latest = fechas.index(latest_reference)
                 for fecha in reversed(fechas[:idx_latest]):
-                    if data[fecha]["campaign_info"]["active"]:
+                    if data[fecha].get("campaign_info", {}).get("active", False):
                         camp_anterior_referencia = fecha
                         break
             except ValueError:
@@ -531,9 +553,11 @@ def default_value(data):
 
     except Exception as e:
         print(f"Error al leer el archivo JSON: {e}")
+        import traceback
+        traceback.print_exc()
 
-    # Retornar un diccionario vacío en caso de error
-    return {}
+    # Retornar el diccionario con valores por defecto en caso de error
+    return extracted_data
 
 def parse_alarm_val(raw_alarm):
     """

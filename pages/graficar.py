@@ -111,7 +111,7 @@ def layout():
                                 leftSection=DashIconify(icon="mdi:file-pdf-box"),
                                 variant="filled",
                                 fullWidth=True,
-                                c="red"
+                                color="red"
                             ),
 
                         ],
@@ -158,10 +158,13 @@ def layout():
                 position="right"
             ),
             dmc.Drawer(
-                title=dmc.Text("Configuración gráficos", fw="bold", size="xl", style={"marginBottom": "20px"}),
+                title=dmc.Text("Configuración gráficos", fw="bold", size="lg"),
                 id="drawer-config",
+                padding="md",
+                size="sm",
                 children=[
-                    dmc.Text("Seleccionar altura de gráficos", fw="bold", style={"marginBottom": "10px"}),
+                    # Sección: Altura de gráficos
+                    dmc.Text("Seleccionar altura de gráficos", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
                     dmc.Slider(
                         label="Altura de los gráficos (px)",
                         id="alto_graficos_slider",
@@ -178,9 +181,13 @@ def layout():
                             {"value": 900, "label": "900"},
                             {"value": 1000, "label": "1000"},
                         ],
-                        style={"marginBottom": "50px"}
+                        style={"marginBottom": "30px"}
                     ),
-                    dmc.Text("Unidades eje vertical", fw="bold", style={"marginBottom": "10px"}),
+                    
+                    dmc.Divider(style={"marginTop": "15px", "marginBottom": "20px"}),
+                    
+                    # Sección: Unidades y orden eje vertical
+                    dmc.Text("Unidades eje vertical", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
                     dmc.Group([
                         dmc.Text("Unidades", style={"marginRight": "10px"}),
                         dmc.Select(
@@ -194,7 +201,8 @@ def layout():
                             style={"width": "150px"}
                         ),
                     ], style={"marginBottom": "20px"}),
-                    dmc.Text("Orden del eje vertical", fw="bold", style={"marginBottom": "10px"}),
+                    
+                    dmc.Text("Orden del eje vertical", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
                     dmc.SegmentedControl(
                         id="orden",
                         value="ascendente",
@@ -206,31 +214,44 @@ def layout():
                         color="blue",
                         radius="xl",
                         size="md",
-                        style={"marginBottom": "50px"}
-                    ),
-                    dmc.Text("Seleccionar estilo de colores", fw="bold", style={"marginBottom": "10px"}),
-                    dmc.RadioGroup(
-                        id="color_scheme_selector",
-                        value="monocromo",  # Valor por defecto
-                        children=[
-                            dmc.Radio("Monocromo", value="monocromo", style={"marginRight": "20px"}),
-                            dmc.Radio("Multicromo", value="multicromo", style={"marginRight": "20px"}),
-                        ],
-                        style={"marginBottom": "50px", "width": "100%", "display": "flex", "flexDirection": "row", "marginRight": "50px"}
-                    ),
-                    # Component for "Escala gráficos desplazamiento"
-                    dmc.Text("Escala gráficos Desplazamiento", fw="bold", style={"marginBottom": "10px"}),
-                    dmc.RadioGroup(
-                        #label="Escala gráficos desplazamiento",
-                        id="escala_graficos_desplazamiento",
-                        value="manual",
-                        children=[
-                            dmc.Radio("Automática", value="automatica", style={"marginBottom": "10px"}),
-                            dmc.Radio("Manual", value="manual", style={"marginBottom": "10px"})
-                        ],
                         style={"marginBottom": "20px"}
                     ),
-                    # Escala manual gráficos de desplazamiento grafico_1 y grafico_3
+                    
+                    dmc.Divider(style={"marginTop": "15px", "marginBottom": "20px"}),
+                    
+                    # Sección: Estilo de colores
+                    dmc.Text("Estilo de colores", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
+                    dmc.SegmentedControl(
+                        id="color_scheme_selector",
+                        value="monocromo",
+                        data=[
+                            {"value": "monocromo", "label": "Monocromo"},
+                            {"value": "multicromo", "label": "Multicromo"},
+                        ],
+                        fullWidth=True,
+                        color="blue",
+                        radius="xl",
+                        size="md",
+                        style={"marginBottom": "20px"}
+                    ),
+                    
+                    dmc.Divider(style={"marginTop": "15px", "marginBottom": "20px"}),
+                    
+                    # Sección: Escala Desplazamiento
+                    dmc.Text("Escala gráficos Desplazamiento", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
+                    dmc.SegmentedControl(
+                        id="escala_graficos_desplazamiento",
+                        value="manual",
+                        data=[
+                            {"value": "automatica", "label": "Automática"},
+                            {"value": "manual", "label": "Manual"},
+                        ],
+                        fullWidth=True,
+                        color="blue",
+                        radius="xl",
+                        size="sm",
+                        style={"marginBottom": "15px"}
+                    ),
                     dmc.Group(
                         [
                             dmc.Text("Max", style={"width": "30px"}),
@@ -255,22 +276,25 @@ def layout():
                             ),
                         ],
                         ta="center",
-                        gap="1",
-                        style={"width": "100%"},
+                        gap="xs",
+                        style={"width": "100%", "marginBottom": "20px"},
                     ),
-                    # Component for "Escala gráficos incremento"
-                    dmc.Text("Escala gráficos Incremento", fw="bold", style={"marginBottom": "10px"}),
-                    dmc.RadioGroup(
-                        # label="Escala gráficos incremento",
+                    
+                    # Sección: Escala Incremento
+                    dmc.Text("Escala gráficos Incremento", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
+                    dmc.SegmentedControl(
                         id="escala_graficos_incremento",
                         value="manual",
-                        children=[
-                            dmc.Radio("Automática", value="automatica", style={"marginBottom": "10px"}),
-                            dmc.Radio("Manual", value="manual", style={"marginBottom": "10px"})
+                        data=[
+                            {"value": "automatica", "label": "Automática"},
+                            {"value": "manual", "label": "Manual"},
                         ],
-                        style={"marginBottom": "20px"}
+                        fullWidth=True,
+                        color="blue",
+                        radius="xl",
+                        size="sm",
+                        style={"marginBottom": "15px"}
                     ),
-                    # Escala manual gráficos de incremento grafico_2
                     dmc.Group(
                         [
                             dmc.Text("Max", style={"width": "30px"}),
@@ -295,21 +319,25 @@ def layout():
                             ),
                         ],
                         ta="center",
-                        gap="1",
+                        gap="xs",
                         style={"width": "100%", "marginBottom": "20px"},
                     ),
-                    # Component for "Escala gráfico temporal"
-                    dmc.Text("Escala gráficos Evolución Temporal", fw="bold", style={"marginBottom": "10px"}),
-                    dmc.RadioGroup(
+                    
+                    # Sección: Escala Evolución Temporal
+                    dmc.Text("Escala gráficos Evolución Temporal", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
+                    dmc.SegmentedControl(
                         id="escala_grafico_temporal",
                         value="manual",
-                        children=[
-                            dmc.Radio("Automática", value="automatica", style={"marginBottom": "10px"}),
-                            dmc.Radio("Manual", value="manual", style={"marginBottom": "10px"})
+                        data=[
+                            {"value": "automatica", "label": "Automática"},
+                            {"value": "manual", "label": "Manual"},
                         ],
-                        style={"marginBottom": "20px"}
+                        fullWidth=True,
+                        color="blue",
+                        radius="xl",
+                        size="sm",
+                        style={"marginBottom": "15px"}
                     ),
-                    # Escala manual gráficos temporal
                     dmc.Group(
                         [
                             dmc.Text("Max", style={"width": "30px"}),
@@ -334,10 +362,13 @@ def layout():
                             ),
                         ],
                         ta="center",
-                        gap="1",
-                        style={"width": "100%", "marginBottom": "20px"},
+                        gap="xs",
+                        style={"width": "100%", "marginBottom": "30px"},
                     ),
-                    dmc.Button("Cerrar", id="close-config-drawer", n_clicks=None)
+                    
+                    dmc.Divider(style={"marginTop": "10px", "marginBottom": "20px"}),
+                    
+                    dmc.Button("Cerrar", id="close-config-drawer", variant="outline", fullWidth=True)
                 ],
                 opened=False,
                 position="right"
@@ -373,13 +404,13 @@ def layout():
                             html.Div([
                                 dmc.Grid([
                                     dmc.GridCol([
-                                        dcc.Graph(id='grafico_incli_1_a', config={'responsive': False}, style={'height': '600px'}),
+                                        dcc.Graph(id='grafico_incli_1_a', config={'responsive': True}, style={'height': '800px'}),
                                         dmc.Text("Desplazamiento A", ta="center")
-                                    ], span=6, style={'padding': '0', 'margin': '0'}),
+                                    ], span=6, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                                     dmc.GridCol([
-                                        dcc.Graph(id='grafico_incli_1_b', config={'responsive': False}, style={'height': '600px'}),
+                                        dcc.Graph(id='grafico_incli_1_b', config={'responsive': True}, style={'height': '800px'}),
                                         dmc.Text("Desplazamiento B", ta="center")
-                                    ], span=6, style={'padding': '0', 'margin': '0'}),
+                                    ], span=6, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                                 ])
                             ]),
                             value="grafico1"
@@ -388,13 +419,13 @@ def layout():
                             html.Div([
                                 dmc.Grid([
                                     dmc.GridCol([
-                                        dcc.Graph(id='grafico_incli_2_a', config={'responsive': False}, style={'height': '600px'}),
+                                        dcc.Graph(id='grafico_incli_2_a', config={'responsive': True}, style={'height': '800px'}),
                                         dmc.Text("Incremental A", ta="center")
-                                    ], span=6, style={'padding': '0', 'margin': '0'}),
+                                    ], span=6, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                                     dmc.GridCol([
-                                        dcc.Graph(id='grafico_incli_2_b', config={'responsive': False}, style={'height': '600px'}),
+                                        dcc.Graph(id='grafico_incli_2_b', config={'responsive': True}, style={'height': '800px'}),
                                         dmc.Text("Incremental B", ta="center")
-                                    ], span=6, style={'padding': '0', 'margin': '0'}),
+                                    ], span=6, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                                 ])
                             ]),
                             value="grafico2"
@@ -403,13 +434,13 @@ def layout():
                             html.Div([
                                 dmc.Grid([
                                     dmc.GridCol([
-                                        dcc.Graph(id='grafico_incli_chk_a', config={'responsive': False}, style={'height': '600px'}),
+                                        dcc.Graph(id='grafico_incli_chk_a', config={'responsive': True}, style={'height': '800px'}),
                                         dmc.Text("Checksum A", ta="center")
-                                    ], span=6, style={'padding': '0', 'margin': '0'}),
+                                    ], span=6, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                                     dmc.GridCol([
-                                        dcc.Graph(id='grafico_incli_chk_b', config={'responsive': False}, style={'height': '600px'}),
+                                        dcc.Graph(id='grafico_incli_chk_b', config={'responsive': True}, style={'height': '800px'}),
                                         dmc.Text("Checksum B", ta="center")
-                                    ], span=6, style={'padding': '0', 'margin': '0'}),
+                                    ], span=6, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                                 ])
                             ]),
                             value="grafico_chk"
@@ -418,17 +449,17 @@ def layout():
                             html.Div([
                                 dmc.Grid([
                                     dmc.GridCol([
-                                        dcc.Graph(id='grafico_incli_3_a', config={'responsive': False}, style={'height': '600px'}),
+                                        dcc.Graph(id='grafico_incli_3_a', config={'responsive': True}, style={'height': '800px'}),
                                         dmc.Text("Desplazamiento A", ta="center")
-                                    ], span=4, style={'padding': '0', 'margin': '0'}),
+                                    ], span=4, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                                     dmc.GridCol([
-                                        dcc.Graph(id='grafico_incli_3_b', config={'responsive': False}, style={'height': '600px'}),
+                                        dcc.Graph(id='grafico_incli_3_b', config={'responsive': True}, style={'height': '800px'}),
                                         dmc.Text("Desplazamiento B", ta="center")
-                                    ], span=4, style={'padding': '0', 'margin': '0'}),
+                                    ], span=4, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                                     dmc.GridCol([
-                                        dcc.Graph(id='grafico_incli_3_total', config={'responsive': False}, style={'height': '600px'}),
+                                        dcc.Graph(id='grafico_incli_3_total', config={'responsive': True}, style={'height': '800px'}),
                                         dmc.Text("Desplazamientos Totales", ta="center")
-                                    ], span=4, style={'padding': '0', 'margin': '0'}),
+                                    ], span=4, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                                 ])
                             ]),
                             value="grafico3"
@@ -460,7 +491,7 @@ def layout():
                 ], span=3)  # Ocupa el 30% de la fila
             ], style={"width": "100%"}),
 
-            dmc.Divider(style={"marginTop": "20px", "marginBottom": "20px"}),
+            dmc.Divider(style={"marginTop": "40px", "marginBottom": "20px"}),
             dmc.Grid([
                 dmc.GridCol(
                     dcc.Graph(id='grafico_temporal', config={'responsive': False}, style={'height': '400px'}),
@@ -513,7 +544,7 @@ def layout():
                         "Depurar parámetros (consola)",
                         id="btn-debug-parametros",
                         variant="outline",
-                        c="teal",
+                        color="teal",
                         leftSection=DashIconify(icon="tabler:bug"),
                         style={"marginTop": "10px", "marginBottom": "20px"}
                     ),
@@ -528,7 +559,7 @@ def layout():
                         "Generar Vista Previa",
                         id="btn-generar-preview",
                         variant="outline",
-                        c="blue",
+                        color="blue",
                         fullWidth=True,
                         leftSection=DashIconify(icon="mdi:eye-outline")
                     ),
@@ -547,7 +578,7 @@ def layout():
                     dmc.Group(
                         justify="flex-end",
                         children=[
-                            dmc.Button("Cancelar", c="gray", id="btn-cancelar-informe"),
+                            dmc.Button("Cancelar", color="gray", id="btn-cancelar-informe"),
                             dmc.Button("Generar PDF", id="btn-generar-informe-pdf",
                                        leftSection=DashIconify(icon="mdi:file-pdf-box"))
                         ],
@@ -642,6 +673,28 @@ def register_callbacks(app):
         if escalado == "manual":
             return False, False
         return True, True
+
+    # Callback para actualizar la altura de los contenedores de gráficos según el slider
+    @app.callback(
+        [Output("grafico_incli_1_a", "style"),
+         Output("grafico_incli_1_b", "style"),
+         Output("grafico_incli_2_a", "style"),
+         Output("grafico_incli_2_b", "style"),
+         Output("grafico_incli_chk_a", "style"),
+         Output("grafico_incli_chk_b", "style"),
+         Output("grafico_incli_3_a", "style"),
+         Output("grafico_incli_3_b", "style"),
+         Output("grafico_incli_3_total", "style")],
+        [Input("alto_graficos_slider", "value")]
+    )
+    def update_graph_container_height(alto_graficos):
+        """
+        Actualiza la altura del contenedor de los gráficos según el valor del slider.
+        El gráfico ocupará el 100% de este contenedor.
+        """
+        style = {'height': f'{alto_graficos}px'}
+        return [style] * 9
+
     """
     Carga los datos del archivo JSON subido y actualiza la información de la tarjeta de hover.
     - **Inputs**:
@@ -965,7 +1018,7 @@ def register_callbacks(app):
 
             # Seleccionar más fechas según la cadencia de 'cadencia_dias'
 
-            if cadencia_dias > 0 and len(seleccionadas) < total_camp:
+            if cadencia_dias > 0 and len(seleccionadas) < total_camp and len(seleccionadas) > 0:
                 ultima_fecha_seleccionada = datetime.fromisoformat(seleccionadas[-1])  # Última fecha seleccionada inicialmente
                 for fecha_str in fechas[ultimas_camp:]:
                     fecha_actual = datetime.fromisoformat(fecha_str)
@@ -1062,7 +1115,7 @@ def register_callbacks(app):
                             eje, orden):
 
         if not fechas_seleccionadas or not data:
-            # CRÍTICO: Las figuras vacías también deben tener autosize=False
+            # CRÍTICO: Las figuras vacías deben tener autosize=False para evitar crecimiento infinito
             fig_vacia = go.Figure()
             fig_vacia.update_layout(
                 autosize=False,
@@ -1337,24 +1390,28 @@ def register_callbacks(app):
                 uirevision=f'constant_{orden}_{eje}',  # CAMBIADO: Forzar reset UI al cambiar orden o eje
                 yaxis=dict(
                     type='linear',
-                    title=titulo_eje_y,
+                    title=dict(text=titulo_eje_y, font=dict(color='#888888')),  # Título con color
                     autorange='reversed' if orden == 'descendente' else True,  # MODIFICADO: Lógica para SegmentedControl
                     fixedrange=False,  # Permitir zoom pero sin auto-redimensionado continuo
-                    gridcolor='lightgray', gridwidth=1, griddash='dash',
+                    gridcolor='#555555', gridwidth=1, griddash='dash',  # Gris medio visible en modo oscuro
                     anchor='free',
                     #position=0,  # Posicionar el eje Y en x=0
                     constrain='domain',  # ← Fija el eje al área del subplot
                     showline=False,  # Asegurarse de que no se muestra la línea vertical del eje Y
+                    tickfont=dict(color='#888888'),  # Color del texto de los ticks
                 ),
                 xaxis=dict(
-                    gridcolor='lightgray', gridwidth=1, griddash='dash',
+                    gridcolor='#555555', gridwidth=1, griddash='dash',  # Gris medio visible en modo oscuro
                     showline=True,  # Mostrar la línea del borde inferior (eje X)
-                    linecolor='darkgray',  # Color del borde inferior
+                    linecolor='#666666',  # Color del borde inferior
                     linewidth=1,  # Grosor del borde inferior
-                    zeroline=True, zerolinecolor='darkgray', zerolinewidth=1 # muestra el eje vertical en x=0
+                    zeroline=True, zerolinecolor='#666666', zerolinewidth=1,  # muestra el eje vertical en x=0
+                    tickfont=dict(color='#888888'),  # Color del texto de los ticks
                 ),
-                showlegend=False, height=alto_graficos, title_x=0.5, plot_bgcolor='white',
-                autosize=False  # CRÍTICO: Desactiva autosize para evitar bucle de redimensionado
+                showlegend=False, height=alto_graficos, title_x=0.5,
+                plot_bgcolor='rgba(0,0,0,0)',  # Fondo transparente para adaptarse al modo oscuro
+                paper_bgcolor='rgba(0,0,0,0)',  # Fondo del papel transparente
+                autosize=False  # CRÍTICO: Desactivar para evitar bucle de crecimiento infinito
             )
 
         return [fig1_a, fig1_b, fig2_a, fig2_b,fig_chk_a, fig_chk_b, fig3_a, fig3_b, fig3_total]
@@ -1416,7 +1473,7 @@ def register_callbacks(app):
                 font=dict(
                     family="Arial",  # Fuente (puedes cambiarla)
                     size=18,  # Tamaño más pequeño del texto
-                    color="black",  # Color del texto
+                    color="#c1c2c5",  # Color del texto (gris claro para modo oscuro)
                     #weight="bold"  # Negrita
                 ),
                 x=0,  # Alineación a la izquierda
@@ -1424,22 +1481,29 @@ def register_callbacks(app):
                 yanchor="top"  # Alineado en la parte superior
             ),
             yaxis=dict(
-                gridcolor='lightgray', gridwidth=1, griddash='dash',
+                gridcolor='#555555', gridwidth=1, griddash='dash',
                 showline=True,
-                linecolor='darkgray',
+                linecolor='#666666',
                 linewidth=2,
                 zeroline=True,
-                zerolinecolor='darkgray',
-                zerolinewidth=1
+                zerolinecolor='#666666',
+                zerolinewidth=1,
+                tickfont=dict(color='#888888'),  # Color del texto de los ticks
             ),
             xaxis=dict(
-                gridcolor='lightgray', gridwidth=1, griddash='dash',
+                gridcolor='#555555', gridwidth=1, griddash='dash',
                 showline=True,
-                linecolor='darkgray',
+                linecolor='#666666',
                 linewidth=2,
+                tickfont=dict(color='#888888'),  # Color del texto de los ticks
+            ),
+            legend=dict(
+                 bgcolor='rgba(0,0,0,0)',
+                 font=dict(color='#c1c2c5')
             ),
             showlegend=True,
-            plot_bgcolor='white',
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
             autosize=False,  # CRÍTICO: Desactiva autosize para evitar bucle
             uirevision='constant'  # Mantener estado UI
         )
@@ -1529,7 +1593,20 @@ def register_callbacks(app):
             # Buscar la fecha más cercana a la fecha seleccionada
             fecha_cercana = min(fechas_dt, key=lambda x: abs((x - fecha_seleccionada).days))
 
-            return f"Fecha seleccionada: {fecha_cercana}"
+            # Encontrar la fecha original del JSON que corresponde a esta fecha
+            # para mantener el formato ISO exacto (con 'T' y segundos)
+            # Crear un diccionario de datetime -> fecha_str para buscar eficientemente
+            fecha_iso_original = None
+            for fecha_str in fechas_str:
+                if datetime.fromisoformat(fecha_str) == fecha_cercana:
+                    fecha_iso_original = fecha_str
+                    break
+            
+            # Si no podemos encontrar la original, usar el formato ISO estándar
+            if not fecha_iso_original:
+                fecha_iso_original = fecha_cercana.strftime('%Y-%m-%dT%H:%M:%S')
+
+            return f"Fecha seleccionada: {fecha_iso_original}"
 
         except Exception as e:
             print(f"Error al actualizar el tooltip del slider: {e}")
@@ -1673,6 +1750,22 @@ def register_callbacks(app):
             with open(ruta_json, 'r', encoding='utf-8') as file:
                 data_json = json.load(file)
 
+            # Normalizar estructura si no tiene 'paginas' (caso plantillas simples como encabezados)
+            if "paginas" not in data_json and "elementos" in data_json:
+                print(f"Normalizando estructura plana para plantilla: {nombre_plantilla}")
+                # Convertir a estructura de paginas con una pagina ficticia "1"
+                config = data_json.get("configuracion", {})
+                elems = data_json.get("elementos", {})
+                
+                # Reconstruir data_json manteniendo la referencia
+                # Es importante que 'paginas' exista para que el resto del código funcione
+                data_json["paginas"] = {
+                    "1": {
+                        "elementos": elems,
+                        "configuracion": config
+                    }
+                }
+
             # Obtener valores actuales
             current_values = cargar_valores_actuales(
                 data, eje, orden, color_scheme, escala_desplazamiento, escala_incremento,
@@ -1779,10 +1872,15 @@ def register_callbacks(app):
             for num_pagina, pagina in data_json.get("paginas", {}).items():
                 elementos = pagina.get("elementos", {})
                 for nombre_elemento, elemento in elementos.items():
-                    if elemento.get("tipo") == "grafico":
+                    tipo_elem = elemento.get("tipo")
+                    if tipo_elem in ["grafico", "tabla"]:
                         graficos_encontrados += 1
+                        
+                        # Definir icono y color según tipo
+                        icono = "mdi:chart-line" if tipo_elem == "grafico" else "mdi:table"
+                        color_badge = "blue" if tipo_elem == "grafico" else "green"
 
-                        # Generar contenido del accordion para este gráfico
+                        # Generar contenido del accordion para este gráfico (compatible con tabla)
                         contenido = generar_seccion_grafico(
                             num_pagina, nombre_elemento, elemento, scripts_disponibles, current_values
                         )
@@ -1793,9 +1891,9 @@ def register_callbacks(app):
                                 [
                                     dmc.AccordionControl(
                                         dmc.Group([
-                                            DashIconify(icon="mdi:chart-line", width=20),
-                                            dmc.Text(f"{nombre_elemento}", fw="bold"),
-                                            dmc.Badge(f"Página {num_pagina}", variant="light", c="blue")
+                                            DashIconify(icon=icono, width=20),
+                                            dmc.Text(f"{nombre_elemento} ({tipo_elem})", fw="bold"),
+                                            dmc.Badge(f"Página {num_pagina}", variant="light", c=color_badge)
                                         ])
                                     ),
                                     dmc.AccordionPanel(contenido)
@@ -1923,7 +2021,8 @@ def register_callbacks(app):
          State("total_camp", "value"),
          State("ultimas_camp", "value"),
          State("cadencia_dias", "value"),
-         State("leyenda_umbrales", "data")],  # ← AÑADIR ESTA LÍNEA
+         State("leyenda_umbrales", "data"),
+         State("slider_fecha_tooltip", "children")],  # Estado añadido para capturar la fecha seleccionada
         prevent_initial_call=True
     )
     def generar_informe_pdf(n_clicks, plantilla_json, datos_tubo,
@@ -1933,7 +2032,7 @@ def register_callbacks(app):
                         valor_positivo_incremento, valor_negativo_incremento,
                         escala_temporal, valor_positivo_temporal, valor_negativo_temporal,
                         fecha_inicial, fecha_final, total_camp, ultimas_camp, cadencia_dias,
-                        leyenda_umbrales):
+                        leyenda_umbrales, slider_tooltip):
         """
         Genera un informe PDF basado en una plantilla JSON y los datos del tubo.
 
@@ -1966,6 +2065,27 @@ def register_callbacks(app):
             # Crear una copia profunda de la plantilla para no modificar el original
             plantilla_modificada = copy.deepcopy(plantilla_json)
 
+            # Obtener fecha seleccionada del tooltip
+            # El tooltip puede contener formato "Fecha seleccionada: YYYY-MM-DD HH:MM:SS"
+            # Necesitamos convertirlo a formato ISO "YYYY-MM-DDTHH:MM:SS" para coincidir con el JSON
+            fecha_seleccionada = None
+            if slider_tooltip and "Fecha seleccionada: " in str(slider_tooltip):
+                # Formato esperado: "Fecha seleccionada: YYYY-MM-DD HH:MM:SS"
+                parts = str(slider_tooltip).replace("Fecha seleccionada: ", "").strip()
+                # Convertir formato "YYYY-MM-DD HH:MM:SS" a "YYYY-MM-DDTHH:MM:SS" (ISO)
+                if " " in parts:
+                    fecha_seleccionada = parts.replace(" ", "T")
+                else:
+                    fecha_seleccionada = parts
+                    
+            print(f"DEBUG generar_informe_pdf: slider_tooltip = {slider_tooltip}")
+            print(f"DEBUG generar_informe_pdf: fecha_seleccionada extraída = {fecha_seleccionada}")
+            
+            # Si no hay fecha en el slider, usar la fecha final del rango o la última disponible
+            if not fecha_seleccionada and fecha_final:
+                fecha_seleccionada = fecha_final
+                print(f"DEBUG generar_informe_pdf: usando fecha_final como fecha_seleccionada = {fecha_final}")
+
             # Recopilar valores actuales para sustituciones $CURRENT
             current_values = {
                 'eje': eje,
@@ -1987,14 +2107,16 @@ def register_callbacks(app):
                 'cadencia_dias': cadencia_dias,
                 'sensor': datos_tubo.get('info', {}).get('codigo', 'desconocido') if datos_tubo else 'desconocido',
                 'nombre_sensor': datos_tubo.get('info', {}).get('nombre', 'Sin nombre') if datos_tubo else 'Sin nombre',
-                'leyenda_umbrales': leyenda_umbrales
+                'leyenda_umbrales': leyenda_umbrales,
+                'fecha_seleccionada': fecha_seleccionada
             }
 
             # Procesar la plantilla para reemplazar los valores $CURRENT restantes
             for pagina_num, pagina_data in plantilla_modificada.get("paginas", {}).items():
                 for elemento_id, elemento in pagina_data.get("elementos", {}).items():
-                    # Solo procesar elementos de tipo gráfico
-                    if elemento.get("tipo") == "grafico" and "configuracion" in elemento:
+                    # Procesar elementos de tipo grafico y tabla
+                    tipo_elemento = elemento.get("tipo")
+                    if tipo_elemento in ["grafico", "tabla"] and "configuracion" in elemento:
                         # Obtener los parámetros actuales
                         parametros = elemento["configuracion"].get("parametros", {})
 
@@ -2018,15 +2140,35 @@ def register_callbacks(app):
             # Modificación aquí: Separar las rutas de plantillas y gráficos
             biblioteca_plantillas_path = Path("biblioteca_plantillas")
             biblioteca_graficos_path = Path("biblioteca_graficos")  # Ruta directa, no dentro de plantillas
+            biblioteca_tablas_path = Path("biblioteca_tablas")  # Ruta a scripts de tablas
+
+            # Para mantener compatibilidad con gráficos que esperan la estructura original de datos_tubo,
+            # pasamos datos_tubo directamente. Los valores de current_values ya fueron reemplazados
+            # en los parámetros de los elementos arriba (líneas 2102-2104).
+            # 
+            # Para tablas que necesitan acceder a fecha_seleccionada, ultimas_camp, etc.,
+            # estos valores se pueden obtener de los parámetros del elemento, que ya fueron
+            # reemplazados con los valores de current_values.
+            #
+            # NOTA: Si es necesario pasar valores adicionales al data_source para tablas,
+            # se debe hacer de forma selectiva sin interferir con las claves de datos_tubo.
+            data_source_for_pdf = datos_tubo.copy() if datos_tubo else {}
+            
+            # Añadir SOLO los valores específicos que necesitan los scripts de tabla
+            # y que NO existen en datos_tubo (para no sobrescribir fechas u otros datos)
+            table_specific_values = ['fecha_seleccionada', 'ultimas_camp']
+            for key in table_specific_values:
+                if key in current_values:
+                    data_source_for_pdf[key] = current_values[key]
 
             # Generar PDF usando el módulo importado
-            # Llamar a la función con ambas rutas
             generate_pdf_from_template(
                 plantilla_modificada,
-                datos_tubo,
+                data_source_for_pdf,
                 buffer,
                 biblioteca_plantillas_path,
-                biblioteca_graficos_path  # Pasar ruta de gráficos separadamente
+                biblioteca_graficos_path,
+                biblioteca_tablas_path  # Añadir ruta de tablas
             )
 
 
@@ -2297,8 +2439,8 @@ def register_callbacks(app):
                 elif valor.lower() == "false":
                     valor_convertido = False
                 # Convertir a número si es posible
-                elif valor.replace('.', '', 1).isdigit() or (
-                        valor[0] == '-' and valor[1:].replace('.', '', 1).isdigit()):
+                elif valor and (valor.replace('.', '', 1).isdigit() or (
+                        len(valor) > 1 and valor[0] == '-' and valor[1:].replace('.', '', 1).isdigit())):
                     valor_convertido = float(valor)
                     # Si es un entero, convertirlo a int
                     if valor_convertido.is_integer():
@@ -2308,8 +2450,19 @@ def register_callbacks(app):
 
             # Actualizar el parámetro en la plantilla
             try:
-                plantilla_modificada["paginas"][pagina]["elementos"][elemento]["configuracion"]["parametros"][
-                    param] = valor_convertido
+                if "." in param:
+                    # Parámetro anidado (ej: celdas.N1_C1)
+                    grupo, sub_param = param.split(".", 1)
+                    # Asegurar que la estructura existe
+                    config_params = plantilla_modificada["paginas"][pagina]["elementos"][elemento]["configuracion"]["parametros"]
+                    if grupo not in config_params or not isinstance(config_params[grupo], dict):
+                        config_params[grupo] = {}
+                    
+                    config_params[grupo][sub_param] = valor_convertido
+                else:
+                    # Parámetro simple
+                    plantilla_modificada["paginas"][pagina]["elementos"][elemento]["configuracion"]["parametros"][
+                        param] = valor_convertido
             except KeyError:
                 print(f"Error: No se pudo actualizar el parámetro {param} para pagina={pagina}, elemento={elemento}")
 

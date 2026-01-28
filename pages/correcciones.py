@@ -25,9 +25,8 @@ from utils.funciones_importar import valores_calc_directos
 
 # Layout function
 def layout():
-    return dmc.MantineProvider(
-        children=dmc.Grid([
-            html.Div(style={'height': '50px'}),
+    return dmc.Grid([
+        html.Div(style={'height': '50px'}),
 
             # Upload section
             dmc.Grid(
@@ -89,6 +88,7 @@ def layout():
                     dmc.GridCol(
                         AgGrid(
                             id='tabla-json',
+                            className='ag-theme-alpine-dark',
                             style={
                                 'height': '200px', 'width': '100%', 'margin': '0 auto'
                             },
@@ -165,12 +165,12 @@ def layout():
                             html.Div([
                                 dmc.Grid([
                                     dmc.GridCol([
-                                        dcc.Graph(id='corr_grafico_incli_1_a', config={'responsive': False}, style={'height': '600px'}),
-                                        dmc.Text("Desplazamiento A (mm)", ta="center")], span=6, style={'padding': '0', 'margin': '0'}),
+                                        dcc.Graph(id='corr_grafico_incli_1_a', config={'responsive': True}, style={'height': '800px'}),
+                                        dmc.Text("Desplazamiento A (mm)", ta="center")], span=6, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                                     dmc.GridCol([
-                                        dcc.Graph(id='corr_grafico_incli_1_b', config={'responsive': False}, style={'height': '600px'}),
+                                        dcc.Graph(id='corr_grafico_incli_1_b', config={'responsive': True}, style={'height': '800px'}),
                                         dmc.Text("Desplazamiento B (mm)", ta="center")
-                                    ], span=6, style={'padding': '0', 'margin': '0'}),
+                                    ], span=6, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                                 ])
                             ]),
                             value="corr_grafico1"
@@ -179,13 +179,13 @@ def layout():
                             html.Div([
                                 dmc.Grid([
                                     dmc.GridCol([
-                                        dcc.Graph(id='corr_grafico_incli_2_a', config={'responsive': False}, style={'height': '600px'}),
+                                        dcc.Graph(id='corr_grafico_incli_2_a', config={'responsive': True}, style={'height': '800px'}),
                                         dmc.Text("Incremental A (mm)", ta="center")
-                                    ], span=6, style={'padding': '0', 'margin': '0'}),
+                                    ], span=6, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                                     dmc.GridCol([
-                                        dcc.Graph(id='corr_grafico_incli_2_b', config={'responsive': False}, style={'height': '600px'}),
+                                        dcc.Graph(id='corr_grafico_incli_2_b', config={'responsive': True}, style={'height': '800px'}),
                                         dmc.Text("Incremental B (mm)", ta="center")
-                                    ], span=6, style={'padding': '0', 'margin': '0'}),
+                                    ], span=6, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                                 ])
                             ]),
                             value="corr_grafico2"
@@ -194,17 +194,17 @@ def layout():
                             html.Div([
                                 dmc.Grid([
                                     dmc.GridCol([
-                                        dcc.Graph(id='corr_grafico_incli_3_a', config={'responsive': False}, style={'height': '600px'}),
+                                        dcc.Graph(id='corr_grafico_incli_3_a', config={'responsive': True}, style={'height': '800px'}),
                                         dmc.Text("Desplazamiento A", ta="center")],
-                                        span=4, style={'padding': '0', 'margin': '0'}),
+                                        span=4, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                                     dmc.GridCol([
-                                        dcc.Graph(id='corr_grafico_incli_3_b', config={'responsive': False}, style={'height': '600px'}),
+                                        dcc.Graph(id='corr_grafico_incli_3_b', config={'responsive': True}, style={'height': '800px'}),
                                         dmc.Text("Desplazamiento B", ta="center")],
-                                        span=4, style={'padding': '0', 'margin': '0'}),
+                                        span=4, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                                     dmc.GridCol([
-                                        dcc.Graph(id='corr_grafico_incli_3_total', config={'responsive': False}, style={'height': '600px'}),
+                                        dcc.Graph(id='corr_grafico_incli_3_total', config={'responsive': True}, style={'height': '800px'}),
                                         dmc.Text("Desplazamientos  (mm)", ta="center")
-                                    ], span=4, style={'padding': '0', 'margin': '0'}),
+                                    ], span=4, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                                 ])
                             ]),
                             value="corr_grafico3"
@@ -216,10 +216,13 @@ def layout():
             ], style={'minHeight': '700px', 'width': '100%', 'marginBottom': '20px'}),
             # drawer con la configuración del GRAFICO 1: correc-drawer-1
             dmc.Drawer(
-                title=dmc.Text("Configuración gráficos", fw="bold", size="xl", style={"marginBottom": "20px"}),
+                title=dmc.Text("Configuración gráficos", fw="bold", size="lg"),
                 id="correc-drawer-1",
+                padding="md",
+                size="sm",
                 children=[
-                    dmc.Text("Seleccionar altura de gráficos", fw="bold", style={"marginBottom": "10px"}),
+                    # Sección: Altura de gráficos
+                    dmc.Text("Altura de gráficos", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
                     dmc.Slider(
                         label="Altura de los gráficos (px)",
                         id="corr_alto_graficos_slider_grafico1",
@@ -236,49 +239,62 @@ def layout():
                             {"value": 900, "label": "900"},
                             {"value": 1000, "label": "1000"},
                         ],
-                        style={"marginBottom": "50px"}
+                        style={"marginBottom": "30px"}
                     ),
-                    dmc.Text("Seleccionar estilo de colores", fw="bold", style={"marginBottom": "10px"}),
-                    dmc.RadioGroup(
+                    
+                    dmc.Divider(style={"marginTop": "15px", "marginBottom": "20px"}),
+                    
+                    # Sección: Estilo de colores
+                    dmc.Text("Estilo de colores", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
+                    dmc.SegmentedControl(
                         id="correcciones_color_grafico1",
-                        value="monocromo",  # Valor por defecto
-                        children=[
-                            dmc.Radio("Monocromo", value="monocromo", style={"marginRight": "20px"}),
-                            dmc.Radio("Multicromo", value="multicromo", style={"marginRight": "20px"}),
+                        value="monocromo",
+                        data=[
+                            {"value": "monocromo", "label": "Monocromo"},
+                            {"value": "multicromo", "label": "Multicromo"},
                         ],
-                        style={"marginBottom": "30px", "width": "100%", "display": "flex",
-                               "flexDirection": "row", "marginRight": "50px"}
+                        fullWidth=True,
+                        color="blue",
+                        radius="xl",
+                        size="md",
+                        style={"marginBottom": "20px"}
                     ),
-                    # insertar número de campañas previas a graficar
+                    
+                    # Sección: Campañas previas
+                    dmc.Text("Campañas previas", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
                     dmc.Group(
                         children=[
-                            dmc.Text("Campañas previas a mostrar", fw="bold", style={"marginBottom": "10px", "flex": "2"}),
+                            dmc.Text("Número a mostrar"),
                             dmc.NumberInput(
                                 id="correc_num_camp_previas_grafico1",
-                                value=10,  # Valor por defecto
+                                value=10,
                                 min=0,
                                 max=1000,
                                 step=1,
                                 disabled=False,
-                                style={"flex": "1"}
+                                style={"width": "100px"}
                             )
                         ],
-                        style={"width": "100%", "alignItems": "center", "justifyContent": "space-between"}
+                        style={"width": "100%", "alignItems": "center", "justifyContent": "space-between", "marginBottom": "20px"}
                     ),
-                    html.Div(style={'height': '20px'}),  # Espaciado
-                    # Component for "Escala gráficos desplazamiento"
-                    dmc.Text("Escala gráficos Desplazamiento", fw="bold", style={"marginBottom": "10px"}),
-                    dmc.RadioGroup(
-                        # label="Escala gráficos desplazamiento",
+                    
+                    dmc.Divider(style={"marginTop": "10px", "marginBottom": "20px"}),
+                    
+                    # Sección: Escala Desplazamiento
+                    dmc.Text("Escala gráficos Desplazamiento", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
+                    dmc.SegmentedControl(
                         id="correc_escala_graficos_desplazamiento",
                         value="manual",
-                        children=[
-                            dmc.Radio("Automática", value="automatica", style={"marginBottom": "10px"}),
-                            dmc.Radio("Manual", value="manual", style={"marginBottom": "10px"})
+                        data=[
+                            {"value": "automatica", "label": "Automática"},
+                            {"value": "manual", "label": "Manual"},
                         ],
-                        style={"marginBottom": "20px"}
+                        fullWidth=True,
+                        color="blue",
+                        radius="xl",
+                        size="sm",
+                        style={"marginBottom": "15px"}
                     ),
-                    # Escala manual gráficos de desplazamiento grafico_1 y grafico_3
                     dmc.Group(
                         [
                             dmc.Text("Max", style={"width": "30px"}),
@@ -303,22 +319,25 @@ def layout():
                             ),
                         ],
                         ta="center",
-                        gap="1",
-                        style={"width": "100%"},
+                        gap="xs",
+                        style={"width": "100%", "marginBottom": "20px"},
                     ),
-                    # Component for "Escala gráficos incremento"
-                    dmc.Text("Escala gráficos Incremento", fw="bold", style={"marginBottom": "10px"}),
-                    dmc.RadioGroup(
-                        # label="Escala gráficos incremento",
+                    
+                    # Sección: Escala Incremento
+                    dmc.Text("Escala gráficos Incremento", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
+                    dmc.SegmentedControl(
                         id="correc_escala_graficos_incremento",
                         value="manual",
-                        children=[
-                            dmc.Radio("Automática", value="automatica", style={"marginBottom": "10px"}),
-                            dmc.Radio("Manual", value="manual", style={"marginBottom": "10px"})
+                        data=[
+                            {"value": "automatica", "label": "Automática"},
+                            {"value": "manual", "label": "Manual"},
                         ],
-                        style={"marginBottom": "20px"}
+                        fullWidth=True,
+                        color="blue",
+                        radius="xl",
+                        size="sm",
+                        style={"marginBottom": "15px"}
                     ),
-                    # Escala manual gráficos de incremento grafico_2
                     dmc.Group(
                         [
                             dmc.Text("Max", style={"width": "30px"}),
@@ -343,14 +362,16 @@ def layout():
                             ),
                         ],
                         ta="center",
-                        gap="1",
-                        style={"width": "100%", "marginBottom": "20px"},
+                        gap="xs",
+                        style={"width": "100%", "marginBottom": "30px"},
                     ),
-
-                    # Escala manual gráficos temporal
-                    dmc.Button("Cerrar", id="close-correc-drawer-1", n_clicks=None)
+                    
+                    dmc.Divider(style={"marginTop": "10px", "marginBottom": "20px"}),
+                    
+                    dmc.Button("Cerrar", id="close-correc-drawer-1", variant="outline", fullWidth=True)
                 ],
-                opened=False
+                opened=False,
+                position="right"
             ),
             # Correcciones de spikes
             dmc.Space(h=30),
@@ -362,17 +383,17 @@ def layout():
                 dmc.GridCol([
                     dmc.Grid([
                         dmc.GridCol([
-                            dcc.Graph(id='corr_graf_spike_a', config={'responsive': False}, style={'height': '600px'}),
+                            dcc.Graph(id='corr_graf_spike_a', config={'responsive': True}, style={'height': '800px'}),
                             dmc.Text("Incr CheckSum A", ta="center")],
-                            span=3, style={'padding': '0', 'margin': '0'}),
+                            span=3, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                         dmc.GridCol([
-                            dcc.Graph(id='corr_graf_spike_b', config={'responsive': False}, style={'height': '600px'}),
+                            dcc.Graph(id='corr_graf_spike_b', config={'responsive': True}, style={'height': '800px'}),
                             dmc.Text("Incr CheckSum B", ta="center")],
-                            span=3, style={'padding': '0', 'margin': '0'}),
+                            span=3, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                         dmc.GridCol([
-                            dcc.Graph(id='corr_graf_stats_a', config={'responsive': False}, style={'height': '600px'}),
+                            dcc.Graph(id='corr_graf_stats_a', config={'responsive': True}, style={'height': '800px'}),
                             dmc.Text("Estadística seleccionada", ta="center")],
-                            span=6, style={'padding': '0', 'margin': '0'})
+                            span=6, style={'padding': '0', 'margin': '0', 'overflow': 'visible'})
                     ], style={'width': '100%', 'display': 'flex', 'flexWrap': 'nowrap'})
                 ], span=8, style={'padding': '0', 'margin': '0'}),
 
@@ -470,6 +491,7 @@ def layout():
                     ),
                     AgGrid(
                         id='spikes-table',
+                        className='ag-theme-alpine-dark',
                         rowData=[],  # Inicialmente vacío
                         columnDefs=[
                             {'headerName': 'Selec', 'field': 'Corregir', 'cellRenderer': 'agCheckboxCellRenderer'},
@@ -547,10 +569,10 @@ def layout():
                 # Primera columna - 70% de ancho, contiene los gráficos
                 dmc.GridCol([
                     dmc.Grid([
-                        dmc.GridCol(dcc.Graph(id='corr_graf_bias_a', config={'responsive': False}, style={'height': '600px'}), span=4, style={'padding': '0', 'margin': '0'}),
-                        dmc.GridCol(dcc.Graph(id='corr_estad_bias_a', config={'responsive': False}, style={'height': '600px'}), span=2, style={'padding': '0', 'margin': '0'}),
-                        dmc.GridCol(dcc.Graph(id='corr_graf_bias_b', config={'responsive': False}, style={'height': '600px'}), span=4, style={'padding': '0', 'margin': '0'}),
-                        dmc.GridCol(dcc.Graph(id='corr_estad_bias_b', config={'responsive': False}, style={'height': '600px'}), span=2, style={'padding': '0', 'margin': '0'}),
+                        dmc.GridCol(dcc.Graph(id='corr_graf_bias_a', config={'responsive': True}, style={'height': '800px'}), span=4, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
+                        dmc.GridCol(dcc.Graph(id='corr_estad_bias_a', config={'responsive': True}, style={'height': '800px'}), span=2, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
+                        dmc.GridCol(dcc.Graph(id='corr_graf_bias_b', config={'responsive': True}, style={'height': '800px'}), span=4, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
+                        dmc.GridCol(dcc.Graph(id='corr_estad_bias_b', config={'responsive': True}, style={'height': '800px'}), span=2, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                     ], style={'width': '100%', 'display': 'flex', 'flexWrap': 'nowrap'})
                 ], span=8, style={'padding': '0', 'margin': '0'}), # ancho de la columna de gráficos
 
@@ -657,6 +679,7 @@ def layout():
                     # tabla de configuración de bias a aplicar
                     AgGrid(
                         id='bias-table',
+                        className='ag-theme-alpine-dark',
                         #rowData=[],  # Inicialmente vacío
                         rowData=[
                             {'Correccion': 'Bias_1_A', 'Selec': False, 'Prof_inf': 0, 'Prof_sup': 0, 'Delta': ''},
@@ -735,7 +758,7 @@ def layout():
             ], style={'minHeight': '700px', 'width': '100%', 'marginBottom': '20px'}),  # Cierre del html.Div del bloque bias
 
         ])
-    )
+
 
 
 # Registra los callbacks en lugar de definir un nuevo Dash app
@@ -1091,6 +1114,18 @@ def register_callbacks(app):
         # Return por defecto para evitar None
         return (dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update)
 
+    # Callback para cambiar el tema de las tablas AgGrid
+    @app.callback(
+        [Output('tabla-json', 'className'),
+         Output('spikes-table', 'className'),
+         Output('bias-table', 'className')],
+        [Input('mantine-provider', 'forceColorScheme')]
+    )
+    def update_aggrid_theme(color_scheme):
+        if color_scheme == "dark":
+            return "ag-theme-alpine-dark", "ag-theme-alpine-dark", "ag-theme-alpine-dark"
+        return "ag-theme-alpine", "ag-theme-alpine", "ag-theme-alpine"
+
     @app.callback(
         Output("json_spikes", "data"),  # Update the "json_spikes" Store
         [Input("corregir-tubo", "data"), # archivo json data
@@ -1277,6 +1312,31 @@ def register_callbacks(app):
         habilitar_incremento = escala_incremento == "manual"
         return not habilitar_desplazamiento, not habilitar_desplazamiento, not habilitar_incremento, not habilitar_incremento
 
+    # Callback para actualizar la altura de los contenedores de gráficos según el slider
+    @app.callback(
+        [Output("corr_grafico_incli_1_a", "style"),
+         Output("corr_grafico_incli_1_b", "style"),
+         Output("corr_grafico_incli_2_a", "style"),
+         Output("corr_grafico_incli_2_b", "style"),
+         Output("corr_grafico_incli_3_a", "style"),
+         Output("corr_grafico_incli_3_b", "style"),
+         Output("corr_grafico_incli_3_total", "style"),
+         Output("corr_graf_spike_a", "style"),
+         Output("corr_graf_spike_b", "style"),
+         Output("corr_graf_stats_a", "style"),
+         Output("corr_graf_bias_a", "style"),
+         Output("corr_estad_bias_a", "style"),
+         Output("corr_graf_bias_b", "style"),
+         Output("corr_estad_bias_b", "style")],
+        [Input("corr_alto_graficos_slider_grafico1", "value")]
+    )
+    def update_corr_graph_container_height(alto_graficos):
+        """
+        Actualiza la altura del contenedor de los gráficos según el valor del slider.
+        """
+        style = {'height': f'{alto_graficos}px'}
+        return [style] * 14
+
     # Grupo de gráficos 1: Representación de movimientos vs profundidad, con diferentes opciones
     # cambiar el nombre a la función: graficos_1
     @app.callback(
@@ -1383,7 +1443,7 @@ def register_callbacks(app):
         # agrego la campaña con las correcciones de bias, en línea discontínua
         # el motivo de agregarla es que cuando hay cambio de referencia, no se ve el resultado final
         # sólo se agrega en caso de que haya correcciones y sólo en "Desplazamientos"
-        if corr_bias[fecha_seleccionada]['bias']:
+        if corr_bias and fecha_seleccionada in corr_bias and corr_bias[fecha_seleccionada].get('bias'):
             fecha = fecha_seleccionada
             color = 'red'
             grosor = 4
@@ -1503,19 +1563,23 @@ def register_callbacks(app):
             fig.update_layout(
                 yaxis=dict(
                     autorange="reversed",
-                    gridcolor='lightgray', gridwidth=1, griddash='dash',
+                    gridcolor='#555555', gridwidth=1, griddash='dash',  # Gris medio visible en modo oscuro
                     anchor='free',
                     position=0,  # Posicionar el eje Y en x=0
                     showline=False,  # Asegurarse de que no se muestra la línea vertical del eje Y
+                    tickfont=dict(color='#888888'),  # Color del texto de los ticks
                 ),
                 xaxis=dict(
-                    gridcolor='lightgray', gridwidth=1, griddash='dash',
+                    gridcolor='#555555', gridwidth=1, griddash='dash',  # Gris medio visible en modo oscuro
                     showline=True,  # Mostrar la línea del borde inferior (eje X)
-                    linecolor='darkgray',  # Color del borde inferior
+                    linecolor='#666666',  # Color del borde inferior
                     linewidth=1,  # Grosor del borde inferior
-                    zeroline=True, zerolinecolor='darkgray', zerolinewidth=1  # muestra el eje vertical en x=0
+                    zeroline=True, zerolinecolor='#666666', zerolinewidth=1,  # muestra el eje vertical en x=0
+                    tickfont=dict(color='#888888'),  # Color del texto de los ticks
                 ),
-                showlegend=False, height=alto_graficos, title_x=0.5, plot_bgcolor='white',
+                showlegend=False, height=alto_graficos, title_x=0.5,
+                plot_bgcolor='rgba(0,0,0,0)',  # Fondo transparente para modo oscuro
+                paper_bgcolor='rgba(0,0,0,0)',  # Fondo del papel transparente
                 autosize=False  # CRÍTICO: Evita bucle de redimensionado
             )
 
@@ -1615,19 +1679,23 @@ def register_callbacks(app):
             fig.update_layout(
                 yaxis=dict(
                     autorange="reversed",
-                    gridcolor='lightgray', gridwidth=1, griddash='dash',
+                    gridcolor='#555555', gridwidth=1, griddash='dash',
                     anchor='free',
                     position=0,  # Posicionar el eje Y en x=0
                     showline=False,  # Asegurarse de que no se muestra la línea vertical del eje Y
+                    tickfont=dict(color='#888888'),
                 ),
                 xaxis=dict(
-                    gridcolor='lightgray', gridwidth=1, griddash='dash',
+                    gridcolor='#555555', gridwidth=1, griddash='dash',
                     showline=True,  # Mostrar la línea del borde inferior (eje X)
-                    linecolor='darkgray',  # Color del borde inferior
+                    linecolor='#666666',  # Color del borde inferior
                     linewidth=1,  # Grosor del borde inferior
-                    zeroline=True, zerolinecolor='darkgray', zerolinewidth=1  # muestra el eje vertical en x=0
+                    zeroline=True, zerolinecolor='#666666', zerolinewidth=1,  # muestra el eje vertical en x=0
+                    tickfont=dict(color='#888888'),
                 ),
-                showlegend=False, height=alto_graficos, title_x=0.5, plot_bgcolor='white',
+                showlegend=False, height=alto_graficos, title_x=0.5,
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
                 autosize=False  # CRÍTICO: Evita bucle de redimensionado
             )
         # títulos
@@ -1660,10 +1728,19 @@ def register_callbacks(app):
             if fecha_referencia <= fecha['value'] <= fecha_seleccionada
                and data[fecha['value']]['campaign_info']['active'] == True
         ]
+        
+        # Asegurar que la fecha_seleccionada esté incluida (aunque no esté activa)
+        if fecha_seleccionada not in conjunto_fechas:
+            conjunto_fechas.insert(0, fecha_seleccionada)
 
         # Considerar solo las campañas marcadas por n_spikes
         if n_spikes != 'max':
-            conjunto_fechas = conjunto_fechas[:int(n_spikes) + 1]  # Incluir la fecha seleccionada
+            # Asegurar que fecha_seleccionada siempre esté incluida
+            if fecha_seleccionada in conjunto_fechas:
+                otras_fechas = [f for f in conjunto_fechas if f != fecha_seleccionada][:int(n_spikes)]
+                conjunto_fechas = [fecha_seleccionada] + otras_fechas
+            else:
+                conjunto_fechas = conjunto_fechas[:int(n_spikes) + 1]
 
         # Convertir el diccionario en un DataFrame
         dfs = dict_a_df(
@@ -1862,23 +1939,25 @@ def register_callbacks(app):
                 },
                 xaxis=dict(
                     title="Fecha",
-                    title_font={'size': 12, 'color': '#34495e'},
+                    title_font={'size': 12, 'color': '#c1c2c5'},
                     showgrid=True,
                     gridwidth=0.5,
-                    gridcolor='rgba(128, 128, 128, 0.1)',
+                    gridcolor='#555555',
                     showline=True,
                     linewidth=1,
-                    linecolor='rgba(128, 128, 128, 0.3)'
+                    linecolor='#666666',
+                    tickfont=dict(color='#888888'),
                 ),
                 yaxis=dict(
                     title="Valor",
-                    title_font={'size': 12, 'color': '#34495e'},
+                    title_font={'size': 12, 'color': '#c1c2c5'},  # Color texto claro
                     showgrid=True,
                     gridwidth=0.5,
-                    gridcolor='rgba(128, 128, 128, 0.1)',
+                    gridcolor='#555555',  # Gris medio
                     showline=True,
                     linewidth=1,
-                    linecolor='rgba(128, 128, 128, 0.3)'
+                    linecolor='#666666',
+                    tickfont=dict(color='#888888'),  # Color ticks
                 ),
                 template='plotly_white',
                 hovermode='closest',
@@ -1888,14 +1967,14 @@ def register_callbacks(app):
                     y=0.98,
                     xanchor="left",
                     x=1.02,
-                    bgcolor="rgba(255, 255, 255, 0.95)",
+                    bgcolor="rgba(0,0,0,0)",  # Transparente
                     bordercolor="rgba(128, 128, 128, 0.2)",
                     borderwidth=1,
-                    font={'size': 10}
+                    font={'size': 10, 'color': '#c1c2c5'}
                 ),
                 margin=dict(l=60, r=140, t=50, b=50),
-                plot_bgcolor='white',
-                paper_bgcolor='white',
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
                 autosize=False  # CRÍTICO: Evita bucle de redimensionado
             )
 
@@ -2261,12 +2340,25 @@ def register_callbacks(app):
             else:
                 titulo = "Corr.Despl.Bias B"
             fig.update_layout(
-                yaxis=dict(autorange='reversed', title='Profundidad'),
-                xaxis=dict(title=titulo),
+                yaxis=dict(
+                    autorange='reversed', title='Profundidad',
+                    gridcolor='#555555',
+                    tickfont=dict(color='#888888'),
+                    title_font=dict(color='#c1c2c5'),
+                ),
+                xaxis=dict(
+                    title=titulo,
+                    gridcolor='#555555',
+                    linecolor='#666666',
+                    tickfont=dict(color='#888888'),
+                    title_font=dict(color='#c1c2c5'),
+                ),
                 template='plotly_white',
                 margin=dict(l=40, r=20, t=40, b=20),
                 height=600,
                 showlegend=False,  # Oculta la leyenda
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
                 autosize=False  # CRÍTICO: Evita bucle de redimensionado
             )
         # Configurar escala horizontal en desplazamiento
@@ -2286,25 +2378,32 @@ def register_callbacks(app):
                     autorange='reversed',
                     showticklabels=False,  # Ocultar etiquetas del eje vertical
                     zeroline=True,  # Asegura que la línea cero del eje vertical se muestre
+                    gridcolor='#555555',
+                    zerolinecolor='#666666',
                 ),
                 xaxis=dict(
                     title= titulo,
-                    title_font=dict(color='blue'),  # Título del eje principal en azul
+                    title_font=dict(color='#228be6'),  # Azul
                     zeroline=True,  # Asegura que la línea cero del eje x esté visible
-                    zerolinecolor='gray',  # Color de la línea cero
-                    zerolinewidth=2  # Grosor de la línea cero
+                    zerolinecolor='#666666',  # Color de la línea cero
+                    zerolinewidth=2,  # Grosor de la línea cero
+                    gridcolor='#555555',
+                    tickfont=dict(color='#888888'),
                 ),
                 xaxis2=dict(
                     title= titulo_2,
                     overlaying='x',  # Superpone este eje sobre el eje 'x'
                     side='top',  # Coloca el eje en la parte superior
-                    title_font=dict(color='red'),  # Título del segundo eje en rojo
-                    zeroline=False  # Este eje no necesita una línea cero porque comparte la del principal
+                    title_font=dict(color='#fa5252'),  # Rojo
+                    zeroline=False,  # Este eje no necesita una línea cero porque comparte la del principal
+                    tickfont=dict(color='#888888'),
                 ),
                 template='plotly_white',
                 margin=dict(l=40, r=20, t=40, b=20),
                 height=600,
                 showlegend=False,  # Oculta la leyenda
+                plot_bgcolor='rgba(0,0,0,0)',
+                paper_bgcolor='rgba(0,0,0,0)',
                 autosize=False  # CRÍTICO: Evita bucle de redimensionado
             )
 
@@ -2396,10 +2495,22 @@ def register_callbacks(app):
 
         # Personalizar el diseño del gráfico
         fig.update_layout(
-            title="Gráfico",
-            xaxis_title="Fecha",
-            yaxis_title="Valores",
+            title=dict(text="Gráfico", font=dict(color='#c1c2c5')),
+            xaxis=dict(
+                title=dict(text="Fecha", font=dict(color='#c1c2c5')),
+                tickfont=dict(color='#888888'),
+                gridcolor='#555555',
+                linecolor='#666666',
+            ),
+            yaxis=dict(
+                title=dict(text="Valores", font=dict(color='#c1c2c5')),
+                tickfont=dict(color='#888888'),
+                gridcolor='#555555',
+                linecolor='#666666',
+            ),
             template="plotly_white",
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
             autosize=False  # CRÍTICO: Evita bucle de redimensionado
         )
 
@@ -2467,11 +2578,23 @@ def register_callbacks(app):
 
         # Personalizar el diseño del gráfico
         fig.update_layout(
-            title="Gráfico evolución desviación estándard",
-            xaxis_title="Fecha",
-            yaxis_title="Valores",
+            title=dict(text="Gráfico evolución desviación estándard", font=dict(color='#c1c2c5')),
+            xaxis=dict(
+                title=dict(text="Fecha", font=dict(color='#c1c2c5')),
+                tickfont=dict(color='#888888'),
+                gridcolor='#555555',
+                linecolor='#666666',
+            ),
+            yaxis=dict(
+                title=dict(text="Valores", font=dict(color='#c1c2c5')),
+                tickfont=dict(color='#888888'),
+                gridcolor='#555555',
+                linecolor='#666666',
+            ),
             template="plotly_white",
             hovermode='x unified',
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
             autosize=False  # CRÍTICO: Evita bucle de redimensionado
         )
 
