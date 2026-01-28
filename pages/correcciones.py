@@ -244,6 +244,24 @@ def layout():
                     
                     dmc.Divider(style={"marginTop": "15px", "marginBottom": "20px"}),
                     
+                    # Sección: Orden del eje vertical
+                    dmc.Text("Orden del eje vertical", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
+                    dmc.SegmentedControl(
+                        id="correc_orden_eje",
+                        value="descendente",
+                        data=[
+                            {"value": "ascendente", "label": "↑ Ascendente"},
+                            {"value": "descendente", "label": "↓ Descendente"},
+                        ],
+                        fullWidth=True,
+                        color="blue",
+                        radius="xl",
+                        size="md",
+                        style={"marginBottom": "20px"}
+                    ),
+                    
+                    dmc.Divider(style={"marginTop": "15px", "marginBottom": "20px"}),
+                    
                     # Sección: Estilo de colores
                     dmc.Text("Estilo de colores", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
                     dmc.SegmentedControl(
@@ -1360,12 +1378,13 @@ def register_callbacks(app):
          Input("correc_valor_positivo_desplazamiento", "value"),
          Input("correc_valor_negativo_desplazamiento", "value"),
          Input("correc_valor_positivo_incremento", "value"),
-         Input("correc_valor_negativo_incremento", "value")]
+         Input("correc_valor_negativo_incremento", "value"),
+         Input("correc_orden_eje", "value")]  # Nuevo: orden del eje
     )
     def corr_grafico_1(data, camp_corregida, corr_bias, fecha_seleccionada, fechas_incli, camp_previas, alto_graficos, color_scheme,
                             escala_desplazamiento, escala_incremento,
                             valor_positivo_desplazamiento, valor_negativo_desplazamiento,
-                            valor_positivo_incremento, valor_negativo_incremento):
+                            valor_positivo_incremento, valor_negativo_incremento, orden_eje):
         if not fecha_seleccionada or not data:
             fig_vacia = go.Figure()
             fig_vacia.update_layout(autosize=False, height=600)
@@ -1562,7 +1581,7 @@ def register_callbacks(app):
         for fig in [fig1_a, fig1_b, fig2_a, fig2_b, fig3_a, fig3_b, fig3_total]:
             fig.update_layout(
                 yaxis=dict(
-                    autorange="reversed",
+                    autorange='reversed' if orden_eje == 'descendente' else True,  # Dinámico según selección
                     gridcolor='#555555', gridwidth=1, griddash='dash',  # Gris medio visible en modo oscuro
                     anchor='free',
                     position=0,  # Posicionar el eje Y en x=0
@@ -1600,9 +1619,10 @@ def register_callbacks(app):
          Input("camp_a_graficar", "data"),#  fechas_incli
          Input('n_spikes', "value"), #  campañas anteriores
          Input("correcciones_color_grafico1", "value"),# color
-         Input('estadisticas_spikes', "value")]) # lo que se muestra en las estadísticas
+         Input('estadisticas_spikes', "value"),  # lo que se muestra en las estadísticas
+         Input("correc_orden_eje", "value")])  # Nuevo: orden del eje
 
-    def graficos_spike(data, json_spikes, fecha_seleccionada, fechas, n_spikes, color_scheme, estadistica):
+    def graficos_spike(data, json_spikes, fecha_seleccionada, fechas, n_spikes, color_scheme, estadistica, orden_eje):
         if not fecha_seleccionada or not data:
             return [go.Figure() for _ in range(3)]
 
@@ -1678,7 +1698,7 @@ def register_callbacks(app):
         for fig in [fig1_a, fig1_b, fig_3]:#, fig2_a, fig2_b, fig3_a, fig3_b, fig3_total]:
             fig.update_layout(
                 yaxis=dict(
-                    autorange="reversed",
+                    autorange='reversed' if orden_eje == 'descendente' else True,  # Dinámico según selección
                     gridcolor='#555555', gridwidth=1, griddash='dash',
                     anchor='free',
                     position=0,  # Posicionar el eje Y en x=0
@@ -2209,11 +2229,11 @@ def register_callbacks(app):
         [Input("json_bias", "data"), # Correcciones calculadas - bias
          Input("correc_escala_graficos_desplazamiento", "value"),
          Input("correc_valor_positivo_desplazamiento", "value"),
-         Input("correc_valor_negativo_desplazamiento", "value")
-         ]
+         Input("correc_valor_negativo_desplazamiento", "value"),
+         Input("correc_orden_eje", "value")]  # Nuevo: orden del eje
     )
 
-    def graficos_bias(json_bias, escala_desplazamiento, valor_positivo_desplazamiento, valor_negativo_desplazamiento):
+    def graficos_bias(json_bias, escala_desplazamiento, valor_positivo_desplazamiento, valor_negativo_desplazamiento, orden_eje):
         # ojo, en los gráficos se muestran los valores de desplazamiento desde la última referenica, no A ORIGEN DEL TUBO
 
         # control primeras cargas
@@ -2341,7 +2361,8 @@ def register_callbacks(app):
                 titulo = "Corr.Despl.Bias B"
             fig.update_layout(
                 yaxis=dict(
-                    autorange='reversed', title='Profundidad',
+                    autorange='reversed' if orden_eje == 'descendente' else True,  # Dinámico según selección
+                    title='Profundidad',
                     gridcolor='#555555',
                     tickfont=dict(color='#888888'),
                     title_font=dict(color='#c1c2c5'),
@@ -2375,7 +2396,7 @@ def register_callbacks(app):
                 titulo_2 = 'Incr_B'
             fig.update_layout(
                 yaxis=dict(
-                    autorange='reversed',
+                    autorange='reversed' if orden_eje == 'descendente' else True,  # Dinámico según selección
                     showticklabels=False,  # Ocultar etiquetas del eje vertical
                     zeroline=True,  # Asegura que la línea cero del eje vertical se muestre
                     gridcolor='#555555',

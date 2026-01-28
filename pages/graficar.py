@@ -194,10 +194,10 @@ def layout():
                             id="unidades_eje",
                             data=[
                                 {"value": "index", "label": "índice"},
-                                {"value": "cota_abs", "label": "cota absoluta"},
+                            {"value": "cota_abs", "label": "cota absoluta"},
                                 {"value": "depth", "label": "profundidad"}
                             ],
-                            value="cota_abs",
+                            value="depth",
                             style={"width": "150px"}
                         ),
                     ], style={"marginBottom": "20px"}),
@@ -205,7 +205,7 @@ def layout():
                     dmc.Text("Orden del eje vertical", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
                     dmc.SegmentedControl(
                         id="orden",
-                        value="ascendente",
+                        value="descendente",
                         data=[
                             {"value": "ascendente", "label": "↑ Ascendente"},
                             {"value": "descendente", "label": "↓ Descendente"},
@@ -1710,7 +1710,7 @@ def register_callbacks(app):
         [Input("select-plantilla-informe", "value")],
         [State("graficar-tubo", "data"),
          State("unidades_eje", "value"),
-         State("orden", "checked"),
+         State("orden", "value"),
          State("color_scheme_selector", "value"),
          State("escala_graficos_desplazamiento", "value"),
          State("escala_graficos_incremento", "value"),
@@ -1946,7 +1946,7 @@ def register_callbacks(app):
         [Input({"type": "script-grafico", "pagina": MATCH, "elemento": MATCH}, "value")],
         [State("graficar-tubo", "data"),
          State("unidades_eje", "value"),
-         State("orden", "checked"),
+         State("orden", "value"),
          State("color_scheme_selector", "value"),
          State("escala_graficos_desplazamiento", "value"),
          State("escala_graficos_incremento", "value"),
@@ -2005,7 +2005,7 @@ def register_callbacks(app):
          State("graficar-tubo", "data"),
          # Estados para $CURRENT
          State("unidades_eje", "value"),
-         State("orden", "checked"),
+         State("orden", "value"),
          State("color_scheme_selector", "value"),
          State("escala_graficos_desplazamiento", "value"),
          State("escala_graficos_incremento", "value"),
@@ -2089,7 +2089,8 @@ def register_callbacks(app):
             # Recopilar valores actuales para sustituciones $CURRENT
             current_values = {
                 'eje': eje,
-                'orden': orden,
+                'orden': True if orden == 'ascendente' else False,  # Convertir a booleano
+                'orden_ascendente': True if orden == 'ascendente' else False,  # Alias para compatibilidad
                 'color_scheme': color_scheme,
                 'escala_desplazamiento': escala_desplazamiento,
                 'escala_incremento': escala_incremento,
