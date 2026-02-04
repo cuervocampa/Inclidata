@@ -76,9 +76,6 @@ def layout():
             dcc.Store(id="json_bias", storage_type='memory'), # Campaña seleccionada con las correcciones bias
             dcc.Store(id='tabla_inicial', data={}, storage_type='memory'),  # tabla resumen de campañas de 'corregir-tubo'
             dcc.Store(id='log_cambios', data={}, storage_type='memory'),  # interacciones que se van haciendo en la tabla
-            dcc.Store(id='cambios_a_realizar', data={}, storage_type='memory'),  # modificaciones que se van haciendo sobre corregir-tubo NO SE USA
-            dcc.Store(id='calculated_bias_values', storage_type='memory'), # gestiona la carga inicial de la tabla bias-table
-            dcc.Store(id="json_final", storage_type='memory'),# Campaña seleccionada con las correcciones spk+bias NO SE USA
             dcc.Store(id='bias-table-change-flag', data=False, storage_type='memory'), # variable para que se actualice json_bias en la primera carga
             dcc.Store(id="error-store", data={"opened": False, "message": ""}), # gestión de mensajes de error en bias-table
 

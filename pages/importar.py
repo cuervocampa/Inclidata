@@ -85,8 +85,6 @@ def layout():
                 # Stores para datos
                 dcc.Store(id='tubo', storage_type='memory'),
                 dcc.Store(id='camp_added', storage_type='memory'),
-                dcc.Store(id='selected-file-store'),
-                dcc.Store(id='selected-file-data-store')
             ]
         ),
 

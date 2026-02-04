@@ -674,6 +674,16 @@ def register_callbacks(app):
             return False, False
         return True, True
 
+    @app.callback(
+        [Output("valor_positivo_temporal", "disabled"),
+         Output("valor_negativo_temporal", "disabled")],
+        [Input("escala_grafico_temporal", "value")]
+    )
+    def update_temporal_inputs(escalado):
+        if escalado == "manual":
+            return False, False
+        return True, True
+
     # Callback para actualizar la altura de los contenedores de gráficos según el slider
     @app.callback(
         [Output("grafico_incli_1_a", "style"),
@@ -2232,7 +2242,7 @@ def register_callbacks(app):
          State("valor_negativo_incremento", "value"),
          State("leyenda_umbrales", "data"),
          State("unidades_eje", "value"),
-         State("orden", "checked"),
+         State("orden", "value"),
          State("date_range_picker", "start_date"),
          State("date_range_picker", "end_date"),
          State({"type": "script-grafico", "pagina": ALL, "elemento": ALL}, "value"),
@@ -2515,7 +2525,7 @@ def register_callbacks(app):
          State("date_range_picker", "start_date"),
          State("date_range_picker", "end_date"),
          State("unidades_eje", "value"),
-         State("orden", "checked"),
+         State("orden", "value"),
          State("color_scheme_selector", "value"),
          State("total_camp", "value"),
          State("ultimas_camp", "value"),
@@ -2823,7 +2833,7 @@ def register_callbacks(app):
          State("valor_negativo_incremento", "value"),
          State("leyenda_umbrales", "data"),
          State("unidades_eje", "value"),
-         State("orden", "checked"),
+         State("orden", "value"),
          State("date_range_picker", "start_date"),
          State("date_range_picker", "end_date"),
          State({"type": "script-grafico", "pagina": ALL, "elemento": ALL}, "value"),
