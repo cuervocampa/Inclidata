@@ -19,23 +19,62 @@ def import_RST(files, index_0, cota):
     # index_0 marca dónde comienza el inclinómetro, 1000 si no hay cambios en la boca
     # cota es la cota original de index_0=1000
 
-    # Contante del instrumento para dar mm de desplazamiento por paso
-    cte_instrument = 1000
-    paso = 0.5
-
     data = {}
 
     for file in files:
-        # Para cada archivo se genera una estructura de datos compatible con el json tipo
         filename = file['filename']
         lines = file['lines']
-        index = index_0 - 1 # inicializo en índice en cada pasada
+        
+        # --- DETECCIÓN DE FORMATO ---
+        # AQUI se identifica qué formato tiene el archivo leyendo las cabeceras.
+        format_type = None
+        header_row_idx = -1
+        
+        # Escaneamos las primeras líneas para encontrar la cabecera
+        for i, line in enumerate(lines[:50]):
+            line_upper = line.strip().upper()
+            
+            # FORMATO B: Nuevo formato CSV
+            # Busca cabecera: ID, DEPTH_METRES (o METERS), ...
+            # Confirma si contiene columnas clave
+            if "ID," in line_upper and ("DEPTH_METRES" in line_upper or "DEPTH_METERS" in line_upper) and "A_POSITIVE_MM" in line_upper:
+                format_type = "B"
+                header_row_idx = i
+                break
+            
+            # FORMATO A: Formato original RST
+            # Busca cabeceras tipo: Depth,Face A+,Face A-,Face B+,Face B-
+            # O la versión reducida: Depth,Face
+            elif "DEPTH,FACE" in line_upper or ("DEPTH" in line_upper and "FACE A+" in line_upper):
+                format_type = "A"
+                header_row_idx = i
+                break
+        
+        if format_type is None:
+            print(f"No se pudo identificar un formato válido para {filename}. Se requiere cabecera RST conocida.")
+            continue
 
-        # Inicializar la estructura de datos para la fecha y hora
+        # --- PARÁMETROS SEGÚN FORMATO ---
+        if format_type == "B":
+            # Formato B (Nuevo): Los datos vienen en MM -> Cte = 1
+            cte_instrument = 1.0
+            paso_defecto = 0.5 # Se intentará leer del archivo
+        else: # Format A
+            # Formato A (Original): Los datos suelen venir en Metros -> Cte = 1000
+            cte_instrument = 1000.0
+            paso_defecto = 0.5
+            
+        # Variables comunes
+        campaign_info = {
+            "index_0": index_0,
+            "importador": "RST",
+            "instrument_constant": cte_instrument,
+            "active": True,
+            "quarentine": False,
+            "alarm": "por definir"
+        }
         campaign_data = {}
         date_time = None
-
-        # Variables para almacenar los datos
         index_values = []
         abs_depth_values = []
         depth_values = []
@@ -43,143 +82,204 @@ def import_RST(files, index_0, cota):
         a180_values = []
         b0_values = []
         b180_values = []
-
-        # info asociada a la campaña. Por defecto
-        campaign_info = {
-            "index_0": index_0,
-            "importador": "RST",
-            "instrument_constant": cte_instrument, # valor en mm para RST
-            #"reference": False,
-            "active": True,
-            "quarentine": False,
-            "alarm": "por definir"
-        }
-        # Paso 1. Busca dónde comienzan las líneas de lecturas
-        # Parsear las líneas del archivo (mantener la lógica existente)
-        reading_lines_start = 0
-        # busca la línea donde empiezan los datos - reading_lines_start
-        for i, line in enumerate(lines):
-            if line.strip() == "" and "Depth,Face" in lines[i + 1]:
-                reading_lines_start = i + 2
-                break
-        # Paso 2. Recorre del inicio hasta las lecturas y rellena la información de la campaña
-        for line in lines[:reading_lines_start]:
-            if ',' in line:
+        
+        # --- PARSING DE METADATA (Común y específico) ---
+        # Leemos líneas anteriores a la cabecera para metadatos
+        meta_lines = lines[:header_row_idx] if header_row_idx > 0 else lines[:20]
+        
+        for line in meta_lines:
+            # Limpieza básica
+            if ':' not in line and ',' not in line: continue
+            
+            parts = []
+            # Intentar separar clave-valor dependiendo del formato
+            # En Format A (legacy), se usa comma. En Format B (nuevo), se usa colon.
+            if format_type == "B":
+                if ':' in line:
+                    parts = line.split(':', 1)
+            else: # Format A
+                if ',' in line:
+                    parts = line.split(',', 1)
+            
+            if not parts: continue
+                
+            key = parts[0].strip()
+            value = parts[1].strip()
+            key_upper = key.upper()
+             
+            # Intervalo (Paso)
+            if "INTERVAL" in key_upper:
                 try:
-                    key, value = line.strip().split(',', 1)
-                except ValueError:
-                    print(f"Error al dividir la línea en {filename}: {line.strip()}")
-                    continue
-                if key in ["Reading Date(m/d/y)", "Reading Date(m/d/y,h:m:s)"]:
-                    try:
-                        # Intentar varios formatos posibles de fecha
+                    val_clean = value.lower().replace('m', '').replace('ft', '').strip()
+                    paso_defecto = float(val_clean)
+                    campaign_data["interval"] = paso_defecto
+                except: pass
+            
+            # Fecha (Survey Date / Reading Date)
+            elif "SURVEY DATE" in key_upper or "READING DATE" in key_upper:
+                # Formatos posibles: 20250828_103102 (B) o m/d/y (A)
+                try:
+                    if "_" in value and len(value) >= 15: # Tipo 20250828_103102
+                        date_time = datetime.strptime(value.strip(), "%Y%m%d_%H%M%S").isoformat()
+                    elif "," in value: # Tipo m/d/y,h:m:s
                         date_time = datetime.strptime(value.strip(), "%m/%d/%Y,%H:%M:%S").isoformat()
-                    except ValueError:
-                        try:
-                            date_time = datetime.strptime(value.strip(), "%m/%d/%Y").isoformat()
-                        except ValueError:
-                            print(f"Error al parsear la fecha en {filename}: {value.strip()}")
-                elif key == "Borehole":
-                    campaign_data["nom_campo"] = value
-                elif key == "Reading Date(m/d/y)":
-                    campaign_date = value
-                elif key == "Interval":
-                    depth_interval = float(value)
-                    campaign_data["interval"] = depth_interval
-                elif key == "Probe Serial#":
-                    campaign_data["probe_serial"] = value
-                elif key == "Reel Serial#":
-                    campaign_data["reel_serial"] = value
-                elif key == "Reading Units":
-                    campaign_data["reading_units"] = value
-                elif key == "Depth Units":
-                    campaign_data["depth_units"] = value
-                elif key == "Operator":
-                    campaign_data["operator"] = value
-                elif key == "Offset Correction":
-                    campaign_data["offset_correction"] = float(value.split(",")[0])
-                elif key == "Incline Angle":
-                    campaign_data["incline_angle"] = float(value.split(",")[1])
-                else:
-                    campaign_data[key] = value.strip()
-        campaign_data["fecha_campo"] = date_time
-
-        # Paso 3. Recorre las líneas con lecturas y separa las variables. Se guarda una lista con cada una
-        for line in lines[reading_lines_start:]:
-            if ',' in line:
-                try:
-                    values = line.split(',')
-                    depth = float(values[0])
-                    a0 = float(values[1])
-                    a180 = float(values[2])
-                    b0 = float(values[3])
-                    b180 = float(values[4])
-
-                    # index y abs_depth
-                    index += 1 # añado una posición por línea
-                    abs_depth = cota - (index - index_0 + 1) * paso
+                    else: # Tipo m/d/y
+                        date_time = datetime.strptime(value.strip(), "%m/%d/%Y").isoformat()
                 except ValueError:
-                    print(f"Error al dividir la línea en {filename}: {line.strip()}")
-                    continue
+                    pass
+            
+            # Otros metadatos
+            elif "BOREHOLE" in key_upper:
+                campaign_data["nom_campo"] = value
+            elif "SERIAL" in key_upper:
+                campaign_data["probe_serial"] = value
+            elif "OPERATOR" in key_upper:
+                campaign_data["operator"] = value
+            elif "SITE" in key_upper:
+                campaign_data["Site"] = value
+        
+        campaign_data["fecha_campo"] = date_time
+        
+        # --- PARSING DE DATOS ---
+        header_line = lines[header_row_idx]
+        headers = [h.upper().strip() for h in header_line.split(',')]
+        
+        # Mapeo de columnas
+        col_map = {}
+        try:
+            if format_type == "B":
+                # Buscar columnas específicas del formato B
+                # DEPTH_METRES puede ser DEPTH_METERS
+                if "DEPTH_METRES" in headers:
+                    col_map['depth'] = headers.index("DEPTH_METRES")
+                elif "DEPTH_METERS" in headers:
+                    col_map['depth'] = headers.index("DEPTH_METERS")
+                else:
+                     # Si no encuentra Depth exacto, puede haber un error en el archivo
+                     # pero si detectó el formato, asumimos que existe depth
+                     raise ValueError("Columna DEPTH no encontrada")
 
+                col_map['a0'] = headers.index("A_POSITIVE_MM")
+                col_map['a180'] = headers.index("A_NEGATIVE_MM")
+                col_map['b0'] = headers.index("B_POSITIVE_MM")
+                col_map['b180'] = headers.index("B_NEGATIVE_MM")
+                
+            else: # Format A
+                # Formato original posicional si no se encuentran nombres exactos de columnas
+                # Cabecera esperada: Depth,Face A+,Face A-,Face B+,Face B-
+                if "DEPTH" in headers:
+                     col_map['depth'] = headers.index("DEPTH")
+                else:
+                     col_map['depth'] = 0
+                     
+                if "FACE A+" in headers:
+                    col_map['a0'] = headers.index("FACE A+")
+                    col_map['a180'] = headers.index("FACE A-")
+                    col_map['b0'] = headers.index("FACE B+")
+                    col_map['b180'] = headers.index("FACE B-")
+                else:
+                    # Fallback posicional estricto para formato antiguo 'Depth,Face'
+                    col_map['a0'] = 1
+                    col_map['a180'] = 2
+                    col_map['b0'] = 3
+                    col_map['b180'] = 4
+
+        except ValueError as e:
+            print(f"Error mapeando columnas en {filename}: {e}")
+            continue
+
+        # Lectura fila a fila
+        index = index_0 - 1
+        
+        for line in lines[header_row_idx+1:]:
+            if not line.strip(): continue
+            
+            # --- SANITIZACIÓN DE DATOS ---
+            # Reemplazar 'null' por '0' para evitar errores de conversión a float
+            # Esto corrige archivos antiguos que tienen 'null' en columnas no usadas (ej. TEMP)
+            # o permite recuperar filas con datos parciales.
+            line = re.sub(r'(?i)\bnull\b', '0', line)
+            
+            parts = line.split(',')
+            
+            # Verificar longitud suficiente
+            req_len = max(col_map.values()) + 1
+            if len(parts) < req_len: continue
+            
+            try:
+                # Extraer valores raw
+                d_val = float(parts[col_map['depth']])
+                a0_val = float(parts[col_map['a0']])
+                a180_val = float(parts[col_map['a180']])
+                b0_val = float(parts[col_map['b0']])
+                b180_val = float(parts[col_map['b180']])
+                
+                # Procesar Depth: SIEMPRE valor absoluto según requerimiento
+                depth = abs(d_val)
+                
+                index += 1
+                # Abs Depth (Cota): Se asume orden descendente (top-down)
+                abs_depth = cota - (index - index_0 + 1) * paso_defecto
+                
                 index_values.append(index)
-                abs_depth_values. append(abs_depth)
+                abs_depth_values.append(abs_depth)
                 depth_values.append(depth)
-                a0_values.append(a0)
-                a180_values.append(a180)
-                b0_values.append(b0)
-                b180_values.append(b180)
+                a0_values.append(a0_val)
+                a180_values.append(a180_val)
+                b0_values.append(b0_val)
+                b180_values.append(b180_val)
+                
+            except ValueError:
+                continue
 
-        # añado la última fila, para que parta el cálculo de cero
-        index_values.append(index_values[-1] + 1) # posición absoluta en el índice del tubo "index"
-        abs_depth_values.append(cota - (index_values[-1] - index_0 + 1) * paso)
-        depth_values.append(depth_values[-1] - paso)
-        a0_values.append(0)
-        a180_values.append(0)
-        b0_values.append(0)
-        b180_values.append(0)
+        # Fila de cierre (Bottom)
+        if index_values:
+            index_values.append(index_values[-1] + 1)
+            abs_depth_values.append(cota - (index_values[-1] - index_0 + 1) * paso_defecto)
+            # Profundidad final = profundidad anterior + paso
+            depth_values.append(depth_values[-1] + paso_defecto) 
+            a0_values.append(0)
+            a180_values.append(0)
+            b0_values.append(0)
+            b180_values.append(0)
 
-        # Paso 4. Generar la estructura de salida compatible con JSON
-        raw_entries = [] # valores raw
-        calc_entries = [] # convertidos en mm
-        # Paso 4.a. Primero inserto los valores raw
+        # Generar JSON Output
+        raw_entries = []
+        calc_entries = []
+        
         for i in range(len(depth_values)):
+            # RAW
             entry = {
-                "index": index_values[i], # posición absoluta en el índice del tubo
-                "cota_abs": abs_depth_values[i], # cota absoluta
-                "depth": -depth_values[i], # considero las profundidades positivas
+                "index": index_values[i],
+                "cota_abs": abs_depth_values[i],
+                "depth": depth_values[i], # Almacenar positivo (módulo)
                 "a0": a0_values[i],
                 "a180": a180_values[i],
                 "b0": b0_values[i],
                 "b180": b180_values[i]
             }
             raw_entries.append(entry)
-
-        # Paso 4.b. Calcula los valores raw normalizados
-        # Se crea el bloque "normalizados", sólo es el paso a mm del raw.
-        # Es por unificar debido a como da los datos Sisgeo
-        # En resumen, habrá dos bloques además del raw:
-        #  - normalizados, en mm. Es un raw en mm, nunca va a cambiar
-        #  - calc, en mm. En este paso del importador serán iguales, luego puede cambiar con las correcciones
-        for i in range(len(depth_values)):
-            entry = valores_calc_directos(
+            
+            # CALC (Normalizado a mm)
+            # Pasamos cte_instrument que será 1 o 1000 según formato
+            # depth se pasa tal cual (positivo)
+            entry_calc = valores_calc_directos(
                 index_values[i], abs_depth_values[i],
-                -depth_values[i], a0_values[i], a180_values[i],
-                b0_values[i], b180_values[i], cte_instrument)
-            calc_entries.append(entry)
-        # Nota: el bloque que depende de los cáculos con referencias y profundidades, se calcula fuera del importador
+                depth_values[i], 
+                a0_values[i], a180_values[i],
+                b0_values[i], b180_values[i], 
+                cte_instrument)
+            calc_entries.append(entry_calc)
 
-        # Paso 4.c. Añadir la información al diccionario final
         if date_time:
             data[date_time] = {
                 "campaign_info": campaign_info,
                 "info_readout": campaign_data,
                 "raw": raw_entries,
-                #"normalizados": calc_entries,
-                "calc": calc_entries # en la importación no hay cambios en calculado, a tener en cuenta en caso de spira
+                "calc": calc_entries
             }
         else:
-            print(f"Fecha no encontrada en {filename}")
+            print(f"Fecha no encontrada en {filename}. Cabecera a línea {header_row_idx}")
 
     return data
 
@@ -433,7 +533,7 @@ def import_soil_dux(files, index_0, cota):
 
 # Funciones auxiliares   +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 def insertar_camp(data, fechas_agg, selected_filename, data_path):
-   # inserta las campañas seleccionadasa
+    # inserta las campañas seleccionadas
 
     try:
          # Guardar los cambios en el archivo JSON original
@@ -456,9 +556,31 @@ def insertar_camp(data, fechas_agg, selected_filename, data_path):
         # Actualizar el contenido existente con los nuevos datos
         existing_data.update(filtered_data)
 
+        # --- ORDENAR CRONOLÓGICAMENTE ---
+        # Separar claves especiales y fechas
+        special_keys = ['info', 'umbrales']
+        # Identificar claves de fecha (asumimos formato ISO o contienen 'T', y no son especiales)
+        date_keys = [k for k in existing_data.keys() if k not in special_keys]
+        
+        # Ordenar las fechas
+        # Es robusto ordenarlas como string ISO 8601
+        date_keys.sort()
+        
+        # Reconstruir el diccionario ordenado
+        sorted_data = {}
+        
+        # 1. Insertar 'info' y 'umbrales' al principio si existen
+        for k in special_keys:
+            if k in existing_data:
+                sorted_data[k] = existing_data[k]
+        
+        # 2. Insertar las campañas ordenadas
+        for k in date_keys:
+            sorted_data[k] = existing_data[k]
+
         # Guardar el archivo actualizado
         with open(file_path, 'w') as json_file:
-            json.dump(existing_data, json_file, indent=4)
+            json.dump(sorted_data, json_file, indent=4)
 
         return "campañas añadidas"
     except Exception as e:

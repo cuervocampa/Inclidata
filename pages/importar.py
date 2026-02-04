@@ -441,6 +441,12 @@ def register_callbacks(app):
                 # Valores del tubo por defecto que se usan en el importador
                 cota = tubo['info']['cota_1000'] # la cota se define en el archivo de configuración json
 
+                # Asegurar que index_0 es un entero
+                try:
+                    index_0 = int(float(index_0)) if index_0 is not None else 1000
+                except (ValueError, TypeError):
+                    index_0 = 1000
+
                 # Condicional dependiendo del importador seleccionado
                 if selected_value == 'RST':
                     result = import_RST(input_files, index_0, cota)
@@ -457,6 +463,60 @@ def register_callbacks(app):
                             Text("El importador seleccionado no está implementado.")
                         ]
                     ), None
+
+                # --- VALIDACIÓN DE FECHAS: NO IMPORTAR CAMPAÑAS ANTERIORES A LA PRIMERA REFERENCIA ---
+                try:
+                    # 1. Encontrar la fecha de referencia más antigua existente en 'tubo'
+                    earliest_ref_date = None
+                    if tubo:
+                        for date_str, camp_data in tubo.items():
+                            if date_str in ["info", "umbrales"]: continue
+                            
+                            # Verificamos si es una campaña y si está marcada como referencia
+                            if isinstance(camp_data, dict) and camp_data.get('campaign_info', {}).get('reference', False):
+                                try:
+                                    dt = datetime.fromisoformat(date_str)
+                                    if earliest_ref_date is None or dt < earliest_ref_date:
+                                        earliest_ref_date = dt
+                                except ValueError:
+                                    pass
+
+                    # 2. Verificar si alguna de las NUEVAS campañas es anterior a esa referencia
+                    if earliest_ref_date:
+                        conflict_dates = []
+                        for new_date_str in result.keys():
+                            if new_date_str in ["info", "umbrales"]: continue
+                            try:
+                                new_dt = datetime.fromisoformat(new_date_str)
+                                if new_dt < earliest_ref_date:
+                                    conflict_dates.append(new_date_str)
+                            except ValueError:
+                                pass
+                        
+                        if conflict_dates:
+                            conflict_dates.sort()
+                            return Alert(
+                                title="Error Cronológico Crítico",
+                                c="red",
+                                icon=DashIconify(icon="mdi:timer-off"),
+                                children=[
+                                    Text("No se permite importar campañas anteriores a la primera referencia existente.", fw=700),
+                                    Text(f"Primera referencia actual: {earliest_ref_date.isoformat()}", size="sm", mt=5),
+                                    Divider(my=10),
+                                    Text("Campañas conflictivas detectadas:", fw=500),
+                                    dmc.List(
+                                        size="sm",
+                                        children=[dmc.ListItem(d) for d in conflict_dates[:5]] # mostrar max 5
+                                    ),
+                                    Text("... y otras más." if len(conflict_dates) > 5 else "", size="xs", c="dimmed")
+                                ]
+                            ), None
+                except Exception as e:
+                    print(f"Error en validación de fechas: {e}")
+                    # En caso de error en la validación, permitimos continuar con warning en consola o bloqueamos?
+                    # Mejor no bloquear si es un error de validación inesperado, pero loggearlo.
+                    pass
+                # -------------------------------------------------------------------------------------
 
                 fechas_agg = []
                 for clave in result.keys():
@@ -477,9 +537,15 @@ def register_callbacks(app):
 
                 # Calcular las variables que dependen de la referencia y las profundidades anteriores
                 # se inicializa fecha_referencia para el caso de la primera carga
+                if not fechas_agg:
+                    raise Exception(f"No se encontraron datos válidos (fechas) tras importar. Compruebe que el archivo coincide con el formato esperado (RST/Sisgeo) y que se detectaron las cabeceras correctamente.")
+
                 primera_fecha = fechas_agg[0]
                 for fecha in fechas_agg:
                     # Si es referencia, se añade a la información de la campaña
+                    # Además, como acabamos de importarla, debe estar activa para cálculo
+                    tubo[fecha]["campaign_info"]["active"] = True
+                    
                     if checkbox_ref_value == True and fecha == primera_fecha:
                         tubo[fecha]["campaign_info"]["reference"] = True
                     else:
@@ -639,14 +705,25 @@ def register_callbacks(app):
                 )
 
             except Exception as e:
-                print(f"Error al procesar archivos: {e}")
-                import traceback; traceback.print_exc()
+                import traceback
+                error_trace = traceback.format_exc()
+                print(f"Error al procesar archivos: {type(e).__name__}: {e}")
+                print(error_trace)
+                
+                # Extract a shorter error summary if possible
+                res_e = str(e) if str(e) else "Error desconocido o mensaje vacío"
+                
                 return (
                     Alert(
                         title="Error al procesar archivos",
                         c="red",
                         icon=DashIconify(icon="mdi:alert-circle"),
-                        children=[Text(f"Se produjo un error: {e}")]
+                        children=[
+                            Text(f"Tipo: {type(e).__name__}", fw=700),
+                            Text(f"Detalle: {res_e}", mb=10),
+                            Text("Traza del error:", size="sm", fw=500),
+                            dmc.Code(error_trace, block=True, style={"maxHeight": "200px", "overflowY": "auto"})
+                        ]
                     ),
                     None
                 )

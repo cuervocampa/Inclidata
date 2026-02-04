@@ -874,8 +874,10 @@ def register_callbacks(app):
 
                     # Almacenar los valores iniciales de la tabla-json en tabla_inicial
                     tabla_inicial = {row['Fecha']: row for row in datos_del_json}
-                    camp_a_graficar_data = [{'value': fecha, 'label': fecha} for fecha in fechas]
-                    camp_a_graficar_value = fechas[0] if fechas else ''  # Selecciona la fecha más reciente
+                    # Filter active campaigns for the dropdown
+                    active_fechas = [f for f in fechas if data.get(f, {}).get('campaign_info', {}).get('active', False)]
+                    camp_a_graficar_data = [{'value': fecha, 'label': fecha} for fecha in active_fechas]
+                    camp_a_graficar_value = active_fechas[0] if active_fechas else ''  # Selecciona la fecha más reciente
                 return corregir_tubo_data, informacion_archivo, corregir_archivo_data, columnDefs, datos_del_json, tabla_inicial, camp_a_graficar_data, camp_a_graficar_value, dash.no_update, dash.no_update
             except Exception as e:
                 return dash.no_update, "Error al procesar el archivo", dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update
@@ -1124,8 +1126,12 @@ def register_callbacks(app):
                 json.dump(corregir_tubo, f, ensure_ascii=False, indent=4,
                           default=lambda o: o.item() if hasattr(o, 'item') else o)
 
+            fechas_actualizadas = sorted([key for key in corregir_tubo.keys() if key != 'info' and key != 'umbrales'], reverse=True)
+            active_fechas = [f for f in fechas_actualizadas if corregir_tubo.get(f, {}).get('campaign_info', {}).get('active', False)]
+            camp_a_graficar_data = [{'value': fecha, 'label': fecha} for fecha in active_fechas]
+            camp_a_graficar_value = active_fechas[0] if active_fechas else ''
 
-            return (corregir_tubo, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update,dash.no_update, True, "Guardados los cambios")
+            return (corregir_tubo, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, camp_a_graficar_data, camp_a_graficar_value, True, "Guardados los cambios")
         elif trigger_id == "cerrar-cambios-tabla":
             return (dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update, dash.no_update,dash.no_update,False, dash.no_update)  # Cierra el modal sin cambiar el mensaje
         
@@ -2704,8 +2710,14 @@ def register_callbacks(app):
             # busco referencia
             fecha_referencia = buscar_referencia(corregir_tubo, fecha_seleccionada)
             data_new = {
-                fecha_referencia: {"calc": corregir_tubo[fecha_referencia]['calc']},
-                fecha_seleccionada: {"calc":  nuevo_calc[fecha_seleccionada]['calc']}
+                fecha_referencia: {
+                   "calc": corregir_tubo[fecha_referencia]['calc'],
+                   "campaign_info": corregir_tubo[fecha_referencia].get('campaign_info', {})
+                },
+                fecha_seleccionada: {
+                    "calc":  nuevo_calc[fecha_seleccionada]['calc'],
+                    "campaign_info": corregir_tubo[fecha_seleccionada].get('campaign_info', {})
+                }
             }
             resultado = calcular_incrementos(data_new, fecha_seleccionada, fecha_referencia)
 

@@ -130,7 +130,12 @@ def calcular_incrementos(data, fecha_calc, fecha_referencia):
     indice_actual = fechas_activas.index(fecha_calc) if fecha_calc in fechas_activas else -1
 
     calc_fecha_calc = data[fecha_calc]['calc']
-    calc_fecha_referencia = data[fecha_referencia]['calc']
+    
+    # Manejo robusto de fecha_referencia siendo None
+    if fecha_referencia and fecha_referencia in data:
+        calc_fecha_referencia = data[fecha_referencia]['calc']
+    else:
+        calc_fecha_referencia = None
 
     # Determinar la fecha anterior activa
     fecha_anterior = None
@@ -152,8 +157,8 @@ def calcular_incrementos(data, fecha_calc, fecha_referencia):
         index_info['desp_a'] = 0
         index_info['desp_b'] = 0
 
-    # Caso especial: es una fecha de referencia o la primera fecha activa
-    if fecha_calc == fecha_referencia or fecha_calc == fechas_activas[0]:
+    # Caso especial: es una fecha de referencia, la primera fecha activa, o no hay referencia válida
+    if (fecha_referencia is None) or (fecha_calc == fecha_referencia) or (fechas_activas and fecha_calc == fechas_activas[0]):
         if fecha_anterior is not None and fecha_anterior != fecha_calc:
             calc_fecha_anterior = data[fecha_anterior]['calc']
 
@@ -168,19 +173,23 @@ def calcular_incrementos(data, fecha_calc, fecha_referencia):
 
     # Para el caso normal, calcular los incrementos
     else:
-        for index_info in calc_fecha_calc:
-            index = index_info['index']
-            referencia_info = next((item for item in calc_fecha_referencia if item['index'] == index), None)
+        # Si no hay datos de referencia (aunque haya fecha), no se puede calcular incremento relativo
+        if not calc_fecha_referencia:
+            pass # Se quedan en 0 los incrementos
+        else:
+            for index_info in calc_fecha_calc:
+                index = index_info['index']
+                referencia_info = next((item for item in calc_fecha_referencia if item['index'] == index), None)
 
-            if referencia_info:
-                index_info['incr_checksum_a'] = round(index_info['checksum_a'] - referencia_info['checksum_a'],4)
-                index_info['incr_checksum_b'] = round(index_info['checksum_b'] - referencia_info['checksum_b'], 4)
-                index_info['incr_dev_a'] = round(index_info['dev_a'] - referencia_info['dev_a'], 2)
-                index_info['incr_dev_b'] = round(index_info['dev_b'] - referencia_info['dev_b'], 2)
-                index_info['incr_dev_abs_a'] = round(
-                    index_info['incr_dev_a'] + referencia_info.get('incr_dev_abs_a', 0), 2)
-                index_info['incr_dev_abs_b'] = round(
-                    index_info['incr_dev_b'] + referencia_info.get('incr_dev_abs_b', 0), 2)
+                if referencia_info:
+                    index_info['incr_checksum_a'] = round(index_info['checksum_a'] - referencia_info['checksum_a'],4)
+                    index_info['incr_checksum_b'] = round(index_info['checksum_b'] - referencia_info['checksum_b'], 4)
+                    index_info['incr_dev_a'] = round(index_info['dev_a'] - referencia_info['dev_a'], 2)
+                    index_info['incr_dev_b'] = round(index_info['dev_b'] - referencia_info['dev_b'], 2)
+                    index_info['incr_dev_abs_a'] = round(
+                        index_info['incr_dev_a'] + referencia_info.get('incr_dev_abs_a', 0), 2)
+                    index_info['incr_dev_abs_b'] = round(
+                        index_info['incr_dev_b'] + referencia_info.get('incr_dev_abs_b', 0), 2)
 
     # Insertar parámetros calculados en el diccionario data
     for index_info in calc_fecha_calc:
@@ -215,11 +224,15 @@ def calcular_incrementos(data, fecha_calc, fecha_referencia):
 
             # Determinar qué referencia usar
             if fecha_calc == fecha_referencia:
-                # Si es referencia, usar los desplazamientos de la campaña anterior
+                # Si es referencia, usar los desplazamientos de la campaña anterior activa
                 referencia_info = next((item for item in calc_fecha_activa_anterior if item['index'] == index), None)
             else:
-                # Sino, usar los de la campaña de referencia
-                referencia_info = next((item for item in calc_fecha_referencia if item['index'] == index), None)
+                # Sino, usar los de la campaña de referencia (acumulado hasta la fecha de referencia)
+                if fecha_referencia and fecha_referencia in data:
+                     calc_ref_actual = data[fecha_referencia]['calc']
+                     referencia_info = next((item for item in calc_ref_actual if item['index'] == index), None)
+                else:
+                    referencia_info = None
 
             if referencia_info:
                 index_info['desp_a'] = round(index_info['desp_a'] + referencia_info.get('desp_a', 0), 2)
@@ -243,16 +256,25 @@ def obtener_fecha_activa_anterior(datos, fecha_calc):
     fechas_datetime = []
     for fecha_str in fechas_activas:
         try:
+            # Intentar formato ISO directo
             fecha_dt = datetime.fromisoformat(fecha_str)
             fechas_datetime.append((fecha_str, fecha_dt))
         except ValueError:
-            continue
+            try:
+                # Intentar reemplazo de espacio por T
+                fecha_dt = datetime.fromisoformat(fecha_str.replace(' ', 'T'))
+                fechas_datetime.append((fecha_str, fecha_dt))
+            except ValueError:
+                continue
 
     # Convertir fecha_calc a datetime
     try:
         fecha_calc_dt = datetime.fromisoformat(fecha_calc)
     except ValueError:
-        return {}
+        try:
+            fecha_calc_dt = datetime.fromisoformat(fecha_calc.replace(' ', 'T'))
+        except ValueError:
+            return {}
 
     # Ordenar fechas de más reciente a más antigua
     fechas_ordenadas = sorted(fechas_datetime, key=lambda x: x[1], reverse=True)
