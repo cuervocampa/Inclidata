@@ -1,0 +1,14 @@
+{
+    "name": "dash_component_editor",
+    "version": "0.0.1",
+    "description": "Custom Dash component for visual template editing",
+    "main": "build/index.js",
+    "scripts": {
+        "build:js": "webpack --mode production",
+        "build": "npm run build:js"
+    },
+    "author": "Antigravity",
+    "license": "MIT",
+    "dependencies": {},
+    "devDependencies": {}
+}

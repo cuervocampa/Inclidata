@@ -227,7 +227,7 @@ def cargar_valores_actuales(data, eje, orden, color_scheme, escala_desplazamient
         'valor_positivo_incremento': valor_positivo_incremento,
         'valor_negativo_incremento': valor_negativo_incremento,
         'eje': eje,
-        'orden': orden,
+        'orden': True if orden == 'ascendente' else False,
         'ancho_cm': 21,  # Ancho estándar A4
         'alto_cm': 29.7,  # Alto estándar A4
         'dpi': 100,
@@ -310,6 +310,7 @@ def obtener_parametros_por_defecto(script_name, current_values):
         'valor_negativo_incremento': "$CURRENT",
         'eje': "$CURRENT",
         'orden': "$CURRENT",
+        'leyenda_umbrales': "$CURRENT",
         'ancho_cm': 21,
         'alto_cm': 29.7,
         'dpi': 100

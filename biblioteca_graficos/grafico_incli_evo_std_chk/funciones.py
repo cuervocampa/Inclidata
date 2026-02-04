@@ -727,6 +727,12 @@ def interpolar_def_tubo(cota_tubo, cota_umbral, def_umbral):
     try:
         x_conocidos = np.array(cota_umbral)
         y_conocidos = np.array(def_umbral)
+
+        # Ordenar por cota ascendente (requisito de np.interp)
+        idx = np.argsort(x_conocidos)
+        x_conocidos = x_conocidos[idx]
+        y_conocidos = y_conocidos[idx]
+
         x_interpolar = np.array(cota_tubo)
         y_interpolados = np.interp(x_interpolar, x_conocidos, y_conocidos)
         return y_interpolados.tolist()

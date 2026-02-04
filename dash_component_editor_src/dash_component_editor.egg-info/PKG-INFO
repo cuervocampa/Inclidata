@@ -1,0 +1,11 @@
+Metadata-Version: 2.4
+Name: dash_component_editor
+Version: 0.0.1
+Summary: Custom Dash component for visual template editing
+Author: Antigravity
+License: MIT
+Classifier: Framework :: Dash
+Dynamic: author
+Dynamic: classifier
+Dynamic: license
+Dynamic: summary

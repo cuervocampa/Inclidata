@@ -2136,6 +2136,10 @@ def register_callbacks(app):
                             if param_value == "$CURRENT" and param_key in current_values:
                                 elemento["configuracion"]["parametros"][param_key] = current_values[param_key]
 
+                        # Inyectar leyenda_umbrales si no está en los parámetros de la plantilla
+                        if tipo_elemento == "grafico" and "leyenda_umbrales" not in parametros:
+                            elemento["configuracion"]["parametros"]["leyenda_umbrales"] = current_values.get("leyenda_umbrales", {})
+
             # Obtener el nombre de la plantilla para el archivo
             nombre_plantilla = plantilla_modificada.get("configuracion", {}).get("nombre_plantilla", "informe")
             if not nombre_plantilla:

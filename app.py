@@ -21,6 +21,7 @@ from pages import (
     importar_umbrales,
     editor_plantilla,
     # configuracion_plantilla_gpt,
+    editor_visual,
 )
 from utils import funciones_comunes as utils
 
@@ -52,6 +53,7 @@ sidebar = html.Div(
                 dbc.NavLink("Importar umbrales", href="/importar_umbrales", active="exact"),
                 # dbc.NavLink("Plantilla gpt", href="/configuracion_plantilla_gpt", active="exact"),
                 dbc.NavLink("Editor plantillas", href="/editor_plantilla", active="exact"),
+                dbc.NavLink("Editor Visual (Nuevo)", href="/editor-visual", active="exact"),
             ],
             vertical=True,
             pills=True,
@@ -193,6 +195,9 @@ def render_page_content(pathname: str):
     #     return configuracion_plantilla_gpt.layout()
     elif pathname == "/editor_plantilla":
         return editor_plantilla.layout()
+    elif pathname == "/editor-visual":
+        return editor_visual.layout
+
 
     # Página no encontrada
     return html.Div([
