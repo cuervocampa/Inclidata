@@ -175,6 +175,7 @@ importar_umbrales.register_callbacks(app)
 # configuraciones.register_callbacks(app)
 # configuracion_plantilla_gpt.register_callbacks(app)
 editor_plantilla.register_callbacks(app)
+editor_visual.register_callbacks(app)
 # graficar_debug.register_callbacks(app)  # Ya registrado arriba
 
 
@@ -196,7 +197,7 @@ def render_page_content(pathname: str):
     elif pathname == "/editor_plantilla":
         return editor_plantilla.layout()
     elif pathname == "/editor-visual":
-        return editor_visual.layout
+        return editor_visual.layout()
 
 
     # Página no encontrada

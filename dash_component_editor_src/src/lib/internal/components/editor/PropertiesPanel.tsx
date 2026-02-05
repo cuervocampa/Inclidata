@@ -3,18 +3,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { 
-  AlignLeft, 
-  AlignCenter, 
-  AlignRight, 
-  Bold, 
+import {
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  Bold,
   Italic,
   Trash2,
   Layers,
@@ -24,48 +24,90 @@ import { motion } from 'framer-motion';
 
 const CM_TO_PX = 37.8;
 
+/**
+ * Read helpers that understand the canonical JSON format (Spanish field names)
+ * with fallback to visual-editor names (English).
+ */
+function getBackgroundColor(estilo: any): string {
+  return estilo.color_relleno || estilo.backgroundColor || '#ffffff';
+}
+function getBorderColor(estilo: any): string {
+  return estilo.color_borde || estilo.borderColor || '#cbd5e1';
+}
+function getBorderWidth(estilo: any): number {
+  return estilo.grosor_borde ?? estilo.borderWidth ?? 1;
+}
+function getOpacity(estilo: any): number {
+  const raw = estilo.opacidad ?? estilo.opacity;
+  if (raw == null) return 1;
+  return raw > 1 ? raw / 100 : raw;
+}
+function getFontWeight(estilo: any): string {
+  return estilo.negrita || estilo.fontWeight || 'normal';
+}
+function getFontStyle(estilo: any): string {
+  return estilo.cursiva || estilo.fontStyle || 'normal';
+}
+function getTextAlign(estilo: any): string {
+  return estilo.alineacion_h || estilo.textAlign || 'left';
+}
+function getTexto(element: any): string {
+  return (element.contenido || {}).texto || '';
+}
+function getImageSrc(element: any): string {
+  const img = element.imagen || {};
+  const cont = element.contenido || {};
+  return img.datos_temp || img.ruta_nueva || cont.src || '';
+}
+
 export const PropertiesPanel = () => {
-  const { 
-    paginas, 
-    pagina_actual, 
-    selectedElementId, 
+  const {
+    paginas,
+    pagina_actual,
+    selectedElementId,
     configuracion,
     updateElement,
     deleteElement,
     updateConfig
   } = useTemplateStore();
-  
+
   const currentPage = paginas[pagina_actual];
-  const selectedElement = selectedElementId 
-    ? currentPage?.elementos[selectedElementId] 
+  const selectedElement = selectedElementId
+    ? currentPage?.elementos[selectedElementId]
     : null;
+
+  // Safe accessors
+  const estilo = (selectedElement as any)?.estilo || {};
+  const contenido = (selectedElement as any)?.contenido || {};
+  const metadata = (selectedElement as any)?.metadata || { zIndex: 0, visible: true };
+  const geometria = (selectedElement as any)?.geometria || { x: 0, y: 0, ancho: 1, alto: 1 };
 
   const handleGeometryChange = (field: string, value: string) => {
     if (!selectedElement) return;
     const numValue = parseFloat(value) || 0;
     updateElement(pagina_actual, selectedElement.id, {
-      geometria: { ...selectedElement.geometria, [field]: numValue }
+      geometria: { ...geometria, [field]: numValue }
     });
   };
 
   const handleStyleChange = (field: string, value: string | number) => {
     if (!selectedElement) return;
     updateElement(pagina_actual, selectedElement.id, {
-      estilo: { ...selectedElement.estilo, [field]: value }
+      estilo: { ...estilo, [field]: value }
     });
   };
 
   const handleContentChange = (field: string, value: string) => {
     if (!selectedElement) return;
     updateElement(pagina_actual, selectedElement.id, {
-      contenido: { ...selectedElement.contenido, [field]: value }
+      contenido: { ...contenido, [field]: value }
     });
   };
 
   const handleMetadataChange = (field: string, value: number | boolean | string) => {
     if (!selectedElement) return;
     updateElement(pagina_actual, selectedElement.id, {
-      metadata: { ...selectedElement.metadata, [field]: value }
+      metadata: { ...metadata, [field]: value }
     });
   };
 
@@ -77,7 +119,7 @@ export const PropertiesPanel = () => {
   // Template settings view when no element is selected
   if (!selectedElement) {
     return (
-      <motion.aside 
+      <motion.aside
         initial={{ x: 20, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         className="w-72 bg-card border-l border-border p-4 overflow-y-auto scrollbar-thin"
@@ -89,7 +131,7 @@ export const PropertiesPanel = () => {
 
         <div className="property-section">
           <div className="property-section-title">General</div>
-          
+
           <div className="space-y-3">
             <div>
               <Label className="text-xs text-muted-foreground mb-1.5 block">
@@ -101,7 +143,7 @@ export const PropertiesPanel = () => {
                 className="h-9"
               />
             </div>
-            
+
             <div>
               <Label className="text-xs text-muted-foreground mb-1.5 block">
                 Versión
@@ -133,7 +175,7 @@ export const PropertiesPanel = () => {
   }
 
   return (
-    <motion.aside 
+    <motion.aside
       initial={{ x: 20, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       key={selectedElement.id}
@@ -157,14 +199,14 @@ export const PropertiesPanel = () => {
       {/* Geometry Section */}
       <div className="property-section">
         <div className="property-section-title">Geometría (cm)</div>
-        
+
         <div className="grid grid-cols-2 gap-2">
           <div>
             <Label className="text-xs text-muted-foreground">X</Label>
             <Input
               type="number"
               step="0.1"
-              value={selectedElement.geometria.x.toFixed(1)}
+              value={(geometria.x || 0).toFixed(1)}
               onChange={(e) => handleGeometryChange('x', e.target.value)}
               className="h-8 text-sm"
             />
@@ -174,7 +216,7 @@ export const PropertiesPanel = () => {
             <Input
               type="number"
               step="0.1"
-              value={selectedElement.geometria.y.toFixed(1)}
+              value={(geometria.y || 0).toFixed(1)}
               onChange={(e) => handleGeometryChange('y', e.target.value)}
               className="h-8 text-sm"
             />
@@ -184,7 +226,7 @@ export const PropertiesPanel = () => {
             <Input
               type="number"
               step="0.1"
-              value={selectedElement.geometria.ancho.toFixed(1)}
+              value={(geometria.ancho || geometria.ancho_maximo || 1).toFixed(1)}
               onChange={(e) => handleGeometryChange('ancho', e.target.value)}
               className="h-8 text-sm"
             />
@@ -194,7 +236,7 @@ export const PropertiesPanel = () => {
             <Input
               type="number"
               step="0.1"
-              value={selectedElement.geometria.alto.toFixed(1)}
+              value={(geometria.alto || geometria.alto_maximo || 1).toFixed(1)}
               onChange={(e) => handleGeometryChange('alto', e.target.value)}
               className="h-8 text-sm"
             />
@@ -207,7 +249,7 @@ export const PropertiesPanel = () => {
         <div className="property-section">
           <div className="property-section-title">Contenido</div>
           <textarea
-            value={selectedElement.contenido.texto || ''}
+            value={getTexto(selectedElement)}
             onChange={(e) => handleContentChange('texto', e.target.value)}
             className="w-full h-24 px-3 py-2 text-sm border border-input rounded-md bg-background resize-none focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="Escribe tu texto..."
@@ -220,7 +262,7 @@ export const PropertiesPanel = () => {
         <div className="property-section">
           <div className="property-section-title">Fuente</div>
           <Input
-            value={selectedElement.contenido.src || ''}
+            value={getImageSrc(selectedElement)}
             onChange={(e) => handleContentChange('src', e.target.value)}
             placeholder="URL de la imagen"
             className="h-8 text-sm"
@@ -231,7 +273,7 @@ export const PropertiesPanel = () => {
       {/* Style Section */}
       <div className="property-section">
         <div className="property-section-title">Estilo</div>
-        
+
         {/* Text styling */}
         {selectedElement.tipo === 'texto' && (
           <>
@@ -239,7 +281,7 @@ export const PropertiesPanel = () => {
               <Label className="text-xs text-muted-foreground mb-1.5 block">Tamaño</Label>
               <Input
                 type="number"
-                value={selectedElement.estilo.tamano || 14}
+                value={estilo.tamano || 14}
                 onChange={(e) => handleStyleChange('tamano', parseInt(e.target.value))}
                 className="h-8 text-sm"
               />
@@ -249,17 +291,17 @@ export const PropertiesPanel = () => {
               <Label className="text-xs text-muted-foreground mb-1.5 block">Formato</Label>
               <div className="flex gap-1">
                 <Button
-                  variant={selectedElement.estilo.fontWeight === 'bold' ? 'secondary' : 'ghost'}
+                  variant={getFontWeight(estilo) === 'bold' ? 'secondary' : 'ghost'}
                   size="sm"
-                  onClick={() => handleStyleChange('fontWeight', selectedElement.estilo.fontWeight === 'bold' ? 'normal' : 'bold')}
+                  onClick={() => handleStyleChange('negrita', getFontWeight(estilo) === 'bold' ? 'normal' : 'bold')}
                   className="h-8 w-8 p-0"
                 >
                   <Bold className="w-4 h-4" />
                 </Button>
                 <Button
-                  variant={selectedElement.estilo.fontStyle === 'italic' ? 'secondary' : 'ghost'}
+                  variant={getFontStyle(estilo) === 'italic' ? 'secondary' : 'ghost'}
                   size="sm"
-                  onClick={() => handleStyleChange('fontStyle', selectedElement.estilo.fontStyle === 'italic' ? 'normal' : 'italic')}
+                  onClick={() => handleStyleChange('cursiva', getFontStyle(estilo) === 'italic' ? 'normal' : 'italic')}
                   className="h-8 w-8 p-0"
                 >
                   <Italic className="w-4 h-4" />
@@ -271,25 +313,25 @@ export const PropertiesPanel = () => {
               <Label className="text-xs text-muted-foreground mb-1.5 block">Alineación</Label>
               <div className="flex gap-1">
                 <Button
-                  variant={selectedElement.estilo.textAlign === 'left' ? 'secondary' : 'ghost'}
+                  variant={getTextAlign(estilo) === 'left' ? 'secondary' : 'ghost'}
                   size="sm"
-                  onClick={() => handleStyleChange('textAlign', 'left')}
+                  onClick={() => handleStyleChange('alineacion_h', 'left')}
                   className="h-8 w-8 p-0"
                 >
                   <AlignLeft className="w-4 h-4" />
                 </Button>
                 <Button
-                  variant={selectedElement.estilo.textAlign === 'center' ? 'secondary' : 'ghost'}
+                  variant={getTextAlign(estilo) === 'center' ? 'secondary' : 'ghost'}
                   size="sm"
-                  onClick={() => handleStyleChange('textAlign', 'center')}
+                  onClick={() => handleStyleChange('alineacion_h', 'center')}
                   className="h-8 w-8 p-0"
                 >
                   <AlignCenter className="w-4 h-4" />
                 </Button>
                 <Button
-                  variant={selectedElement.estilo.textAlign === 'right' ? 'secondary' : 'ghost'}
+                  variant={getTextAlign(estilo) === 'right' ? 'secondary' : 'ghost'}
                   size="sm"
-                  onClick={() => handleStyleChange('textAlign', 'right')}
+                  onClick={() => handleStyleChange('alineacion_h', 'right')}
                   className="h-8 w-8 p-0"
                 >
                   <AlignRight className="w-4 h-4" />
@@ -306,31 +348,31 @@ export const PropertiesPanel = () => {
             <div className="flex gap-1">
               <input
                 type="color"
-                value={selectedElement.estilo.color || '#000000'}
+                value={estilo.color || '#000000'}
                 onChange={(e) => handleStyleChange('color', e.target.value)}
                 className="w-8 h-8 rounded cursor-pointer border border-input"
               />
               <Input
-                value={selectedElement.estilo.color || '#000000'}
+                value={estilo.color || '#000000'}
                 onChange={(e) => handleStyleChange('color', e.target.value)}
                 className="h-8 text-xs flex-1"
               />
             </div>
           </div>
-          
+
           {(selectedElement.tipo === 'rectangulo' || selectedElement.tipo === 'texto') && (
             <div>
               <Label className="text-xs text-muted-foreground mb-1.5 block">Fondo</Label>
               <div className="flex gap-1">
                 <input
                   type="color"
-                  value={selectedElement.estilo.backgroundColor || '#ffffff'}
-                  onChange={(e) => handleStyleChange('backgroundColor', e.target.value)}
+                  value={getBackgroundColor(estilo)}
+                  onChange={(e) => handleStyleChange('color_relleno', e.target.value)}
                   className="w-8 h-8 rounded cursor-pointer border border-input"
                 />
                 <Input
-                  value={selectedElement.estilo.backgroundColor || '#ffffff'}
-                  onChange={(e) => handleStyleChange('backgroundColor', e.target.value)}
+                  value={getBackgroundColor(estilo)}
+                  onChange={(e) => handleStyleChange('color_relleno', e.target.value)}
                   className="h-8 text-xs flex-1"
                 />
               </div>
@@ -345,15 +387,16 @@ export const PropertiesPanel = () => {
             <div className="flex gap-2">
               <Input
                 type="number"
-                value={selectedElement.estilo.borderWidth || 1}
-                onChange={(e) => handleStyleChange('borderWidth', parseInt(e.target.value))}
+                value={getBorderWidth(estilo)}
+                onChange={(e) => handleStyleChange('grosor_borde', parseFloat(e.target.value))}
                 className="h-8 text-sm w-16"
                 min={0}
+                step={0.5}
               />
               <input
                 type="color"
-                value={selectedElement.estilo.borderColor || '#cbd5e1'}
-                onChange={(e) => handleStyleChange('borderColor', e.target.value)}
+                value={getBorderColor(estilo)}
+                onChange={(e) => handleStyleChange('color_borde', e.target.value)}
                 className="w-8 h-8 rounded cursor-pointer border border-input"
               />
             </div>
@@ -363,11 +406,11 @@ export const PropertiesPanel = () => {
         {/* Opacity */}
         <div className="mb-3">
           <Label className="text-xs text-muted-foreground mb-1.5 block">
-            Opacidad: {Math.round((selectedElement.estilo.opacity ?? 1) * 100)}%
+            Opacidad: {Math.round(getOpacity(estilo) * 100)}%
           </Label>
           <Slider
-            value={[(selectedElement.estilo.opacity ?? 1) * 100]}
-            onValueChange={([value]) => handleStyleChange('opacity', value / 100)}
+            value={[getOpacity(estilo) * 100]}
+            onValueChange={([value]) => handleStyleChange('opacidad', value)}
             max={100}
             step={1}
             className="mt-2"
@@ -378,12 +421,12 @@ export const PropertiesPanel = () => {
       {/* Metadata Section */}
       <div className="property-section">
         <div className="property-section-title">Capas y Grupos</div>
-        
+
         <div className="mb-3">
           <Label className="text-xs text-muted-foreground mb-1.5 block">Z-Index</Label>
           <Input
             type="number"
-            value={selectedElement.metadata.zIndex}
+            value={metadata.zIndex || 0}
             onChange={(e) => handleMetadataChange('zIndex', parseInt(e.target.value))}
             className="h-8 text-sm"
           />
@@ -392,7 +435,7 @@ export const PropertiesPanel = () => {
         <div>
           <Label className="text-xs text-muted-foreground mb-1.5 block">Grupo</Label>
           <Select
-            value={selectedElement.metadata.grupo || 'ninguno'}
+            value={metadata.grupo || 'ninguno'}
             onValueChange={(value) => handleMetadataChange('grupo', value === 'ninguno' ? '' : value)}
           >
             <SelectTrigger className="h-8">

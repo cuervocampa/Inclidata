@@ -242,8 +242,30 @@ export const useTemplateStore = create<TemplateState & TemplateActions>((set, ge
   },
   
   loadTemplate: (template) => {
+    // Ensure every element has the required sub-objects to prevent crashes
+    // when loading templates from the old editor format.
+    const safePaginas: Record<string, Page> = {};
+    for (const [pageId, page] of Object.entries(template.paginas || {})) {
+      const safeElementos: Record<string, TemplateElement> = {};
+      for (const [elemId, elem] of Object.entries((page as Page).elementos || {})) {
+        const e = elem as any;
+        safeElementos[elemId] = {
+          ...e,
+          id: e.id || elemId,
+          estilo: e.estilo || {},
+          contenido: e.contenido || {},
+          metadata: e.metadata || { zIndex: 0, visible: true },
+          geometria: e.geometria || { x: 0, y: 0, ancho: 1, alto: 1 },
+        };
+      }
+      safePaginas[pageId] = {
+        ...(page as Page),
+        elementos: safeElementos,
+      };
+    }
     set({
       ...template,
+      paginas: safePaginas,
       selectedElementId: null
     });
   },

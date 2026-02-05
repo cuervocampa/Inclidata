@@ -8,45 +8,92 @@ interface CanvasElementProps {
   cmToPx: number;
 }
 
+/**
+ * Read helpers that understand the canonical JSON format.
+ * Fields use Spanish names as stored in the JSON files.
+ * Fallback to English names for elements created inside the visual editor.
+ */
+function getBackgroundColor(estilo: any, tipo: string): string {
+  return estilo.color_relleno || estilo.backgroundColor || (tipo === 'rectangulo' ? '#e2e8f0' : 'transparent');
+}
+function getBorderColor(estilo: any): string {
+  return estilo.color_borde || estilo.borderColor || '#cbd5e1';
+}
+function getBorderWidth(estilo: any, tipo: string): number {
+  return estilo.grosor_borde ?? estilo.borderWidth ?? (tipo === 'rectangulo' ? 1 : 0);
+}
+function getOpacity(estilo: any): number {
+  const raw = estilo.opacidad ?? estilo.opacity;
+  if (raw == null) return 1;
+  return raw > 1 ? raw / 100 : raw;
+}
+function getFontFamily(estilo: any): string {
+  return estilo.familia_fuente || estilo.fontFamily || 'sans-serif';
+}
+function getFontWeight(estilo: any): string {
+  return estilo.negrita || estilo.fontWeight || 'normal';
+}
+function getFontStyle(estilo: any): string {
+  return estilo.cursiva || estilo.fontStyle || 'normal';
+}
+function getTextAlign(estilo: any): string {
+  return estilo.alineacion_h || estilo.textAlign || 'left';
+}
+function getImageSrc(element: any): string {
+  // Canonical: imagen.datos_temp or imagen.ruta_nueva
+  // Visual editor format: contenido.src
+  const img = element.imagen || {};
+  const cont = element.contenido || {};
+  return img.datos_temp || img.ruta_nueva || cont.src || '';
+}
+function getTexto(element: any): string {
+  const cont = element.contenido || {};
+  return cont.texto || '';
+}
+
 export const CanvasElement = ({ element, pageId, cmToPx }: CanvasElementProps) => {
   const { selectedElementId, selectElement, updateElement } = useTemplateStore();
   const isSelected = selectedElementId === element.id;
-  
+
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [resizeHandle, setResizeHandle] = useState<string | null>(null);
-  
+
   const elementRef = useRef<HTMLDivElement>(null);
   const startPos = useRef({ x: 0, y: 0 });
   const startGeometry = useRef({ x: 0, y: 0, ancho: 0, alto: 0 });
 
-  const { geometria, estilo, contenido, tipo, metadata } = element;
+  const geometria = element.geometria || { x: 0, y: 0, ancho: 1, alto: 1 };
+  const estilo = element.estilo || {};
+  const tipo = element.tipo;
+  const metadata = element.metadata || { zIndex: 0, visible: true };
 
   // Convert cm to px for display
   const style: React.CSSProperties = {
     left: geometria.x * cmToPx,
     top: geometria.y * cmToPx,
-    width: geometria.ancho * cmToPx,
-    height: geometria.alto * cmToPx,
-    backgroundColor: estilo.backgroundColor || (tipo === 'rectangulo' ? '#e2e8f0' : 'transparent'),
+    width: (geometria.ancho || (geometria as any).ancho_maximo || 1) * cmToPx,
+    height: (geometria.alto || (geometria as any).alto_maximo || 1) * cmToPx,
+    backgroundColor: getBackgroundColor(estilo, tipo),
     color: estilo.color || '#000000',
     fontSize: estilo.tamano ? estilo.tamano : 14,
-    fontWeight: estilo.fontWeight || 'normal',
-    fontStyle: estilo.fontStyle || 'normal',
-    textAlign: estilo.textAlign || 'left',
-    borderWidth: estilo.borderWidth || (tipo === 'rectangulo' ? 1 : 0),
-    borderColor: estilo.borderColor || '#cbd5e1',
+    fontFamily: getFontFamily(estilo),
+    fontWeight: getFontWeight(estilo) as any,
+    fontStyle: getFontStyle(estilo),
+    textAlign: getTextAlign(estilo) as any,
+    borderWidth: getBorderWidth(estilo, tipo),
+    borderColor: getBorderColor(estilo),
     borderStyle: 'solid',
-    opacity: estilo.opacity ?? 1,
-    zIndex: metadata.zIndex,
+    opacity: getOpacity(estilo),
+    zIndex: metadata.zIndex || 0,
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
     selectElement(element.id);
-    
+
     if ((e.target as HTMLElement).classList.contains('resize-handle')) return;
-    
+
     setIsDragging(true);
     startPos.current = { x: e.clientX, y: e.clientY };
     startGeometry.current = { ...geometria };
@@ -117,22 +164,24 @@ export const CanvasElement = ({ element, pageId, cmToPx }: CanvasElementProps) =
       case 'texto':
         return (
           <div className="w-full h-full p-1 overflow-hidden flex items-start">
-            {contenido.texto || 'Texto de ejemplo'}
+            {getTexto(element) || 'Texto de ejemplo'}
           </div>
         );
-      case 'imagen':
-        return contenido.src ? (
-          <img src={contenido.src} alt="" className="w-full h-full object-cover" />
+      case 'imagen': {
+        const src = getImageSrc(element);
+        return src ? (
+          <img src={src} alt="" className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-muted text-muted-foreground text-xs">
             Imagen
           </div>
         );
+      }
       case 'linea':
         return (
-          <div 
+          <div
             className="absolute top-1/2 left-0 right-0 h-0.5"
-            style={{ backgroundColor: estilo.borderColor || '#000' }}
+            style={{ backgroundColor: getBorderColor(estilo) }}
           />
         );
       case 'rectangulo':
@@ -167,7 +216,7 @@ export const CanvasElement = ({ element, pageId, cmToPx }: CanvasElementProps) =
       transition={{ duration: 0.15 }}
     >
       {renderContent()}
-      
+
       {isSelected && resizeHandles.map((handle) => (
         <div
           key={handle}

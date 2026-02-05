@@ -23,8 +23,8 @@ export const EditorCanvas = () => {
   const canvasWidth = (isLandscape ? A4_HEIGHT_CM : A4_WIDTH_CM) * CM_TO_PX;
   const canvasHeight = (isLandscape ? A4_WIDTH_CM : A4_HEIGHT_CM) * CM_TO_PX;
 
-  const elements = Object.values(currentPage.elementos).sort(
-    (a, b) => a.metadata.zIndex - b.metadata.zIndex
+  const elements = Object.values(currentPage.elementos || {}).sort(
+    (a, b) => (a.metadata?.zIndex || 0) - (b.metadata?.zIndex || 0)
   );
 
   const handleCanvasClick = (e: React.MouseEvent) => {
