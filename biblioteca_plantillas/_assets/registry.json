@@ -1,0 +1,28 @@
+{
+  "2b8fd1ab": {
+    "filename": "logo_UTE.png",
+    "ext": "png",
+    "md5": "2b8fd1abcbee8ffe845124307a009552",
+    "usages": [
+      "Nueva Plantilla Visual",
+      "kk"
+    ]
+  },
+  "eee3b4c3": {
+    "filename": "logo_organismo.png",
+    "ext": "png",
+    "md5": "eee3b4c3178188212d328f45e85ba8a9",
+    "usages": [
+      "Nueva Plantilla Visual",
+      "kk"
+    ]
+  },
+  "b80fb2c6": {
+    "filename": "imagen 2.png",
+    "ext": "png",
+    "md5": "b80fb2c69dd50f13ba751d244e1b0eef",
+    "usages": [
+      "INCL_AR_prueba_kk_01"
+    ]
+  }
+}

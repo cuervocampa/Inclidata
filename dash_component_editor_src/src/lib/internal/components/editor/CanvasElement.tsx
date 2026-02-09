@@ -51,9 +51,23 @@ function getTexto(element: any): string {
   return cont.texto || '';
 }
 
+/** Deterministic pastel color from group name */
+const GROUP_COLORS = [
+  '#818cf8', '#f472b6', '#34d399', '#fbbf24', '#60a5fa',
+  '#a78bfa', '#fb923c', '#2dd4bf', '#f87171', '#a3e635',
+];
+function getGroupColor(groupName: string): string {
+  let hash = 0;
+  for (let i = 0; i < groupName.length; i++) {
+    hash = ((hash << 5) - hash + groupName.charCodeAt(i)) | 0;
+  }
+  return GROUP_COLORS[Math.abs(hash) % GROUP_COLORS.length];
+}
+
 export const CanvasElement = ({ element, pageId, cmToPx }: CanvasElementProps) => {
-  const { selectedElementId, selectElement, updateElement } = useTemplateStore();
+  const { selectedElementId, selectedElementIds, selectElement, toggleSelectElement, selectGroup, updateElement } = useTemplateStore();
   const isSelected = selectedElementId === element.id;
+  const isMultiSelected = selectedElementIds.includes(element.id);
 
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
@@ -62,6 +76,7 @@ export const CanvasElement = ({ element, pageId, cmToPx }: CanvasElementProps) =
   const elementRef = useRef<HTMLDivElement>(null);
   const startPos = useRef({ x: 0, y: 0 });
   const startGeometry = useRef({ x: 0, y: 0, ancho: 0, alto: 0 });
+  const startGeometries = useRef<Record<string, { x: number; y: number }>>({});
 
   const geometria = element.geometria || { x: 0, y: 0, ancho: 1, alto: 1 };
   const estilo = element.estilo || {};
@@ -90,13 +105,44 @@ export const CanvasElement = ({ element, pageId, cmToPx }: CanvasElementProps) =
 
   const handleMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
-    selectElement(element.id);
+
+    if (e.shiftKey) {
+      toggleSelectElement(element.id);
+      return;
+    }
+
+    if (!isMultiSelected || selectedElementIds.length <= 1) {
+      selectElement(element.id);
+    }
 
     if ((e.target as HTMLElement).classList.contains('resize-handle')) return;
 
     setIsDragging(true);
     startPos.current = { x: e.clientX, y: e.clientY };
     startGeometry.current = { ...geometria };
+
+    // Capture starting positions of all selected elements for group drag
+    if (selectedElementIds.length > 1 && isMultiSelected) {
+      const page = useTemplateStore.getState().paginas[pageId];
+      const geoms: Record<string, { x: number; y: number }> = {};
+      for (const id of selectedElementIds) {
+        const el = page?.elementos[id];
+        if (el) {
+          geoms[id] = { x: el.geometria.x, y: el.geometria.y };
+        }
+      }
+      startGeometries.current = geoms;
+    } else {
+      startGeometries.current = {};
+    }
+  };
+
+  const handleDoubleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const grupo = metadata.grupo;
+    if (grupo) {
+      selectGroup(grupo);
+    }
   };
 
   const handleResizeStart = (e: React.MouseEvent, handle: string) => {
@@ -115,6 +161,19 @@ export const CanvasElement = ({ element, pageId, cmToPx }: CanvasElementProps) =
       const deltaY = (e.clientY - startPos.current.y) / cmToPx;
 
       if (isDragging) {
+        // Move all selected elements together if multi-selected
+        const otherIds = Object.keys(startGeometries.current).filter(id => id !== element.id);
+        if (otherIds.length > 0) {
+          for (const id of otherIds) {
+            const sg = startGeometries.current[id];
+            updateElement(pageId, id, {
+              geometria: {
+                x: Math.max(0, sg.x + deltaX),
+                y: Math.max(0, sg.y + deltaY),
+              } as any
+            });
+          }
+        }
         updateElement(pageId, element.id, {
           geometria: {
             ...geometria,
@@ -218,17 +277,29 @@ export const CanvasElement = ({ element, pageId, cmToPx }: CanvasElementProps) =
   return (
     <motion.div
       ref={elementRef}
-      className={`canvas-element ${isSelected ? 'selected' : ''}`}
+      className={`canvas-element ${isSelected ? 'selected' : ''} ${isMultiSelected && !isSelected ? 'multi-selected' : ''}`}
       style={style}
       onMouseDown={handleMouseDown}
+      onDoubleClick={handleDoubleClick}
       initial={{ scale: 0.9, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ duration: 0.15 }}
     >
       {renderContent()}
 
+      {/* Group indicator tag */}
+      {metadata.grupo && (
+        <div
+          className="group-indicator"
+          style={{ backgroundColor: getGroupColor(metadata.grupo) }}
+          title={`Grupo: ${metadata.grupo}`}
+        >
+          {metadata.grupo}
+        </div>
+      )}
+
       {/* Single resize handle at bottom-right corner */}
-      {isSelected && (
+      {(isSelected && selectedElementIds.length <= 1) && (
         <div
           className="resize-handle-corner"
           onMouseDown={(e) => handleResizeStart(e, 'se')}

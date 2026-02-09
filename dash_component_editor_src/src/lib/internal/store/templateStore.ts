@@ -70,11 +70,19 @@ export interface TemplateConfig {
   version?: string;
 }
 
+export interface PendingAction {
+  type: string;
+  elementIds?: string[];
+  [key: string]: unknown;
+}
+
 export interface TemplateState {
   paginas: Record<string, Page>;
   pagina_actual: string;
   configuracion: TemplateConfig;
   selectedElementId: string | null;
+  selectedElementIds: string[];
+  pendingAction: PendingAction | null;
 }
 
 interface TemplateActions {
@@ -89,11 +97,15 @@ interface TemplateActions {
   updateElement: (pageId: string, elementId: string, updates: Partial<TemplateElement>) => void;
   deleteElement: (pageId: string, elementId: string) => void;
   selectElement: (elementId: string | null) => void;
+  toggleSelectElement: (elementId: string) => void;
+  selectGroup: (groupName: string) => void;
+  clearSelection: () => void;
   
   // Template actions
   updateConfig: (config: Partial<TemplateConfig>) => void;
   loadTemplate: (template: Omit<TemplateState, 'selectedElementId'>) => void;
   resetTemplate: () => void;
+  dispatchAction: (action: PendingAction) => void;
   
   // Helpers
   getSelectedElement: () => TemplateElement | null;
@@ -115,7 +127,9 @@ const initialState: TemplateState = {
     num_paginas: 1,
     version: '1.0'
   },
-  selectedElementId: null
+  selectedElementId: null,
+  selectedElementIds: [],
+  pendingAction: null
 };
 
 export const useTemplateStore = create<TemplateState & TemplateActions>((set, get) => ({
@@ -158,13 +172,14 @@ export const useTemplateStore = create<TemplateState & TemplateActions>((set, ge
           ...state.configuracion,
           num_paginas: state.configuracion.num_paginas - 1
         },
-        selectedElementId: null
+        selectedElementId: null,
+        selectedElementIds: []
       };
     });
   },
   
   setCurrentPage: (pageId: string) => {
-    set({ pagina_actual: pageId, selectedElementId: null });
+    set({ pagina_actual: pageId, selectedElementId: null, selectedElementIds: [] });
   },
   
   setPageOrientation: (pageId: string, orientation: Orientation) => {
@@ -193,7 +208,8 @@ export const useTemplateStore = create<TemplateState & TemplateActions>((set, ge
           }
         }
       },
-      selectedElementId: id
+      selectedElementId: id,
+      selectedElementIds: []
     }));
     return id;
   },
@@ -236,13 +252,44 @@ export const useTemplateStore = create<TemplateState & TemplateActions>((set, ge
             elementos: remainingElements
           }
         },
-        selectedElementId: state.selectedElementId === elementId ? null : state.selectedElementId
+        selectedElementId: state.selectedElementId === elementId ? null : state.selectedElementId,
+        selectedElementIds: state.selectedElementIds.filter(id => id !== elementId)
       };
     });
   },
   
   selectElement: (elementId: string | null) => {
-    set({ selectedElementId: elementId });
+    set({ selectedElementId: elementId, selectedElementIds: elementId ? [elementId] : [] });
+  },
+
+  toggleSelectElement: (elementId: string) => {
+    set((state) => {
+      const ids = state.selectedElementIds.includes(elementId)
+        ? state.selectedElementIds.filter(id => id !== elementId)
+        : [...state.selectedElementIds, elementId];
+      return {
+        selectedElementIds: ids,
+        selectedElementId: ids.length === 1 ? ids[0] : ids.length === 0 ? null : state.selectedElementId,
+      };
+    });
+  },
+
+  selectGroup: (groupName: string) => {
+    set((state) => {
+      const page = state.paginas[state.pagina_actual];
+      if (!page) return state;
+      const ids = Object.values(page.elementos)
+        .filter(el => el.metadata?.grupo === groupName)
+        .map(el => el.id);
+      return {
+        selectedElementIds: ids,
+        selectedElementId: ids.length === 1 ? ids[0] : null,
+      };
+    });
+  },
+
+  clearSelection: () => {
+    set({ selectedElementId: null, selectedElementIds: [] });
   },
   
   // Template actions
@@ -277,7 +324,8 @@ export const useTemplateStore = create<TemplateState & TemplateActions>((set, ge
     set({
       ...template,
       paginas: safePaginas,
-      selectedElementId: null
+      selectedElementId: null,
+      selectedElementIds: []
     });
   },
   
@@ -285,6 +333,10 @@ export const useTemplateStore = create<TemplateState & TemplateActions>((set, ge
     set(initialState);
   },
   
+  dispatchAction: (action: PendingAction) => {
+    set({ pendingAction: action });
+  },
+
   // Helpers
   getSelectedElement: () => {
     const state = get();
@@ -293,7 +345,7 @@ export const useTemplateStore = create<TemplateState & TemplateActions>((set, ge
   },
   
   exportJSON: () => {
-    const { selectedElementId, ...templateData } = get();
+    const { selectedElementId, selectedElementIds, pendingAction, ...templateData } = get();
     return JSON.stringify({
       paginas: templateData.paginas,
       pagina_actual: templateData.pagina_actual,

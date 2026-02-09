@@ -29,11 +29,15 @@ const StoreSync = (props: any) => {
             if (setProps) {
                 // Debounce could be added here if performance is an issue
                 // extracting the clean JSON payload
-                const payload = {
+                const payload: any = {
                     paginas: state.paginas,
                     pagina_actual: state.pagina_actual,
                     configuracion: state.configuracion
                 };
+
+                if (state.pendingAction) {
+                    payload.action = state.pendingAction;
+                }
 
                 // Only sending back if meaningful change? 
                 // For now send everything to keep state in sync for "Save" button in Dash

@@ -51,7 +51,7 @@ const RulerTicks = ({ length, cmToPx, direction }: { length: number; cmToPx: num
 };
 
 export const EditorCanvas = () => {
-  const { paginas, pagina_actual, selectElement } = useTemplateStore();
+  const { paginas, pagina_actual, selectElement, clearSelection } = useTemplateStore();
   const currentPage = paginas[pagina_actual];
 
   const { setNodeRef, isOver } = useDroppable({
@@ -73,7 +73,7 @@ export const EditorCanvas = () => {
 
   const handleCanvasClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
-      selectElement(null);
+      clearSelection();
     }
   };
 

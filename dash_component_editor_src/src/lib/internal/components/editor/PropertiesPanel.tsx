@@ -25,7 +25,9 @@ import {
   ImageIcon,
   Link,
   RatioIcon,
-  X
+  X,
+  Group,
+  Package
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -332,10 +334,13 @@ export const PropertiesPanel = () => {
     paginas,
     pagina_actual,
     selectedElementId,
+    selectedElementIds,
     configuracion,
     updateElement,
     deleteElement,
-    updateConfig
+    updateConfig,
+    dispatchAction,
+    clearSelection
   } = useTemplateStore();
 
   const currentPage = paginas[pagina_actual];
@@ -382,6 +387,76 @@ export const PropertiesPanel = () => {
     if (!selectedElement) return;
     deleteElement(pagina_actual, selectedElement.id);
   };
+
+  // Multi-selection panel
+  if (selectedElementIds.length > 1) {
+    const selectedElements = selectedElementIds
+      .map(id => currentPage?.elementos[id])
+      .filter(Boolean);
+
+    const handleCreateGroup = () => {
+      dispatchAction({
+        type: 'create_group',
+        elementIds: selectedElementIds,
+      });
+    };
+
+    const handleDeleteSelected = () => {
+      for (const id of selectedElementIds) {
+        deleteElement(pagina_actual, id);
+      }
+      clearSelection();
+    };
+
+    return (
+      <motion.aside
+        initial={{ x: 20, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        className="w-72 bg-card border-l border-border p-4 overflow-y-auto scrollbar-thin"
+      >
+        <div className="flex items-center gap-2 mb-4">
+          <Group className="w-4 h-4 text-primary" />
+          <h3 className="font-semibold text-sm">{selectedElementIds.length} elementos seleccionados</h3>
+        </div>
+
+        <div className="property-section">
+          <div className="property-section-title">Acciones</div>
+          <div className="space-y-2">
+            <Button
+              variant="default"
+              size="sm"
+              className="w-full gap-2"
+              onClick={handleCreateGroup}
+            >
+              <Package className="w-4 h-4" />
+              Crear Grupo
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              className="w-full gap-2"
+              onClick={handleDeleteSelected}
+            >
+              <Trash2 className="w-4 h-4" />
+              Eliminar seleccionados
+            </Button>
+          </div>
+        </div>
+
+        <div className="property-section">
+          <div className="property-section-title">Elementos</div>
+          <div className="space-y-1">
+            {selectedElements.map(el => (
+              <div key={el.id} className="text-xs text-muted-foreground flex items-center gap-2 py-1">
+                <span className="capitalize font-medium">{el.tipo}</span>
+                <span className="truncate opacity-60">{el.id}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </motion.aside>
+    );
+  }
 
   // Template settings view when no element is selected
   if (!selectedElement) {

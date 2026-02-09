@@ -1,9 +1,10 @@
 import os
 import json
+import base64
 import shutil
 from pathlib import Path
 
-from utils.asset_manager import register_asset, track_usage
+from utils.asset_manager import register_asset, get_asset_path, track_usage
 
 # Ruta base de los grupos usando pathlib para mayor seguridad
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -137,10 +138,48 @@ def guardar_nuevo_grupo(nombre_grupo, descripcion, elementos_seleccionados, ruta
             "descripcion": descripcion,
             "elementos": elementos_exportar
         }
-        
+
         with open(repo_grupo / f"{safe_name}.json", 'w', encoding='utf-8') as f:
             json.dump(info_grupo, f, indent=4, ensure_ascii=False)
-            
+
+        # 4. Extraer imágenes a {grupo}/assets/
+        assets_dir = repo_grupo / "assets"
+        for elem_id, datos in elementos_exportar.items():
+            if datos.get('tipo') != 'imagen':
+                continue
+            img = datos.get('imagen', {})
+            contenido = datos.get('contenido', {})
+            nombre_archivo = img.get('nombre_archivo', f"{elem_id}.png")
+            guardado = False
+
+            # Desde almacén centralizado
+            if img.get('asset_id'):
+                asset_path = get_asset_path(img['asset_id'])
+                if asset_path and asset_path.exists():
+                    assets_dir.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(asset_path, assets_dir / nombre_archivo)
+                    guardado = True
+
+            # Desde datos_temp (data URI)
+            if not guardado:
+                datos_temp = img.get('datos_temp', '') or contenido.get('src', '') or ''
+                if datos_temp.startswith('data:'):
+                    try:
+                        _, encoded = datos_temp.split(',', 1)
+                        img_bytes = base64.b64decode(encoded)
+                        assets_dir.mkdir(parents=True, exist_ok=True)
+                        (assets_dir / nombre_archivo).write_bytes(img_bytes)
+                        guardado = True
+                    except Exception as e:
+                        print(f"Advertencia: Error guardando asset {nombre_archivo}: {e}")
+
+            if guardado:
+                img['ruta_nueva'] = f"assets/{nombre_archivo}"
+
+        # Re-guardar JSON con rutas actualizadas
+        with open(repo_grupo / f"{safe_name}.json", 'w', encoding='utf-8') as f:
+            json.dump(info_grupo, f, indent=4, ensure_ascii=False)
+
         return True, f"Grupo '{safe_name}' creado exitosamente"
         
     except Exception as e:

@@ -1,0 +1,987 @@
+{
+  "paginas": {
+    "1": {
+      "elementos": {
+        "Rectángulo 1_78b1": {
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 0.6,
+            "y": 0.5,
+            "ancho": 3,
+            "alto": 1
+          },
+          "estilo": {
+            "backgroundColor": "#FFFFFF",
+            "borderColor": "#000000",
+            "borderWidth": 0.5,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "left"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_vert_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "grupo": "grupo_encab_vert_L9"
+          },
+          "id": "Rectángulo 1_78b1",
+          "contenido": {
+            "texto": null,
+            "src": null
+          }
+        },
+        "Rectángulo 2_78b1": {
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 0.6,
+            "y": 1.5,
+            "ancho": 3,
+            "alto": 0.5
+          },
+          "estilo": {
+            "backgroundColor": "#012263",
+            "borderColor": "#000000",
+            "borderWidth": 0.5,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "left"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_vert_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "grupo": "grupo_encab_vert_L9"
+          },
+          "id": "Rectángulo 2_78b1",
+          "contenido": {
+            "texto": null,
+            "src": null
+          }
+        },
+        "Rectángulo 3_78b1": {
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 0.6,
+            "y": 2,
+            "ancho": 3,
+            "alto": 0.5
+          },
+          "estilo": {
+            "backgroundColor": "#ffc000",
+            "borderColor": "#000000",
+            "borderWidth": 0.5,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "left"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_vert_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "grupo": "grupo_encab_vert_L9"
+          },
+          "id": "Rectángulo 3_78b1",
+          "contenido": {
+            "texto": null,
+            "src": null
+          }
+        },
+        "Rectángulo 4_78b1": {
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 3.6,
+            "y": 0.5,
+            "ancho": 6,
+            "alto": 2
+          },
+          "estilo": {
+            "backgroundColor": "#FFFFFF",
+            "borderColor": "#000000",
+            "borderWidth": 0.5,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "left"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_vert_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "grupo": "grupo_encab_vert_L9"
+          },
+          "id": "Rectángulo 4_78b1",
+          "contenido": {
+            "texto": null,
+            "src": null
+          }
+        },
+        "Rectángulo 5_78b1": {
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 9.6,
+            "y": 0.5,
+            "ancho": 6,
+            "alto": 2
+          },
+          "estilo": {
+            "backgroundColor": "#FFFFFF",
+            "borderColor": "#000000",
+            "borderWidth": 0.5,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "left"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_vert_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "grupo": "grupo_encab_vert_L9"
+          },
+          "id": "Rectángulo 5_78b1",
+          "contenido": {
+            "texto": null,
+            "src": null
+          }
+        },
+        "Rectángulo 6_78b1": {
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 15.6,
+            "y": 0.5,
+            "ancho": 4.4,
+            "alto": 2
+          },
+          "estilo": {
+            "backgroundColor": "#FFFFFF",
+            "borderColor": "#000000",
+            "borderWidth": 0.5,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "left"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_vert_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "grupo": "grupo_encab_vert_L9"
+          },
+          "id": "Rectángulo 6_78b1",
+          "contenido": {
+            "texto": null,
+            "src": null
+          }
+        },
+        "logo_UTE_78b1": {
+          "tipo": "imagen",
+          "geometria": {
+            "x": 15.6,
+            "y": 0.5,
+            "ancho": 4.4,
+            "alto": 2
+          },
+          "estilo": {
+            "backgroundColor": "transparent",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 0,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "left"
+          },
+          "imagen": {
+            "formato": "png",
+            "ruta_original": "",
+            "ruta_nueva": "assets/logo_UTE.png",
+            "nombre_archivo": "logo_UTE.png",
+            "estado": "guardada",
+            "asset_id": "2b8fd1ab"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_vert_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 15,
+            "visible": true,
+            "grupo": "grupo_encab_vert_L9"
+          },
+          "id": "logo_UTE_78b1",
+          "contenido": {
+            "src": null,
+            "texto": null
+          }
+        },
+        "titulo_78b1": {
+          "tipo": "texto",
+          "geometria": {
+            "x": 3.97,
+            "y": 1.4,
+            "ancho": 5.5,
+            "alto": 1
+          },
+          "estilo": {
+            "backgroundColor": "transparent",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 0,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 6,
+            "fontFamily": "Helvetica",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "center"
+          },
+          "contenido": {
+            "texto": "“PROJECTE DE CONSTRUCCIÓ DE LA LÍNIA 9 DE METRO DE\nBARCELONA. FINALIZACIÓ DE TÚNEL I ESTACIONS\"",
+            "src": null
+          },
+          "grupo": {
+            "nombre": "grupo_encab_vert_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 20,
+            "visible": true,
+            "grupo": "grupo_encab_vert_L9"
+          },
+          "id": "titulo_78b1"
+        },
+        "proyecto_78b1": {
+          "tipo": "texto",
+          "geometria": {
+            "x": 3.97,
+            "y": 0.65,
+            "ancho": 5.5,
+            "alto": 0.5
+          },
+          "estilo": {
+            "backgroundColor": "transparent",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 0,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 6,
+            "fontFamily": "Helvetica",
+            "fontWeight": "bold",
+            "fontStyle": "normal",
+            "textAlign": "left"
+          },
+          "contenido": {
+            "texto": "PROJECTE:",
+            "src": null
+          },
+          "grupo": {
+            "nombre": "grupo_encab_vert_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 20,
+            "visible": true,
+            "grupo": "grupo_encab_vert_L9"
+          },
+          "id": "proyecto_78b1"
+        },
+        "texto_1_78b1": {
+          "tipo": "texto",
+          "geometria": {
+            "x": 0.65,
+            "y": 0.5,
+            "ancho": 3,
+            "alto": 0.9
+          },
+          "estilo": {
+            "backgroundColor": "transparent",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 0,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 8,
+            "fontFamily": "Helvetica",
+            "fontWeight": "bold",
+            "fontStyle": "normal",
+            "textAlign": "center"
+          },
+          "contenido": {
+            "texto": "METRO BCN\nLÌNEA 9",
+            "src": null
+          },
+          "grupo": {
+            "nombre": "grupo_encab_vert_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 20,
+            "visible": true,
+            "grupo": "grupo_encab_vert_L9"
+          },
+          "id": "texto_1_78b1"
+        },
+        "texto_2_78b1": {
+          "tipo": "texto",
+          "geometria": {
+            "x": 0.65,
+            "y": 1.5,
+            "ancho": 3,
+            "alto": 0.5
+          },
+          "estilo": {
+            "backgroundColor": "transparent",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 0,
+            "opacity": 1,
+            "color": "#ffffff",
+            "tamano": 8,
+            "fontFamily": "Helvetica",
+            "fontWeight": "bold",
+            "fontStyle": "normal",
+            "textAlign": "center"
+          },
+          "contenido": {
+            "texto": "INCLINÒMETRES",
+            "src": null
+          },
+          "grupo": {
+            "nombre": "grupo_encab_vert_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 20,
+            "visible": true,
+            "grupo": "grupo_encab_vert_L9"
+          },
+          "id": "texto_2_78b1"
+        },
+        "nombre_sensor_78b1": {
+          "tipo": "texto",
+          "geometria": {
+            "x": 0.65,
+            "y": 2,
+            "ancho": 3,
+            "alto": 0.5
+          },
+          "estilo": {
+            "backgroundColor": "transparent",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 0,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 8,
+            "fontFamily": "Helvetica",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "center"
+          },
+          "contenido": {
+            "texto": "NOMBRE_SENSOR",
+            "src": null
+          },
+          "grupo": {
+            "nombre": "grupo_encab_vert_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 20,
+            "visible": true,
+            "grupo": "grupo_encab_vert_L9"
+          },
+          "id": "nombre_sensor_78b1"
+        },
+        "logo_organismo_78b1": {
+          "tipo": "imagen",
+          "geometria": {
+            "x": 9.6,
+            "y": 0.5,
+            "ancho": 6,
+            "alto": 2
+          },
+          "estilo": {
+            "backgroundColor": "transparent",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 0,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "left"
+          },
+          "imagen": {
+            "formato": "png",
+            "ruta_original": "",
+            "ruta_nueva": "assets/logo_organismo.png",
+            "nombre_archivo": "logo_organismo.png",
+            "estado": "guardada",
+            "asset_id": "eee3b4c3"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_vert_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 15,
+            "visible": true,
+            "grupo": "grupo_encab_vert_L9"
+          },
+          "id": "logo_organismo_78b1",
+          "contenido": {
+            "src": null,
+            "texto": null
+          }
+        }
+      },
+      "configuracion": {
+        "orientacion": "portrait"
+      }
+    },
+    "2": {
+      "elementos": {
+        "Rectángulo 1_45f4": {
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 0.6,
+            "y": 0.5,
+            "ancho": 4.4,
+            "alto": 1
+          },
+          "estilo": {
+            "backgroundColor": "#FFFFFF",
+            "borderColor": "#000000",
+            "borderWidth": 0.5,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "left"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "grupo": "grupo_encab_hor_L9"
+          },
+          "id": "Rectángulo 1_45f4",
+          "contenido": {
+            "texto": null,
+            "src": null
+          }
+        },
+        "Rectángulo 2_45f4": {
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 0.6,
+            "y": 1.5,
+            "ancho": 4.4,
+            "alto": 0.5
+          },
+          "estilo": {
+            "backgroundColor": "#012263",
+            "borderColor": "#000000",
+            "borderWidth": 0.5,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "left"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "grupo": "grupo_encab_hor_L9"
+          },
+          "id": "Rectángulo 2_45f4",
+          "contenido": {
+            "texto": null,
+            "src": null
+          }
+        },
+        "Rectángulo 3_45f4": {
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 0.6,
+            "y": 2,
+            "ancho": 4.4,
+            "alto": 0.5
+          },
+          "estilo": {
+            "backgroundColor": "#ffc000",
+            "borderColor": "#000000",
+            "borderWidth": 0.5,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "left"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "grupo": "grupo_encab_hor_L9"
+          },
+          "id": "Rectángulo 3_45f4",
+          "contenido": {
+            "texto": null,
+            "src": null
+          }
+        },
+        "Rectángulo 4_45f4": {
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 5,
+            "y": 0.5,
+            "ancho": 8.7,
+            "alto": 2
+          },
+          "estilo": {
+            "backgroundColor": "#FFFFFF",
+            "borderColor": "#000000",
+            "borderWidth": 0.5,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "left"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "grupo": "grupo_encab_hor_L9"
+          },
+          "id": "Rectángulo 4_45f4",
+          "contenido": {
+            "texto": null,
+            "src": null
+          }
+        },
+        "Rectángulo 5_45f4": {
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 13.7,
+            "y": 0.5,
+            "ancho": 8.8,
+            "alto": 2
+          },
+          "estilo": {
+            "backgroundColor": "#FFFFFF",
+            "borderColor": "#000000",
+            "borderWidth": 0.5,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "left"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "grupo": "grupo_encab_hor_L9"
+          },
+          "id": "Rectángulo 5_45f4",
+          "contenido": {
+            "texto": null,
+            "src": null
+          }
+        },
+        "Rectángulo 6_45f4": {
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 22.5,
+            "y": 0.5,
+            "ancho": 6.5,
+            "alto": 2
+          },
+          "estilo": {
+            "backgroundColor": "#FFFFFF",
+            "borderColor": "#000000",
+            "borderWidth": 0.5,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "left"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "grupo": "grupo_encab_hor_L9"
+          },
+          "id": "Rectángulo 6_45f4",
+          "contenido": {
+            "texto": null,
+            "src": null
+          }
+        },
+        "logo_UTE_45f4": {
+          "tipo": "imagen",
+          "geometria": {
+            "x": 22.5,
+            "y": 0.5,
+            "ancho": 6.5,
+            "alto": 2
+          },
+          "estilo": {
+            "backgroundColor": "transparent",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 0,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "left"
+          },
+          "imagen": {
+            "formato": "png",
+            "ruta_original": "",
+            "ruta_nueva": "assets/logo_UTE.png",
+            "nombre_archivo": "logo_UTE.png",
+            "estado": "guardada",
+            "asset_id": "2b8fd1ab"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 15,
+            "visible": true,
+            "grupo": "grupo_encab_hor_L9"
+          },
+          "id": "logo_UTE_45f4",
+          "contenido": {
+            "src": null,
+            "texto": null
+          }
+        },
+        "titulo_45f4": {
+          "tipo": "texto",
+          "geometria": {
+            "x": 5.37,
+            "y": 1.4,
+            "ancho": 8.2,
+            "alto": 1
+          },
+          "estilo": {
+            "backgroundColor": "transparent",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 0,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 7,
+            "fontFamily": "Helvetica",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "center"
+          },
+          "contenido": {
+            "texto": "“PROJECTE DE CONSTRUCCIÓ DE LA LÍNIA 9 DE METRO DE\nBARCELONA. FINALIZACIÓ DE TÚNEL I ESTACIONS\"",
+            "src": null
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 20,
+            "visible": true,
+            "grupo": "grupo_encab_hor_L9"
+          },
+          "id": "titulo_45f4"
+        },
+        "proyecto_45f4": {
+          "tipo": "texto",
+          "geometria": {
+            "x": 5.37,
+            "y": 0.65,
+            "ancho": 2,
+            "alto": 0.5
+          },
+          "estilo": {
+            "backgroundColor": "transparent",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 0,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 7,
+            "fontFamily": "Helvetica",
+            "fontWeight": "bold",
+            "fontStyle": "normal",
+            "textAlign": "left"
+          },
+          "contenido": {
+            "texto": "PROJECTE:",
+            "src": null
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 20,
+            "visible": true,
+            "grupo": "grupo_encab_hor_L9"
+          },
+          "id": "proyecto_45f4"
+        },
+        "texto_1_45f4": {
+          "tipo": "texto",
+          "geometria": {
+            "x": 0.8087301587301587,
+            "y": 5.420634920634921,
+            "ancho": 4.4,
+            "alto": 0.9
+          },
+          "estilo": {
+            "backgroundColor": "transparent",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 0,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 9,
+            "fontFamily": "Helvetica",
+            "fontWeight": "bold",
+            "fontStyle": "normal",
+            "textAlign": "center"
+          },
+          "contenido": {
+            "texto": "kk la vaca\n",
+            "src": null
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 20,
+            "visible": true,
+            "grupo": "grupo_encab_hor_L9"
+          },
+          "id": "texto_1_45f4"
+        },
+        "texto_2_45f4": {
+          "tipo": "texto",
+          "geometria": {
+            "x": 0.65,
+            "y": 1.5,
+            "ancho": 4.4,
+            "alto": 0.5
+          },
+          "estilo": {
+            "backgroundColor": "transparent",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 0,
+            "opacity": 1,
+            "color": "#ffffff",
+            "tamano": 9,
+            "fontFamily": "Helvetica",
+            "fontWeight": "bold",
+            "fontStyle": "normal",
+            "textAlign": "center"
+          },
+          "contenido": {
+            "texto": "INCLINÒMETRES",
+            "src": null
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 20,
+            "visible": true,
+            "grupo": "grupo_encab_hor_L9"
+          },
+          "id": "texto_2_45f4"
+        },
+        "nombre_sensor_45f4": {
+          "tipo": "texto",
+          "geometria": {
+            "x": 0.65,
+            "y": 2,
+            "ancho": 4.4,
+            "alto": 0.5
+          },
+          "estilo": {
+            "backgroundColor": "transparent",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 0,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 9,
+            "fontFamily": "Helvetica",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "center"
+          },
+          "contenido": {
+            "texto": "NOMBRE_SENSOR",
+            "src": null
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 20,
+            "visible": true,
+            "grupo": "grupo_encab_hor_L9"
+          },
+          "id": "nombre_sensor_45f4"
+        },
+        "logo_organismo_45f4": {
+          "tipo": "imagen",
+          "geometria": {
+            "x": 13.7,
+            "y": 0.5,
+            "ancho": 8.8,
+            "alto": 2
+          },
+          "estilo": {
+            "backgroundColor": "transparent",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 0,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "left"
+          },
+          "imagen": {
+            "formato": "png",
+            "ruta_original": "",
+            "ruta_nueva": "assets/logo_organismo.png",
+            "nombre_archivo": "logo_organismo.png",
+            "estado": "guardada",
+            "asset_id": "eee3b4c3"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 15,
+            "visible": true,
+            "grupo": "grupo_encab_hor_L9"
+          },
+          "id": "logo_organismo_45f4",
+          "contenido": {
+            "src": null,
+            "texto": null
+          }
+        },
+        "el_1770676623576_gtl1nwld7": {
+          "tipo": "texto",
+          "geometria": {
+            "x": 0,
+            "y": 0,
+            "ancho": 5,
+            "alto": 1
+          },
+          "estilo": {
+            "color": "#000000",
+            "tamano": 14,
+            "textAlign": "left"
+          },
+          "contenido": {
+            "texto": "Nuevo texto"
+          },
+          "metadata": {
+            "zIndex": 21,
+            "visible": true
+          },
+          "id": "el_1770676623576_gtl1nwld7"
+        }
+      },
+      "configuracion": {
+        "orientacion": "landscape"
+      }
+    }
+  },
+  "pagina_actual": "2",
+  "configuracion": {
+    "nombre_plantilla": "kk",
+    "num_paginas": 2
+  }
+}

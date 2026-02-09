@@ -185,11 +185,43 @@
   .canvas-element.selected {
     @apply ring-2 ring-element-selected ring-offset-2 ring-offset-canvas-paper;
   }
-  
-  .canvas-element:hover:not(.selected) {
+
+  .canvas-element.multi-selected {
+    outline: 2px dashed hsl(var(--element-selected));
+    outline-offset: 2px;
+  }
+
+  .canvas-element:hover:not(.selected):not(.multi-selected) {
     @apply ring-2 ring-element-hover ring-offset-1 ring-offset-canvas-paper;
   }
   
+  /* Group indicator tag */
+  .group-indicator {
+    position: absolute;
+    top: -8px;
+    left: 4px;
+    font-size: 9px;
+    font-weight: 600;
+    color: white;
+    padding: 1px 5px;
+    border-radius: 3px;
+    line-height: 14px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    white-space: nowrap;
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    z-index: 5;
+  }
+
+  .canvas-element:hover .group-indicator,
+  .canvas-element.selected .group-indicator,
+  .canvas-element.multi-selected .group-indicator {
+    opacity: 0.85;
+  }
+
   /* Single resize handle at bottom-right corner */
   .resize-handle-corner {
     @apply absolute cursor-se-resize;
