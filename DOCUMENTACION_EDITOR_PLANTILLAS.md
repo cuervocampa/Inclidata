@@ -222,10 +222,11 @@ Elemento para insertar imágenes (PNG, JPG, etc.)
     "reduccion": 0               // Margen interno (puntos)
   },
   "imagen": {
+    "asset_id": "2b8fd1ab",              // ID único en almacén _assets/ (8 chars MD5)
     "formato": "png",                    // Formato archivo
-    "datos_temp": "data:image/png;...",  // Base64 temporal
-    "ruta_original": "",                 // Ruta original
-    "ruta_nueva": "assets/imagen.png",   // Ruta guardada
+    "datos_temp": "data:image/png;...",  // Base64 temporal (solo en memoria, no se persiste)
+    "ruta_original": "",                 // Ruta original (legacy)
+    "ruta_nueva": "assets/imagen.png",   // Ruta guardada (legacy, se mantiene por compatibilidad)
     "nombre_archivo": "imagen.png",      // Nombre archivo
     "estado": "nueva" | "faltante"       // Estado imagen
   },
@@ -429,8 +430,8 @@ def mi_script_tabla(data_source, params):
 #### Como JSON (reutilizable)
 1. Hacer clic en "Guardar JSON"
 2. Ingresar nombre de archivo en el modal
-3. Se guarda en `plantillas/{nombre}/plantilla.json`
-4. Las imágenes se guardan en `plantillas/{nombre}/assets/`
+3. Se guarda en `biblioteca_plantillas/{nombre}/{nombre}.json`
+4. Las imágenes se registran en el almacén centralizado `biblioteca_plantillas/_assets/`
 
 #### Como PDF (para distribución)
 1. Hacer clic en "Generar PDF"
@@ -492,9 +493,13 @@ y_pdf = page_height - y_pantalla - alto_elemento
 | `utils/funciones_configuracion_plantilla.py` | Funciones auxiliares de orientación |
 | `utils/funciones_grupos.py` | Gestión de grupos reutilizables |
 | `utils/pdf_generator.py` | Motor de renderizado PDF |
+| `utils/asset_manager.py` | Almacén centralizado de assets con deduplicación MD5 |
 | `biblioteca_plantillas/` | Directorio de plantillas guardadas |
 | `biblioteca_plantillas/{nombre}/{nombre}.json` | Archivo JSON de plantilla |
-| `biblioteca_plantillas/{nombre}/assets/` | Imágenes de la plantilla |
+| `biblioteca_plantillas/_assets/` | Almacén compartido de imágenes (deduplicado) |
+| `biblioteca_plantillas/_assets/registry.json` | Índice de assets: id → metadata + usages |
+| `biblioteca_plantillas/{nombre}/assets/` | Imágenes legacy (pre-migración) |
+| `scripts/migrate_assets.py` | Script de migración de assets legacy → _assets/ |
 | `biblioteca_graficos/` | Scripts de gráficos para PDF |
 | `biblioteca_tablas/` | Scripts de tablas dinámicas |
 | `biblioteca_grupos/` | Grupos reutilizables (encabezados) |
@@ -515,12 +520,40 @@ El orden de apilamiento determina qué elementos se dibujan encima de otros:
 - **Menor zIndex**: Se dibuja primero (detrás)
 - **Mayor zIndex**: Se dibuja después (encima)
 
-### Gestión de Imágenes
+### Gestión de Imágenes (Almacén Centralizado)
 
-1. **Carga temporal**: Las imágenes se almacenan en base64 en `datos_temp`
-2. **Guardado**: Al guardar JSON, se extraen y guardan como archivos
-3. **Búsqueda en PDF**: Se busca en múltiples ubicaciones posibles
-4. **Fallback**: Si no se encuentra, se muestra rectángulo con mensaje
+Las imágenes se almacenan en `biblioteca_plantillas/_assets/` con deduplicación por hash MD5.
+Cada archivo se nombra `{asset_id}.{ext}` donde `asset_id` son los 8 primeros caracteres del MD5.
+
+**Flujo de trabajo:**
+1. **Carga temporal**: Las imágenes se almacenan en base64 en `datos_temp` (solo en memoria)
+2. **Guardado**: Al guardar, se registra en `_assets/` vía `register_asset()` → se obtiene `asset_id`
+3. **Resolución para HTML**: `resolve_image_element()` → data URI (prioridad: asset_id → datos_temp → ruta_nueva)
+4. **Resolución para PDF**: `resolve_image_path()` → ruta al archivo (prioridad: asset_id → ruta_nueva → datos_temp)
+5. **Fallback**: Si no se encuentra, se muestra rectángulo con mensaje
+
+**Estructura del almacén:**
+```
+biblioteca_plantillas/_assets/
+├── registry.json          # Índice: {asset_id: {filename, ext, md5, usages}}
+├── 2b8fd1ab.png          # logo_UTE.png (compartido por múltiples plantillas)
+├── eee3b4c3.png          # logo_organismo.png
+└── b80fb2c6.png          # imagen 1.png
+```
+
+### Migración de Assets
+
+Para migrar imágenes legacy (carpetas `assets/` por plantilla) al almacén centralizado:
+
+```bash
+# Preview (sin cambios)
+python scripts/migrate_assets.py --dry-run
+
+# Ejecutar migración
+python scripts/migrate_assets.py
+```
+
+El script es idempotente: si un elemento ya tiene `asset_id`, se salta.
 
 ---
 

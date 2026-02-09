@@ -190,24 +190,37 @@
     @apply ring-2 ring-element-hover ring-offset-1 ring-offset-canvas-paper;
   }
   
-  /* Resize handles */
-  .resize-handle {
-    @apply absolute w-2.5 h-2.5 bg-canvas-paper border-2 border-element-handle rounded-sm
-           opacity-0 transition-opacity duration-150;
+  /* Single resize handle at bottom-right corner */
+  .resize-handle-corner {
+    @apply absolute cursor-se-resize;
+    bottom: -5px;
+    right: -5px;
+    width: 14px;
+    height: 14px;
+    background: hsl(var(--element-handle));
+    border: 2px solid hsl(var(--canvas-paper));
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    z-index: 10;
   }
-  
-  .canvas-element.selected .resize-handle {
-    @apply opacity-100;
+
+  .resize-handle-corner::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 6px;
+    height: 6px;
+    border-right: 2px solid hsl(var(--canvas-paper));
+    border-bottom: 2px solid hsl(var(--canvas-paper));
   }
-  
-  .resize-handle-nw { @apply -top-1 -left-1 cursor-nw-resize; }
-  .resize-handle-n { @apply -top-1 left-1/2 -translate-x-1/2 cursor-n-resize; }
-  .resize-handle-ne { @apply -top-1 -right-1 cursor-ne-resize; }
-  .resize-handle-e { @apply top-1/2 -right-1 -translate-y-1/2 cursor-e-resize; }
-  .resize-handle-se { @apply -bottom-1 -right-1 cursor-se-resize; }
-  .resize-handle-s { @apply -bottom-1 left-1/2 -translate-x-1/2 cursor-s-resize; }
-  .resize-handle-sw { @apply -bottom-1 -left-1 cursor-sw-resize; }
-  .resize-handle-w { @apply top-1/2 -left-1 -translate-y-1/2 cursor-w-resize; }
+
+  /* Rulers */
+  .canvas-ruler {
+    flex-shrink: 0;
+    user-select: none;
+    pointer-events: none;
+  }
   
   /* Property panel sections */
   .property-section {
@@ -226,6 +239,22 @@
     @apply text-sm text-muted-foreground w-16 shrink-0;
   }
   
+  /* Image upload zone */
+  .image-upload-zone {
+    @apply rounded-lg border-2 border-dashed border-border
+           cursor-pointer overflow-hidden
+           transition-all duration-200
+           hover:border-primary/40 hover:bg-accent/30;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .image-upload-zone.image-drop-active {
+    @apply border-primary bg-primary/5;
+  }
+
   /* Page navigation */
   .page-nav-btn {
     @apply w-8 h-8 rounded-md flex items-center justify-center

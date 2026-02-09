@@ -16,6 +16,9 @@ from datetime import datetime
 
 from utils.funciones_configuracion_plantilla import actualizar_orientacion_y_reglas
 from utils.funciones_grupos import listar_grupos_disponibles, leer_datos_grupo, copiar_assets_grupo, guardar_nuevo_grupo
+from utils.asset_manager import (
+    register_asset, track_usage, resolve_image_element, resolve_image_path,
+)
 import uuid
 
 
@@ -2469,51 +2472,11 @@ def register_callbacks(app):
                     ancho_px = cm_a_px(elemento["geometria"]["ancho"])
                     alto_px = cm_a_px(elemento["geometria"]["alto"])
 
-                    # Obtener datos base64 y opacidad
-                    img_src = elemento["imagen"].get("datos_temp", "")
+                    # Obtener datos de imagen via asset_manager y opacidad
+                    nombre_plantilla = store_data.get("configuracion", {}).get("nombre_plantilla", "")
+                    img_src = resolve_image_element(elemento, nombre_plantilla)
                     opacidad = elemento["estilo"]["opacidad"] / 100
-                    
-                    # Intentar recuperar imagen de disco si no hay datos temporales (caso cargar plantilla)
-                    # Intentar recuperar imagen de disco si no hay datos temporales (caso cargar plantilla o grupo)
-                    if not img_src:
-                        ruta_nueva = elemento["imagen"].get("ruta_nueva", "")
-                        nombre_plantilla = store_data.get("configuracion", {}).get("nombre_plantilla", "")
-                        
-                        if ruta_nueva:
-                            base_dir = os.getcwd() # Debería ser la raíz del proyecto
-                            posibles_rutas = []
-                            
-                            # 1. Ruta relativa a la plantilla actual (si tenemos nombre de plantilla)
-                            # Se asume que ruta_nueva es algo como "assets/imagen.png"
-                            if nombre_plantilla:
-                                posibles_rutas.append(os.path.join(base_dir, "biblioteca_plantillas", nombre_plantilla, ruta_nueva))
-                                # Intentar también sin el subdirectorio assets si la ruta ya lo incluye
-                                posibles_rutas.append(os.path.join(base_dir, "biblioteca_plantillas", nombre_plantilla, "assets", os.path.basename(ruta_nueva)))
 
-                            # 2. Ruta relativa a la raíz del proyecto (donde también hay una carpeta assets)
-                            posibles_rutas.append(os.path.join(base_dir, ruta_nueva))
-                            
-                            # 3. Ruta directa en assets global
-                            posibles_rutas.append(os.path.join(base_dir, "assets", os.path.basename(ruta_nueva)))
-                            
-                            # 4. Ruta relativa dentro de biblioteca_grupos (intento de recuperación desesperada)
-                            # Esto es más difícil porque no sabemos el nombre de la carpeta del grupo original,
-                            # pero podemos intentar buscar en todas las carpetas de grupos si es crítico, 
-                            # aunque por rendimiento mejor nos limitamos a assets global.
-
-                            for ruta_img in posibles_rutas:
-                                if os.path.exists(ruta_img):
-                                    try:
-                                        with open(ruta_img, "rb") as image_file:
-                                            encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
-                                            # Detectar mime type básico por extensión
-                                            ext = os.path.splitext(ruta_img)[1].lower()
-                                            mime = "image/png" if ext == ".png" else ("image/jpeg" if ext in [".jpg", ".jpeg"] else "image/png")
-                                            img_src = f"data:{mime};base64,{encoded_string}"
-                                            break # Encontrada, salir del bucle
-                                    except Exception as e:
-                                        print(f"Error cargando imagen de disco {ruta_img}: {e}")
-                    
                     # Fallback si sigue vacío
                     if not img_src:
                         # Placeholder gris de 1x1 pixel
@@ -6121,80 +6084,30 @@ def register_callbacks(app):
                             # Ajustar Y (en ReportLab el origen está en la esquina inferior izquierda)
                             y = page_height - y - alto
 
-                            # Obtener la ruta de la imagen del JSON
-                            ruta_imagen = elemento["imagen"].get("ruta_nueva", "")
-
-                            # Buscar la imagen en diversas ubicaciones posibles
+                            # Resolver imagen vía asset_manager
+                            nombre_plantilla = store_data['configuracion'].get('nombre_plantilla', '')
+                            img_path = resolve_image_path(elemento, nombre_plantilla)
                             imagen_encontrada = False
-                            if ruta_imagen:
-                                # Construir posibles rutas para encontrar la imagen
-                                nombre_plantilla = store_data['configuracion'].get('nombre_plantilla', '')
-                                posibles_rutas = [
-                                    Path(ruta_imagen),  # Ruta directa
-                                    Path("plantillas") / nombre_plantilla / ruta_imagen,  # En carpeta de plantilla
-                                    Path("plantillas") / nombre_plantilla / "assets" / Path(ruta_imagen).name,  # En assets
-                                    Path("assets") / Path(ruta_imagen).name,  # En assets global
-                                    Path(Path(ruta_imagen).name)  # Solo el nombre del archivo (directorio actual)
-                                ]
 
-                                # Probar cada ruta
-                                for ruta in posibles_rutas:
-                                    try:
-                                        if ruta.exists():
-                                            # Configurar parámetros de imagen
-                                            preserveAspectRatio = elemento["estilo"].get("mantener_proporcion", True)
-
-                                            # Usar directamente el archivo de imagen
-                                            pdf.drawImage(
-                                                str(ruta),
-                                                x, y,
-                                                width=ancho,
-                                                height=alto,
-                                                preserveAspectRatio=preserveAspectRatio,
-                                                mask='auto'
-                                            )
-                                            imagen_encontrada = True
-                                            print(f"Imagen encontrada y dibujada desde: {ruta}")
-                                            break
-                                    except Exception as e:
-                                        print(f"Error con ruta {ruta}: {str(e)}")
-                                        continue
-
-                            # Si no se encuentra la imagen, intentar usar los datos base64
-                            if not imagen_encontrada and elemento["imagen"].get("datos_temp"):
+                            if img_path:
                                 try:
-                                    from io import BytesIO
-                                    import base64
-                                    import tempfile
-                                    import os
-
-                                    # Extraer datos base64
-                                    img_data = elemento["imagen"]["datos_temp"]
-                                    if "," in img_data:  # Si tiene formato "data:image/png;base64,DATOS"
-                                        img_data = img_data.split(",")[1]
-
-                                    # Enfoque con archivo temporal
-                                    img_binary = base64.b64decode(img_data)
-
-                                    # Crear archivo temporal con la extensión correcta
-                                    ext = elemento["imagen"].get("formato", "png")
-                                    with tempfile.NamedTemporaryFile(delete=False, suffix=f".{ext}") as temp_file:
-                                        temp_file.write(img_binary)
-                                        temp_path = temp_file.name
-
-                                    # Determinar modo de ajuste de imagen
                                     preserveAspectRatio = elemento["estilo"].get("mantener_proporcion", True)
-
-                                    # Dibujar imagen desde archivo temporal
-                                    pdf.drawImage(temp_path, x, y, width=ancho, height=alto,
-                                                  preserveAspectRatio=preserveAspectRatio, mask='auto')
-
-                                    # Eliminar el archivo temporal
-                                    os.unlink(temp_path)
+                                    pdf.drawImage(
+                                        str(img_path), x, y,
+                                        width=ancho, height=alto,
+                                        preserveAspectRatio=preserveAspectRatio,
+                                        mask='auto'
+                                    )
                                     imagen_encontrada = True
-                                    print(f"Imagen dibujada desde datos base64 temporales")
                                 except Exception as e:
-                                    print(f"Error al procesar imagen base64: {str(e)}")
+                                    print(f"Error dibujando imagen {img_path}: {e}")
+                                finally:
+                                    # Limpiar tempfile si fue creado por resolve_image_path
+                                    if "/tmp/" in str(img_path):
+                                        try:
+                                            os.unlink(img_path)
+                                        except OSError:
+                                            pass
 
                             # Si no se encontró la imagen, mostrar un rectángulo indicativo
                             if not imagen_encontrada:
@@ -6455,9 +6368,6 @@ def register_callbacks(app):
         try:
             import json
             import os
-            import base64
-            import shutil  # Añadimos esta importación para copiar archivos
-            from io import BytesIO
             from pathlib import Path
             from datetime import datetime
 
@@ -6475,9 +6385,6 @@ def register_callbacks(app):
             plantilla_dir = plantillas_dir / grupo_nombre
             plantilla_dir.mkdir(exist_ok=True)
 
-            assets_dir = plantilla_dir / 'assets'
-            assets_dir.mkdir(exist_ok=True)
-
             # Función para procesar imágenes en un diccionario de elementos
             def process_images_in_elementos(elementos):
                 if not elementos:
@@ -6490,67 +6397,41 @@ def register_callbacks(app):
                     # Procesar imágenes si son del tipo 'imagen'
                     if elemento.get("tipo") == "imagen":
                         try:
-                            # CASO 1: Si tiene datos_temp, guardar la imagen desde esos datos
-                            if elemento["imagen"].get("datos_temp"):
-                                try:
-                                    img_data = elemento["imagen"]["datos_temp"]
-                                    if "," in img_data:  # Si tiene formato "data:image/png;base64,DATOS"
-                                        img_data = img_data.split(",")[1]
+                            img = elemento.get("imagen", {})
 
-                                    img_binary = base64.b64decode(img_data)
+                            # CASO 1: Si tiene datos_temp → registrar asset
+                            if img.get("datos_temp"):
+                                nombre_archivo = img.get("nombre_archivo", "")
+                                if not nombre_archivo:
+                                    formato = img.get("formato") or "png"
+                                    nombre_archivo = f"{nombre}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.{formato}"
 
-                                    # Generar nombre de archivo
-                                    nombre_archivo = elemento["imagen"]["nombre_archivo"]
-                                    if not nombre_archivo:
-                                        formato = elemento["imagen"]["formato"] or "png"
-                                        nombre_archivo = f"{nombre}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.{formato}"
+                                asset_id = register_asset(img["datos_temp"], nombre_archivo)
+                                track_usage(asset_id, grupo_nombre)
+                                img["asset_id"] = asset_id
+                                img["estado"] = "guardada"
+                                # Limpiar datos_temp del JSON persistido
+                                img.pop("datos_temp", None)
+                                print(f"Imagen registrada: {nombre_archivo} → asset_id={asset_id}")
 
-                                    # Ruta completa del archivo
-                                    img_path = assets_dir / nombre_archivo
+                            # CASO 2: Si tiene ruta_nueva sin datos_temp → buscar archivo y registrar
+                            elif img.get("ruta_nueva") and not img.get("asset_id"):
+                                from utils.asset_manager import _search_image_file
+                                path = _search_image_file(img["ruta_nueva"], grupo_nombre)
+                                if path:
+                                    asset_id = register_asset(path, path.name)
+                                    track_usage(asset_id, grupo_nombre)
+                                    img["asset_id"] = asset_id
+                                    img["estado"] = "guardada"
+                                    print(f"Imagen existente registrada: {path.name} → asset_id={asset_id}")
+                                else:
+                                    print(f"No se encontró imagen: {img['ruta_nueva']}")
+                                    img["estado"] = "no encontrada"
 
-                                    # Guardar imagen
-                                    with open(img_path, 'wb') as f:
-                                        f.write(img_binary)
+                            # CASO 3: Ya tiene asset_id → solo tracking
+                            elif img.get("asset_id"):
+                                track_usage(img["asset_id"], grupo_nombre)
 
-                                    # Actualizar la ruta en el JSON - IMPORTANTE: usar ruta relativa a la plantilla
-                                    elemento["imagen"]["ruta_nueva"] = f"assets/{nombre_archivo}"
-                                    elemento["imagen"]["estado"] = "guardada"
-
-                                    # Para depuración, imprimir la ruta
-                                    print(f"Imagen guardada en: {img_path}")
-                                except Exception as e:
-                                    print(f"Error al guardar imagen {nombre}: {str(e)}")
-
-                            # CASO 2: Si no tiene datos_temp pero tiene ruta_nueva, intentar copiar el archivo
-                            elif elemento["imagen"].get("ruta_nueva"):
-                                ruta_origen = elemento["imagen"]["ruta_nueva"]
-                                if ruta_origen:
-                                    nombre_archivo = os.path.basename(ruta_origen)
-
-                                    # Buscar el archivo en posibles ubicaciones
-                                    paths_to_check = [
-                                        Path(ruta_origen),  # Ruta directa
-                                        plantillas_dir / grupo_nombre.replace('.json', '') / ruta_origen,
-                                        # En carpeta actual
-                                        # Buscar en todas las subcarpetas de plantillas
-                                        *[p / ruta_origen for p in plantillas_dir.glob("*") if p.is_dir()],
-                                        *[p / "assets" / nombre_archivo for p in plantillas_dir.glob("*") if p.is_dir()]
-                                    ]
-
-                                    found = False
-                                    for p in paths_to_check:
-                                        if p.exists():
-                                            # Copiar el archivo
-                                            destino = assets_dir / nombre_archivo
-                                            shutil.copy2(p, destino)
-                                            found = True
-                                            elemento["imagen"]["estado"] = "copiada"
-                                            print(f"Imagen copiada de {p} a {destino}")
-                                            break
-
-                                    if not found:
-                                        print(f"No se pudo encontrar la imagen {ruta_origen}")
-                                        elemento["imagen"]["estado"] = "no encontrada"
                         except Exception as e:
                             print(f"Error al procesar imagen {nombre}: {str(e)}")
 

@@ -3,6 +3,8 @@ import json
 import shutil
 from pathlib import Path
 
+from utils.asset_manager import register_asset, track_usage
+
 # Ruta base de los grupos usando pathlib para mayor seguridad
 BASE_DIR = Path(__file__).resolve().parent.parent
 GRUPOS_DIR = BASE_DIR / "biblioteca_grupos"
@@ -56,29 +58,11 @@ def leer_datos_grupo(nombre_grupo):
 
 def copiar_assets_grupo(nombre_grupo, ruta_plantilla_destino):
     """
-    Copia el contenido de la carpeta 'assets' del grupo a la carpeta 'assets' 
-    de la plantilla destino.
+    DEPRECADA: Los assets ahora se gestionan de forma centralizada en _assets/.
+    Se mantiene la firma por compatibilidad, pero no realiza ninguna copia.
     """
-    ruta_assets_origen = GRUPOS_DIR / nombre_grupo / "assets"
-    ruta_assets_destino = Path(ruta_plantilla_destino) / "assets"
-
-    if not ruta_assets_origen.exists():
-        # El grupo no tiene assets, no pasa nada
-        return
-
-    # Asegurar que existe destino/assets
-    if not ruta_assets_destino.exists():
-        ruta_assets_destino.mkdir(parents=True, exist_ok=True)
-
-    # Copiar archivos
-    try:
-        for item in ruta_assets_origen.iterdir():
-            if item.is_file():
-                destino = ruta_assets_destino / item.name
-                shutil.copy2(item, destino)
-                print(f"Asset copiado: {item.name}")
-    except Exception as e:
-        print(f"Error copiando assets del grupo {nombre_grupo}: {e}")
+    print(f"[DEPRECADO] copiar_assets_grupo() llamada para '{nombre_grupo}' — "
+          f"los assets se gestionan ahora desde _assets/")
 
 def guardar_nuevo_grupo(nombre_grupo, descripcion, elementos_seleccionados, ruta_assets_origen_app):
     """
@@ -105,60 +89,46 @@ def guardar_nuevo_grupo(nombre_grupo, descripcion, elementos_seleccionados, ruta
             return False, f"Ya existe un grupo llamado '{safe_name}'"
             
         repo_grupo.mkdir(parents=True)
-        assets_grupo = repo_grupo / "assets"
-        assets_grupo.mkdir()
-        
-        # 2. Procesar elementos y copiar assets
+
+        # 2. Procesar elementos y registrar assets
         elementos_exportar = {}
-        assets_vistos = set()
-        
+
         for elem_id, datos in elementos_seleccionados.items():
             # Copia profunda para no modificar el original
             nuevo_dato = json.loads(json.dumps(datos))
-            
-            # Limpiar ID para el JSON del grupo (quitar sufijos raros si queremos, o dejar tal cual)
-            # Para portabilidad, mejor usaremos las claves originales como claves en el json del grupo
-            # O generamos claves genéricas 'elemento_1', 'elemento_2' si los IDs son muy sucios.
-            # Dejaremos los IDs originales de momento.
-            
-            # Gestionar imágenes
+
+            # Gestionar imágenes → registrar en almacén centralizado
             if nuevo_dato.get('tipo') == 'imagen' and 'imagen' in nuevo_dato:
-                ruta_actual = nuevo_dato['imagen'].get('ruta_nueva', '')
-                nombre_archivo = nuevo_dato['imagen'].get('nombre_archivo', '')
-                
-                # Si apunta a assets, intentamos copiarlo
-                # Si apunta a assets, intentamos copiarlo y generar Base64
-                if ruta_actual and nombre_archivo:
-                    source_file = Path(ruta_assets_origen_app) / nombre_archivo
-                    dest_file = assets_grupo / nombre_archivo
-                    
-                    if source_file.exists():
-                        shutil.copy2(source_file, dest_file)
-                        # Asegurar que la ruta en el JSON del grupo sea relativa standard
-                        nuevo_dato['imagen']['ruta_nueva'] = f"assets/{nombre_archivo}"
-                        
-                        # GENERAR BASE64 PARA PORTABILIDAD (datos_temp)
-                        try:
-                            import base64
-                            with open(dest_file, "rb") as image_file:
-                                encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
-                                # Detectar mime type básico
-                                ext = os.path.splitext(nombre_archivo)[1].lower()
-                                mime = "image/png" if ext == ".png" else ("image/jpeg" if ext in [".jpg", ".jpeg"] else "image/png")
-                                # Guardar en el JSON
-                                nuevo_dato['imagen']['datos_temp'] = f"data:{mime};base64,{encoded_string}"
-                        except Exception as e_b64:
-                            print(f"Error generando Base64 para el grupo: {e_b64}")
-                            
-                    else:
-                        print(f"Advertencia: No se encontró asset original {source_file}")
-            
+                img = nuevo_dato['imagen']
+
+                # Si ya tiene asset_id, solo tracking
+                if img.get('asset_id'):
+                    track_usage(img['asset_id'], safe_name)
+                else:
+                    # Intentar registrar desde datos_temp o archivo
+                    nombre_archivo = img.get('nombre_archivo', '')
+                    datos_temp = img.get('datos_temp', '')
+
+                    if datos_temp:
+                        asset_id = register_asset(datos_temp, nombre_archivo)
+                        track_usage(asset_id, safe_name)
+                        img['asset_id'] = asset_id
+                        img.pop('datos_temp', None)
+                    elif nombre_archivo and ruta_assets_origen_app:
+                        source_file = Path(ruta_assets_origen_app) / nombre_archivo
+                        if source_file.exists():
+                            asset_id = register_asset(source_file, nombre_archivo)
+                            track_usage(asset_id, safe_name)
+                            img['asset_id'] = asset_id
+                        else:
+                            print(f"Advertencia: No se encontró asset original {source_file}")
+
             # Añadir etiqueta de grupo
             nuevo_dato['grupo'] = {
                 'nombre': safe_name,
-                'color': '#cccccc' # Color por defecto
+                'color': '#cccccc'
             }
-            
+
             elementos_exportar[elem_id] = nuevo_dato
 
         # 3. Crear JSON

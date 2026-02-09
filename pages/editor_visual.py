@@ -7,7 +7,10 @@ import json
 import uuid
 from pathlib import Path
 
-from utils.funciones_grupos import listar_grupos_disponibles, leer_datos_grupo, copiar_assets_grupo
+from utils.funciones_grupos import listar_grupos_disponibles, leer_datos_grupo
+from utils.asset_manager import (
+    register_asset, get_asset_data_uri, track_usage, resolve_image_element,
+)
 
 # Rutas base
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -85,7 +88,12 @@ def _convertir_elemento(elem_id, elem):
             nuevo['contenido'] = {'texto': '', 'src': None}
     elif tipo == 'imagen':
         img = elem.get('imagen', {})
-        src = img.get('datos_temp', '') or img.get('ruta_nueva', '')
+        # Prioridad: asset_id → datos_temp → ruta_nueva
+        aid = img.get('asset_id')
+        if aid:
+            src = get_asset_data_uri(aid)
+        else:
+            src = img.get('datos_temp', '') or img.get('ruta_nueva', '')
         nuevo['contenido'] = {'src': src, 'texto': None}
     else:
         # rectangulo, linea, grafico, tabla — ensure contenido exists
@@ -296,13 +304,6 @@ def register_callbacks(app):
         elems_actuales = editor_state['paginas'][pagina_actual]['elementos']
         sufijo = str(uuid.uuid4())[:4]
 
-        # Copiar assets del grupo a la plantilla activa
-        try:
-            nom_plantilla = editor_state.get('configuracion', {}).get('nombre_plantilla', 'temp_plantilla') or 'temp_plantilla'
-            copiar_assets_grupo(nombre_grupo, str(PLANTILLAS_DIR / nom_plantilla))
-        except Exception:
-            pass
-
         count = 0
         for id_elem, props in datos_grupo['elementos'].items():
             nuevo_id = f"{id_elem}_{sufijo}"
@@ -329,20 +330,75 @@ def register_callbacks(app):
 
         trigger_id = ctx.triggered[0]["prop_id"].split(".")[0]
 
-        if trigger_id == "btn-save-visual":
-            if editor_state:
-                return dmc.Notification(
-                    title="Guardado",
-                    message=f"Plantilla '{editor_state.get('configuracion', {}).get('nombre_plantilla')}' guardada correctamente.",
-                    color="green",
-                    action="show"
-                )
-            else:
+        if trigger_id != "btn-save-visual":
+            return dash.no_update
+
+        if not editor_state:
+            return dmc.Notification(
+                title="Error",
+                message="No hay datos para guardar.",
+                color="red",
+                action="show"
+            )
+
+        try:
+            import copy
+            data = copy.deepcopy(editor_state)
+            nombre = data.get("configuracion", {}).get("nombre_plantilla", "")
+            if not nombre:
                 return dmc.Notification(
                     title="Error",
-                    message="No hay datos para guardar.",
+                    message="La plantilla no tiene nombre.",
                     color="red",
                     action="show"
                 )
 
-        return dash.no_update
+            # Procesar imágenes en todas las páginas
+            for page_id, page in data.get("paginas", {}).items():
+                for elem_id, elem in page.get("elementos", {}).items():
+                    if elem.get("tipo") != "imagen":
+                        continue
+                    contenido = elem.get("contenido", {})
+                    img = elem.get("imagen", {})
+                    src = contenido.get("src", "") or ""
+
+                    # Si contenido.src es data URI → registrar asset
+                    if src.startswith("data:"):
+                        nombre_archivo = img.get("nombre_archivo", f"{elem_id}.png")
+                        asset_id = register_asset(src, nombre_archivo)
+                        track_usage(asset_id, nombre)
+                        img["asset_id"] = asset_id
+                        # Limpiar base64 del JSON
+                        contenido["src"] = None
+                        img.pop("datos_temp", None)
+                    elif img.get("asset_id"):
+                        # Ya registrado, solo tracking
+                        track_usage(img["asset_id"], nombre)
+
+                    elem["imagen"] = img
+                    elem["contenido"] = contenido
+
+            # Guardar JSON
+            dest_dir = PLANTILLAS_DIR / nombre
+            dest_dir.mkdir(parents=True, exist_ok=True)
+            json_path = dest_dir / f"{nombre}.json"
+
+            with open(json_path, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=2, ensure_ascii=False)
+
+            print(f"[editor_visual] Plantilla '{nombre}' guardada en {json_path}")
+            return dmc.Notification(
+                title="Guardado",
+                message=f"Plantilla '{nombre}' guardada correctamente.",
+                color="green",
+                action="show"
+            )
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return dmc.Notification(
+                title="Error",
+                message=f"Error al guardar: {str(e)}",
+                color="red",
+                action="show"
+            )

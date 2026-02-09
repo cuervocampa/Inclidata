@@ -22,11 +22,21 @@ export interface ElementStyle {
   borderWidth?: number;
   borderColor?: string;
   opacity?: number;
+  mantener_proporcion?: boolean;
 }
 
 export interface ElementContent {
   texto?: string;
   src?: string;
+}
+
+export interface ImageData {
+  formato?: string;
+  datos_temp?: string;
+  ruta_original?: string;
+  ruta_nueva?: string;
+  nombre_archivo?: string;
+  estado?: string;
 }
 
 export interface ElementMetadata {
@@ -42,6 +52,7 @@ export interface TemplateElement {
   estilo: ElementStyle;
   contenido: ElementContent;
   metadata: ElementMetadata;
+  imagen?: ImageData;
 }
 
 export interface PageConfig {

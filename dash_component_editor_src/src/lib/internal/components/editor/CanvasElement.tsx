@@ -169,11 +169,23 @@ export const CanvasElement = ({ element, pageId, cmToPx }: CanvasElementProps) =
         );
       case 'imagen': {
         const src = getImageSrc(element);
+        const mantenerProporcion = estilo.mantener_proporcion ?? true;
         return src ? (
-          <img src={src} alt="" className="w-full h-full object-cover" />
+          <img
+            src={src}
+            alt=""
+            className="w-full h-full"
+            style={{ objectFit: mantenerProporcion ? 'contain' : 'fill' }}
+            draggable={false}
+          />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-muted text-muted-foreground text-xs">
-            Imagen
+          <div className="w-full h-full flex flex-col items-center justify-center bg-muted/50 text-muted-foreground border border-dashed border-border rounded gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+              <circle cx="9" cy="9" r="2"/>
+              <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+            </svg>
+            <span className="text-[10px]">Sin imagen</span>
           </div>
         );
       }
@@ -203,8 +215,6 @@ export const CanvasElement = ({ element, pageId, cmToPx }: CanvasElementProps) =
     }
   };
 
-  const resizeHandles = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
-
   return (
     <motion.div
       ref={elementRef}
@@ -217,13 +227,13 @@ export const CanvasElement = ({ element, pageId, cmToPx }: CanvasElementProps) =
     >
       {renderContent()}
 
-      {isSelected && resizeHandles.map((handle) => (
+      {/* Single resize handle at bottom-right corner */}
+      {isSelected && (
         <div
-          key={handle}
-          className={`resize-handle resize-handle-${handle}`}
-          onMouseDown={(e) => handleResizeStart(e, handle)}
+          className="resize-handle-corner"
+          onMouseDown={(e) => handleResizeStart(e, 'se')}
         />
-      ))}
+      )}
     </motion.div>
   );
 };

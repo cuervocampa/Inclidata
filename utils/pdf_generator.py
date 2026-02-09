@@ -22,6 +22,7 @@ import sys
 from PIL import Image
 import matplotlib.pyplot as plt
 
+from utils.asset_manager import resolve_image_path
 from reportlab.graphics import renderPDF
 try:
     from svglib.svglib import svg2rlg
@@ -299,89 +300,20 @@ def draw_image(pdf, image_data, page_height, plantilla_dir=None, biblioteca_path
     opacidad = image_data["estilo"].get("opacidad", 100) / 100
     preserveAspectRatio = image_data["estilo"].get("mantener_proporcion", True)
 
-    # Buscar la imagen
+    # Resolver imagen vía asset_manager
+    template_name = plantilla_dir.name if plantilla_dir else ""
+    img_path = resolve_image_path(image_data, template_name)
     imagen_encontrada = False
 
-    # Obtener la ruta de la imagen
-    ruta_imagen = image_data["imagen"].get("ruta_nueva", "")
-
-    # CASO 1: Intentar cargar desde ruta
-    if ruta_imagen:
-        # Construir posibles rutas para encontrar la imagen
-        posibles_rutas = []
-
-        # Añadir ruta directa
-        posibles_rutas.append(Path(ruta_imagen))
-
-        # Añadir rutas relativas a la plantilla si tenemos el directorio
-        if plantilla_dir:
-            posibles_rutas.append(plantilla_dir / ruta_imagen)
-            posibles_rutas.append(plantilla_dir / "assets" / Path(ruta_imagen).name)
-
-        # Añadir rutas a la biblioteca global
-        if biblioteca_path:
-            posibles_rutas.append(biblioteca_path / ruta_imagen)
-            posibles_rutas.append(biblioteca_path / "assets" / Path(ruta_imagen).name)
-
-        # Añadir rutas relativas al directorio actual
-        posibles_rutas.append(Path("assets") / Path(ruta_imagen).name)
-        posibles_rutas.append(Path(Path(ruta_imagen).name))
-
-        # Probar cada ruta
-        for ruta in posibles_rutas:
-            try:
-                if ruta.exists():
-                    # Configurar transparencia si es necesario
-                    if opacidad < 1.0:
-                        pdf.saveState()
-                        pdf.setFillAlpha(opacidad)
-
-                    # Dibujar imagen
-                    pdf.drawImage(
-                        str(ruta),
-                        x, y,
-                        width=ancho,
-                        height=alto,
-                        preserveAspectRatio=preserveAspectRatio,
-                        mask='auto'
-                    )
-
-                    if opacidad < 1.0:
-                        pdf.restoreState()
-
-                    imagen_encontrada = True
-                    break
-            except Exception as e:
-                continue
-
-    # CASO 2: Intentar cargar desde datos base64
-    if not imagen_encontrada and image_data["imagen"].get("datos_temp"):
+    if img_path:
         try:
-            # Extraer datos base64
-            img_data = image_data["imagen"]["datos_temp"]
-            if "," in img_data:  # Si tiene formato "data:image/png;base64,DATOS"
-                img_data = img_data.split(",")[1]
-
-            # Decodificar datos
-            img_binary = base64.b64decode(img_data)
-
-            # Crear archivo temporal con la extensión correcta
-            ext = image_data["imagen"].get("formato", "png")
-            with tempfile.NamedTemporaryFile(delete=False, suffix=f".{ext}") as temp_file:
-                temp_file.write(img_binary)
-                temp_path = temp_file.name
-
-            # Configurar transparencia si es necesario
             if opacidad < 1.0:
                 pdf.saveState()
                 pdf.setFillAlpha(opacidad)
 
-            # Dibujar imagen
             pdf.drawImage(
-                temp_path,
-                x, y,
-                width=ancho,
-                height=alto,
+                str(img_path), x, y,
+                width=ancho, height=alto,
                 preserveAspectRatio=preserveAspectRatio,
                 mask='auto'
             )
@@ -389,11 +321,16 @@ def draw_image(pdf, image_data, page_height, plantilla_dir=None, biblioteca_path
             if opacidad < 1.0:
                 pdf.restoreState()
 
-            # Eliminar el archivo temporal
-            os.unlink(temp_path)
             imagen_encontrada = True
         except Exception as e:
-            print(f"Error al procesar imagen base64: {str(e)}")
+            print(f"Error dibujando imagen {img_path}: {e}")
+        finally:
+            # Limpiar tempfile si fue creado por resolve_image_path
+            if "/tmp/" in str(img_path):
+                try:
+                    os.unlink(img_path)
+                except OSError:
+                    pass
 
     # Si no se encontró la imagen, dibujar un rectángulo indicativo
     if not imagen_encontrada:
