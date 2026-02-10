@@ -693,10 +693,10 @@
         "logo_UTE_45f4": {
           "tipo": "imagen",
           "geometria": {
-            "x": 22.5,
-            "y": 0.5,
-            "ancho": 6.5,
-            "alto": 2
+            "x": 22.976190476190474,
+            "y": 0.7380952380952381,
+            "ancho": 5.6798941798941796,
+            "alto": 1.4973544973544972
           },
           "estilo": {
             "backgroundColor": "transparent",
@@ -911,10 +911,10 @@
         "logo_organismo_45f4": {
           "tipo": "imagen",
           "geometria": {
-            "x": 13.7,
+            "x": 13.832275132275132,
             "y": 0.5,
-            "ancho": 8.8,
-            "alto": 2
+            "ancho": 8.50899470899471,
+            "alto": 1.947089947089947
           },
           "estilo": {
             "backgroundColor": "transparent",
@@ -960,18 +960,167 @@
             "alto": 1
           },
           "estilo": {
+            "backgroundColor": "transparent",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 0,
+            "opacity": 1,
             "color": "#000000",
             "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
             "textAlign": "left"
           },
           "contenido": {
-            "texto": "Nuevo texto"
+            "texto": "Nuevo texto",
+            "src": null
           },
           "metadata": {
             "zIndex": 21,
-            "visible": true
+            "visible": true,
+            "grupo": null
           },
           "id": "el_1770676623576_gtl1nwld7"
+        },
+        "el_1770761200397_3edn1ugvy": {
+          "tipo": "grafico",
+          "geometria": {
+            "x": 12.142857142857142,
+            "y": 4.081569449611442,
+            "ancho": 5.317460317460316,
+            "alto": 15.037037037037038
+          },
+          "estilo": {
+            "backgroundColor": "transparent",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 0,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "left"
+          },
+          "contenido": {
+            "texto": null,
+            "src": null
+          },
+          "metadata": {
+            "zIndex": 22,
+            "visible": true,
+            "grupo": null
+          },
+          "configuracion": {
+            "script": "grafico_incli_0.py",
+            "formato": "svg",
+            "parametros": {
+              "sensor": "incr_checksum_a",
+              "mostrar_titulo": true,
+              "etiqueta_eje_x": "Desplazamiento (mm)",
+              "mostrar_leyenda": false,
+              "incluir_todos_umbrales": false,
+              "nombre_sensor": "$CURRENT",
+              "fecha_inicial": "$CURRENT",
+              "fecha_final": "$CURRENT",
+              "total_camp": "$CURRENT",
+              "ultimas_camp": "$CURRENT",
+              "cadencia_dias": "$CURRENT",
+              "color_scheme": "$CURRENT",
+              "escala_desplazamiento": "$CURRENT",
+              "escala_incremento": "$CURRENT",
+              "valor_positivo_desplazamiento": "$CURRENT",
+              "valor_negativo_desplazamiento": "$CURRENT",
+              "valor_positivo_incremento": "$CURRENT",
+              "valor_negativo_incremento": "$CURRENT",
+              "eje": "$CURRENT",
+              "orden": "$CURRENT",
+              "dpi": 600
+            }
+          },
+          "id": "el_1770761200397_3edn1ugvy"
+        },
+        "el_1770761274151_enio4j4oi": {
+          "tipo": "grafico",
+          "geometria": {
+            "x": 26.34920634920635,
+            "y": 13.076278444320437,
+            "ancho": 2.3015873015873005,
+            "alto": 5.830687830687831
+          },
+          "estilo": {
+            "backgroundColor": "transparent",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 0,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "left"
+          },
+          "contenido": {
+            "texto": null,
+            "src": null
+          },
+          "metadata": {
+            "zIndex": 23,
+            "visible": true,
+            "grupo": null
+          },
+          "configuracion": {
+            "script": "grafico_incli_leyenda_0.py",
+            "formato": "svg",
+            "parametros": {}
+          },
+          "id": "el_1770761274151_enio4j4oi"
+        },
+        "el_1770762503588_4lnr3n8zo": {
+          "tipo": "grafico",
+          "geometria": {
+            "x": 6.7989417989418,
+            "y": 4.1,
+            "ancho": 5.3,
+            "alto": 15
+          },
+          "estilo": {
+            "opacity": 1
+          },
+          "contenido": {},
+          "metadata": {
+            "zIndex": 24,
+            "visible": true
+          },
+          "configuracion": {
+            "script": "grafico_incli_0.py",
+            "formato": "svg",
+            "parametros": {}
+          },
+          "id": "el_1770762503588_4lnr3n8zo"
+        },
+        "el_1770762584660_lc6hw04tp": {
+          "tipo": "grafico",
+          "geometria": {
+            "x": 23.994708994708997,
+            "y": 4.0749560966693545,
+            "ancho": 4.470899470899471,
+            "alto": 7.947089947089947
+          },
+          "estilo": {
+            "opacity": 1
+          },
+          "contenido": {},
+          "metadata": {
+            "zIndex": 25,
+            "visible": true
+          },
+          "configuracion": {
+            "script": "grafico_incli_series_0.py",
+            "formato": "svg",
+            "parametros": {}
+          },
+          "id": "el_1770762584660_lc6hw04tp"
         }
       },
       "configuracion": {

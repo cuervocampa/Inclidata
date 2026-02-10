@@ -20,6 +20,7 @@ from utils.asset_manager import (
 # Rutas base
 BASE_DIR = Path(__file__).resolve().parent.parent
 PLANTILLAS_DIR = BASE_DIR / "biblioteca_plantillas"
+GRAFICOS_DIR = BASE_DIR / "biblioteca_graficos"
 
 
 def listar_plantillas_disponibles():
@@ -33,6 +34,16 @@ def listar_plantillas_disponibles():
             if json_file.exists():
                 plantillas.append({"label": item.name, "value": item.name})
     return plantillas
+
+
+def listar_scripts_graficos():
+    """Lista scripts de gráficos disponibles en biblioteca_graficos/."""
+    scripts = []
+    if GRAFICOS_DIR.exists():
+        for item in GRAFICOS_DIR.iterdir():
+            if item.is_dir() and (item / f"{item.name}.py").exists():
+                scripts.append(f"{item.name}.py")
+    return sorted(scripts)
 
 
 def _convertir_elemento(elem_id, elem):
@@ -122,6 +133,10 @@ def _convertir_elemento(elem_id, elem):
         'visible': old_m.get('visible', True),
         'grupo': grupo_str,
     }
+
+    # --- configuracion (gráficos, tablas) ---
+    if 'configuracion' in elem and tipo in ('grafico', 'tabla'):
+        nuevo['configuracion'] = elem['configuracion']
 
     return nuevo
 
@@ -333,7 +348,8 @@ def layout():
                         "configuracion": {
                             "nombre_plantilla": "Nueva Plantilla Visual",
                             "num_paginas": 1
-                        }
+                        },
+                        "chartScripts": listar_scripts_graficos()
                     }
                 ),
                 style={"height": "calc(100vh - 100px)", "width": "100%"}
@@ -526,6 +542,7 @@ def register_callbacks(app):
                 data_json["configuracion"].setdefault("num_paginas", len(data_json.get("paginas", {})))
 
             _convertir_plantilla(data_json)
+            data_json["chartScripts"] = listar_scripts_graficos()
 
             print(f"[editor_visual] Plantilla '{nombre_plantilla}' cargada OK — "
                   f"{len(data_json.get('paginas', {}))} páginas")
@@ -607,6 +624,7 @@ def register_callbacks(app):
             )
 
         editor_state, count = _fusionar_grupo_en_estado(datos_grupo, editor_state)
+        editor_state["chartScripts"] = listar_scripts_graficos()
         pagina_actual = editor_state.get('pagina_actual', '1')
         print(f"[editor_visual] Grupo importado desde '{filename}' — {count} elementos en página {pagina_actual}")
         return editor_state, dmc.Notification(

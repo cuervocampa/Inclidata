@@ -1,10 +1,16 @@
 import { useState } from 'react';
-import { FileText } from 'lucide-react';
+import { FileText, Braces } from 'lucide-react';
 import { useTemplateStore } from '@/store/templateStore';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 
-export const EditorHeader = () => {
+interface EditorHeaderProps {
+  jsonInspectorOpen?: boolean;
+  onToggleJsonInspector?: () => void;
+}
+
+export const EditorHeader = ({ jsonInspectorOpen, onToggleJsonInspector }: EditorHeaderProps) => {
   const { configuracion, updateConfig } = useTemplateStore();
   const [isEditing, setIsEditing] = useState(false);
 
@@ -12,7 +18,7 @@ export const EditorHeader = () => {
     <motion.header
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="h-12 bg-card border-b border-border flex items-center px-6"
+      className="h-12 bg-card border-b border-border flex items-center justify-between px-6"
     >
       <div className="flex items-center gap-4">
         <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -41,6 +47,22 @@ export const EditorHeader = () => {
         <span className="text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-md">
           v{configuracion.version || '1.0'}
         </span>
+      </div>
+
+      {/* Right-side actions */}
+      <div className="flex items-center gap-1">
+        {onToggleJsonInspector && (
+          <Button
+            variant={jsonInspectorOpen ? 'secondary' : 'ghost'}
+            size="sm"
+            onClick={onToggleJsonInspector}
+            className="h-8 gap-1.5 text-xs"
+            title="Inspector JSON"
+          >
+            <Braces className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">JSON</span>
+          </Button>
+        )}
       </div>
     </motion.header>
   );

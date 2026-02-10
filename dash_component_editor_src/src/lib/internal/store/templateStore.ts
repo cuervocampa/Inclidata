@@ -39,6 +39,12 @@ export interface ImageData {
   estado?: string;
 }
 
+export interface ChartConfig {
+  script: string;
+  formato: 'svg' | 'png';
+  parametros: Record<string, unknown>;
+}
+
 export interface ElementMetadata {
   zIndex: number;
   visible: boolean;
@@ -53,6 +59,7 @@ export interface TemplateElement {
   contenido: ElementContent;
   metadata: ElementMetadata;
   imagen?: ImageData;
+  configuracion?: ChartConfig;
 }
 
 export interface PageConfig {
@@ -83,6 +90,7 @@ export interface TemplateState {
   selectedElementId: string | null;
   selectedElementIds: string[];
   pendingAction: PendingAction | null;
+  chartScripts: string[];
 }
 
 interface TemplateActions {
@@ -106,7 +114,8 @@ interface TemplateActions {
   loadTemplate: (template: Omit<TemplateState, 'selectedElementId'>) => void;
   resetTemplate: () => void;
   dispatchAction: (action: PendingAction) => void;
-  
+  setChartScripts: (scripts: string[]) => void;
+
   // Helpers
   getSelectedElement: () => TemplateElement | null;
   exportJSON: () => string;
@@ -129,7 +138,8 @@ const initialState: TemplateState = {
   },
   selectedElementId: null,
   selectedElementIds: [],
-  pendingAction: null
+  pendingAction: null,
+  chartScripts: []
 };
 
 export const useTemplateStore = create<TemplateState & TemplateActions>((set, get) => ({
@@ -232,7 +242,10 @@ export const useTemplateStore = create<TemplateState & TemplateActions>((set, ge
                 geometria: updates.geometria ? { ...element.geometria, ...updates.geometria } : element.geometria,
                 estilo: updates.estilo ? { ...element.estilo, ...updates.estilo } : element.estilo,
                 contenido: updates.contenido ? { ...element.contenido, ...updates.contenido } : element.contenido,
-                metadata: updates.metadata ? { ...element.metadata, ...updates.metadata } : element.metadata
+                metadata: updates.metadata ? { ...element.metadata, ...updates.metadata } : element.metadata,
+                configuracion: updates.configuracion
+                  ? { ...element.configuracion, ...updates.configuracion }
+                  : element.configuracion
               }
             }
           }
@@ -337,6 +350,10 @@ export const useTemplateStore = create<TemplateState & TemplateActions>((set, ge
     set({ pendingAction: action });
   },
 
+  setChartScripts: (scripts: string[]) => {
+    set({ chartScripts: scripts });
+  },
+
   // Helpers
   getSelectedElement: () => {
     const state = get();
@@ -345,7 +362,7 @@ export const useTemplateStore = create<TemplateState & TemplateActions>((set, ge
   },
   
   exportJSON: () => {
-    const { selectedElementId, selectedElementIds, pendingAction, ...templateData } = get();
+    const { selectedElementId, selectedElementIds, pendingAction, chartScripts, ...templateData } = get();
     return JSON.stringify({
       paginas: templateData.paginas,
       pagina_actual: templateData.pagina_actual,

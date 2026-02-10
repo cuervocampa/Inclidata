@@ -27,7 +27,8 @@ import {
   RatioIcon,
   X,
   Group,
-  Package
+  Package,
+  BarChart3
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -291,6 +292,112 @@ const ImageSection = ({
   );
 };
 
+/** Chart configuration panel */
+const ChartSection = ({
+  element,
+  pageId,
+  updateElement,
+  chartScripts,
+}: {
+  element: any;
+  pageId: string;
+  updateElement: (pageId: string, elementId: string, updates: any) => void;
+  chartScripts: string[];
+}) => {
+  const config = element.configuracion || { script: '', formato: 'svg', parametros: {} };
+
+  const handleConfigChange = useCallback((field: string, value: any) => {
+    updateElement(pageId, element.id, {
+      configuracion: { ...config, [field]: value },
+    });
+  }, [element, config, pageId, updateElement]);
+
+  const params = config.parametros || {};
+  const hasParams = Object.keys(params).length > 0;
+  const paramsText = JSON.stringify(params, null, 2);
+
+  const placeholderExample = `{
+  "sensor": "desp_a",
+  "mostrar_titulo": true,
+  "mostrar_leyenda": false,
+  "dpi": 600
+}`;
+
+  return (
+    <div className="property-section">
+      <div className="property-section-title">
+        <BarChart3 className="w-3.5 h-3.5 inline mr-1" />
+        Configuración de Gráfico
+      </div>
+
+      {/* Script selector */}
+      <div className="mb-3">
+        <Label className="text-xs text-muted-foreground mb-1.5 block">Script</Label>
+        <Select
+          value={config.script || '__none__'}
+          onValueChange={(v) => handleConfigChange('script', v === '__none__' ? '' : v)}
+        >
+          <SelectTrigger className="h-8">
+            <SelectValue placeholder="Seleccionar script..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__none__">Sin script</SelectItem>
+            {chartScripts.map((s) => (
+              <SelectItem key={s} value={s}>{s.replace('.py', '')}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Format selector */}
+      <div className="mb-3">
+        <Label className="text-xs text-muted-foreground mb-1.5 block">Formato</Label>
+        <Select
+          value={config.formato || 'svg'}
+          onValueChange={(v) => handleConfigChange('formato', v)}
+        >
+          <SelectTrigger className="h-8">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="svg">SVG</SelectItem>
+            <SelectItem value="png">PNG</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Parameters JSON editor */}
+      <div>
+        <Label className="text-xs text-muted-foreground mb-1.5 block">Parámetros (JSON)</Label>
+        <p className="text-[10px] text-muted-foreground mb-1.5 leading-snug">
+          Objeto JSON con los parámetros que recibe el script.
+          Usa <code className="bg-muted px-0.5 rounded">"$CURRENT"</code> para
+          inyectar el valor activo del informe en tiempo de generación.
+        </p>
+        <textarea
+          defaultValue={hasParams ? paramsText : ''}
+          key={element.id}
+          onBlur={(e) => {
+            const txt = e.target.value.trim();
+            if (!txt) {
+              handleConfigChange('parametros', {});
+              return;
+            }
+            try {
+              const parsed = JSON.parse(txt);
+              handleConfigChange('parametros', parsed);
+            } catch {
+              // invalid JSON — keep current value
+            }
+          }}
+          className="w-full h-36 px-3 py-2 text-xs font-mono border border-input rounded-md bg-background resize-y focus:outline-none focus:ring-2 focus:ring-ring"
+          placeholder={placeholderExample}
+        />
+      </div>
+    </div>
+  );
+};
+
 const CM_TO_PX = 37.8;
 
 /**
@@ -336,6 +443,7 @@ export const PropertiesPanel = () => {
     selectedElementId,
     selectedElementIds,
     configuracion,
+    chartScripts,
     updateElement,
     deleteElement,
     updateConfig,
@@ -605,6 +713,16 @@ export const PropertiesPanel = () => {
           element={selectedElement}
           pageId={pagina_actual}
           updateElement={updateElement}
+        />
+      )}
+
+      {/* Chart section - for chart elements */}
+      {selectedElement.tipo === 'grafico' && (
+        <ChartSection
+          element={selectedElement}
+          pageId={pagina_actual}
+          updateElement={updateElement}
+          chartScripts={chartScripts}
         />
       )}
 

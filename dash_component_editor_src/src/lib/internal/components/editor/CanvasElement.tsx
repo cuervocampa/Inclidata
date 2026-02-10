@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTemplateStore, TemplateElement } from '@/store/templateStore';
 import { motion } from 'framer-motion';
+import { BarChart3 } from 'lucide-react';
 
 interface CanvasElementProps {
   element: TemplateElement;
@@ -257,12 +258,18 @@ export const CanvasElement = ({ element, pageId, cmToPx }: CanvasElementProps) =
         );
       case 'rectangulo':
         return null;
-      case 'grafico':
+      case 'grafico': {
+        const config = (element as any).configuracion || {};
+        const scriptName = config.script ? config.script.replace('.py', '') : 'Sin script';
+        const formato = config.formato || 'svg';
         return (
-          <div className="w-full h-full flex items-center justify-center bg-muted/50 text-muted-foreground text-xs border border-dashed border-border rounded">
-            📊 Gráfico
+          <div className="w-full h-full flex flex-col items-center justify-center bg-muted/50 text-muted-foreground border border-dashed border-border rounded gap-0.5">
+            <BarChart3 className="w-6 h-6 opacity-40" />
+            <span className="text-[10px] font-medium truncate max-w-[90%]">{scriptName}</span>
+            <span className="text-[8px] opacity-60 uppercase">{formato}</span>
           </div>
         );
+      }
       case 'tabla':
         return (
           <div className="w-full h-full flex items-center justify-center bg-muted/50 text-muted-foreground text-xs border border-dashed border-border rounded">

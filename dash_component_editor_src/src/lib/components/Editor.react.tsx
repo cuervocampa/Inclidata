@@ -18,8 +18,12 @@ const StoreSync = (props: any) => {
     // 1. Listen to Dash props change (load template)
     useEffect(() => {
         if (data && Object.keys(data).length > 0) {
-            console.log("Loading template from Dash data", data);
-            store.loadTemplate(data);
+            const { chartScripts, ...templateData } = data;
+            console.log("Loading template from Dash data", templateData);
+            store.loadTemplate(templateData);
+            if (chartScripts) {
+                store.setChartScripts(chartScripts);
+            }
         }
     }, [data]);
 

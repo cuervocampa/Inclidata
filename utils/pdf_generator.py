@@ -126,8 +126,9 @@ def draw_line(pdf, line_data, page_height):
     y2 = page_height - y2
 
     # Configurar estilo
-    pdf.setStrokeColor(line_data["estilo"]["color"])
-    pdf.setLineWidth(line_data["estilo"]["grosor"])
+    estilo = line_data["estilo"]
+    pdf.setStrokeColor(estilo.get("color", estilo.get("borderColor", "#000000")))
+    pdf.setLineWidth(estilo.get("grosor", estilo.get("borderWidth", 1)))
 
     # Dibujar línea
     pdf.line(x1, y1, x2, y2)
@@ -151,11 +152,20 @@ def draw_rectangle(pdf, rect_data, page_height):
     # Ajustar coordenada Y
     y = page_height - y - alto
 
-    # Configurar estilos
-    pdf.setStrokeColor(rect_data["estilo"]["color_borde"])
-    pdf.setLineWidth(rect_data["estilo"]["grosor_borde"])
-    pdf.setFillColor(rect_data["estilo"]["color_relleno"])
-    opacidad = rect_data["estilo"]["opacidad"] / 100
+    # Configurar estilos (soporta formato viejo y nuevo)
+    estilo = rect_data["estilo"]
+    color_borde = estilo.get("color_borde", estilo.get("borderColor", "#000000"))
+    grosor_borde = estilo.get("grosor_borde", estilo.get("borderWidth", 0.5))
+    color_relleno = estilo.get("color_relleno", estilo.get("backgroundColor", "#FFFFFF"))
+    # Formato viejo: opacidad 0-100, formato nuevo: opacity 0-1
+    if "opacidad" in estilo:
+        opacidad = estilo["opacidad"] / 100
+    else:
+        opacidad = estilo.get("opacity", 1)
+
+    pdf.setStrokeColor(color_borde)
+    pdf.setLineWidth(grosor_borde)
+    pdf.setFillColor(color_relleno)
 
     # Dibujar rectángulo
     pdf.saveState()
@@ -167,7 +177,7 @@ def draw_rectangle(pdf, rect_data, page_height):
     pdf.rect(
         x, y, ancho, alto,
         fill=(opacidad > 0),
-        stroke=(rect_data["estilo"]["grosor_borde"] > 0)
+        stroke=(grosor_borde > 0)
     )
 
     pdf.restoreState()
@@ -192,16 +202,17 @@ def draw_text(pdf, text_data, page_height, data_source=None):
     # Ajustar coordenada Y
     y = page_height - y - alto
 
-    # Configurar estilos de texto
-    font_family = text_data["estilo"]["familia_fuente"]
-    font_size = text_data["estilo"]["tamano"]
-    is_bold = text_data["estilo"]["negrita"] == "bold"
-    is_italic = text_data["estilo"]["cursiva"] == "italic"
+    # Configurar estilos de texto (soporta formato viejo y nuevo)
+    estilo = text_data["estilo"]
+    font_family = estilo.get("familia_fuente", estilo.get("fontFamily", "Helvetica"))
+    font_size = estilo.get("tamano", 14)
+    is_bold = estilo.get("negrita", estilo.get("fontWeight", "normal")) == "bold"
+    is_italic = estilo.get("cursiva", estilo.get("fontStyle", "normal")) == "italic"
 
     font_name = get_safe_font_name(font_family, is_bold, is_italic)
 
     pdf.setFont(font_name, font_size)
-    pdf.setFillColor(text_data["estilo"]["color"])
+    pdf.setFillColor(estilo.get("color", "#000000"))
 
     # Obtener el texto
     texto = text_data["contenido"]["texto"] or ""
@@ -214,7 +225,7 @@ def draw_text(pdf, text_data, page_height, data_source=None):
         texto = texto.replace("$CURRENT", str(nom_sensor))
 
     # Aplicar rotación si es necesario
-    rotation = text_data["estilo"].get("rotacion", 0)
+    rotation = estilo.get("rotacion", 0)
     if rotation != 0:
         pdf.saveState()
         # Calcular el centro del área de texto
@@ -231,10 +242,15 @@ def draw_text(pdf, text_data, page_height, data_source=None):
     # Altura de una línea
     line_height = font_size * 1.2
 
+    # Resolver alineaciones (soporta formato viejo y nuevo)
+    # Formato nuevo solo tiene textAlign (horizontal), default vertical a "top"
+    alineacion_v = estilo.get("alineacion_v", "top")
+    alineacion_h = estilo.get("alineacion_h", estilo.get("textAlign", "left"))
+
     # Calcular posición vertical inicial según alineación vertical
-    if text_data["estilo"]["alineacion_v"] == "top":
+    if alineacion_v == "top":
         y_pos = y + alto - font_size
-    elif text_data["estilo"]["alineacion_v"] == "middle":
+    elif alineacion_v == "middle":
         y_pos = y + alto / 2 + (len(lines) * line_height) / 2 - font_size
     else:  # bottom
         y_pos = y + (len(lines) * line_height) - font_size
@@ -242,13 +258,13 @@ def draw_text(pdf, text_data, page_height, data_source=None):
     # Dibujar cada línea de texto
     for line in lines:
         # Calcular posición horizontal según alineación
-        if text_data["estilo"]["alineacion_h"] == "left":
+        if alineacion_h == "left":
             pdf.drawString(x, y_pos, line)
-        elif text_data["estilo"]["alineacion_h"] == "center":
+        elif alineacion_h == "center":
             pdf.drawCentredString(x + ancho / 2, y_pos, line)
-        elif text_data["estilo"]["alineacion_h"] == "right":
+        elif alineacion_h == "right":
             pdf.drawRightString(x + ancho, y_pos, line)
-        elif text_data["estilo"]["alineacion_h"] == "justify" and line:
+        elif alineacion_h == "justify" and line:
             # Implementar justificación básica
             words = line.split()
             if len(words) > 1:
@@ -296,9 +312,13 @@ def draw_image(pdf, image_data, page_height, plantilla_dir=None, biblioteca_path
     # Ajustar coordenada Y
     y = page_height - y - alto
 
-    # Obtener opacidad
-    opacidad = image_data["estilo"].get("opacidad", 100) / 100
-    preserveAspectRatio = image_data["estilo"].get("mantener_proporcion", True)
+    # Obtener opacidad (soporta formato viejo y nuevo)
+    estilo = image_data["estilo"]
+    if "opacidad" in estilo:
+        opacidad = estilo["opacidad"] / 100
+    else:
+        opacidad = estilo.get("opacity", 1)
+    preserveAspectRatio = estilo.get("mantener_proporcion", True)
 
     # Resolver imagen vía asset_manager
     template_name = plantilla_dir.name if plantilla_dir else ""
@@ -548,8 +568,12 @@ def draw_graph(pdf, graph_data, page_height, data_source, biblioteca_graficos_pa
     # Ajustar coordenada Y
     y = page_height - y - alto
 
-    # Obtener opacidad
-    opacidad = graph_data["estilo"].get("opacidad", 100) / 100
+    # Obtener opacidad (compatibilidad: viejo=0-100, nuevo=0-1)
+    estilo = graph_data.get("estilo", {})
+    if "opacidad" in estilo:
+        opacidad = estilo["opacidad"] / 100
+    else:
+        opacidad = estilo.get("opacity", 1)
 
     # Obtener formato de gráfico (directamente de configuracion)
     formato = graph_data["configuracion"].get("formato", "png")
@@ -710,8 +734,8 @@ def draw_table_from_grid(pdf, table_data, page_height, data_source, biblioteca_t
     # Extraer geometría
     x = table_data["geometria"]["x"] * CM_TO_POINTS
     y = table_data["geometria"]["y"] * CM_TO_POINTS
-    ancho_maximo = table_data["geometria"]["ancho_maximo"] * CM_TO_POINTS
-    alto_maximo = table_data["geometria"]["alto_maximo"] * CM_TO_POINTS
+    ancho_maximo = table_data["geometria"].get("ancho_maximo", table_data["geometria"].get("ancho", 20)) * CM_TO_POINTS
+    alto_maximo = table_data["geometria"].get("alto_maximo", table_data["geometria"].get("alto", 25)) * CM_TO_POINTS
     
     # Extraer niveles
     niveles = table_data.get("cuadricula", {}).get("niveles", [])
@@ -956,8 +980,8 @@ def draw_table(pdf, table_data, page_height, data_source, biblioteca_tablas_path
     # Extraer geometría
     x = table_data["geometria"]["x"] * CM_TO_POINTS
     y = table_data["geometria"]["y"] * CM_TO_POINTS
-    ancho_maximo = table_data["geometria"]["ancho_maximo"] * CM_TO_POINTS
-    alto_maximo = table_data["geometria"]["alto_maximo"] * CM_TO_POINTS
+    ancho_maximo = table_data["geometria"].get("ancho_maximo", table_data["geometria"].get("ancho", 20)) * CM_TO_POINTS
+    alto_maximo = table_data["geometria"].get("alto_maximo", table_data["geometria"].get("alto", 25)) * CM_TO_POINTS
     
     # Extraer estructura
     estructura = table_data.get("estructura", {})
@@ -1162,8 +1186,8 @@ def draw_multilevel_table(pdf, table_data, page_height, data_source, biblioteca_
     # Extraer geometría
     x = table_data["geometria"]["x"] * CM_TO_POINTS
     y = table_data["geometria"]["y"] * CM_TO_POINTS
-    ancho_maximo = table_data["geometria"]["ancho_maximo"] * CM_TO_POINTS
-    alto_maximo = table_data["geometria"]["alto_maximo"] * CM_TO_POINTS
+    ancho_maximo = table_data["geometria"].get("ancho_maximo", table_data["geometria"].get("ancho", 20)) * CM_TO_POINTS
+    alto_maximo = table_data["geometria"].get("alto_maximo", table_data["geometria"].get("alto", 25)) * CM_TO_POINTS
     
     # Extraer estructura multinivel
     multinivel = table_data.get("multinivel", {})

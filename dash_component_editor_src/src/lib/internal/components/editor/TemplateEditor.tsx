@@ -4,6 +4,7 @@ import { EditorHeader } from './EditorHeader';
 import { ToolsSidebar } from './ToolsSidebar';
 import { EditorCanvas } from './EditorCanvas';
 import { PropertiesPanel } from './PropertiesPanel';
+import { JsonInspector } from './JsonInspector';
 import { useTemplateStore, ElementType } from '@/store/templateStore';
 import { Type, Image, Minus, Square, BarChart3, Table2 } from 'lucide-react';
 
@@ -35,10 +36,11 @@ const defaultElements: Record<ElementType, { ancho: number; alto: number; estilo
     contenido: {}
   },
   grafico: {
-    ancho: 8,
-    alto: 6,
-    estilo: {},
-    contenido: {}
+    ancho: 10,
+    alto: 8,
+    estilo: { opacity: 1 },
+    contenido: {},
+    configuracion: { script: '', formato: 'svg', parametros: {} }
   },
   tabla: {
     ancho: 10,
@@ -70,6 +72,7 @@ export const TemplateEditor = () => {
   const { addElement, pagina_actual, paginas } = useTemplateStore();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [activeType, setActiveType] = useState<ElementType | null>(null);
+  const [jsonInspectorOpen, setJsonInspectorOpen] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -128,7 +131,8 @@ export const TemplateEditor = () => {
         metadata: {
           zIndex: maxZIndex + 1,
           visible: true
-        }
+        },
+        ...((defaults as any).configuracion ? { configuracion: (defaults as any).configuracion } : {})
       });
     }
   };
@@ -140,13 +144,20 @@ export const TemplateEditor = () => {
       onDragEnd={handleDragEnd}
     >
       <div className="h-screen flex flex-col bg-background">
-        <EditorHeader />
-        
+        <EditorHeader
+          jsonInspectorOpen={jsonInspectorOpen}
+          onToggleJsonInspector={() => setJsonInspectorOpen(!jsonInspectorOpen)}
+        />
+
         <div className="flex-1 flex overflow-hidden">
           <ToolsSidebar />
           <EditorCanvas />
           <PropertiesPanel />
         </div>
+
+        {jsonInspectorOpen && (
+          <JsonInspector onClose={() => setJsonInspectorOpen(false)} />
+        )}
       </div>
 
       <DragOverlay>
