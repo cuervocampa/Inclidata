@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useState, useEffect } from 'react';
 import { useTemplateStore } from '@/store/templateStore';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -28,9 +28,79 @@ import {
   X,
   Group,
   Package,
-  BarChart3
+  BarChart3,
+  Table2,
+  Plus,
+  Minus,
+  ChevronDown,
+  ChevronRight
 } from 'lucide-react';
+import type { GridLevel, GridColumn, ColumnBorders, Cuadricula } from '@/store/templateStore';
 import { motion } from 'framer-motion';
+
+/**
+ * Controlled numeric input with local state.
+ * Handles both typing (allows empty field while editing) and spinner arrows.
+ * Commits valid values to the store on change and onBlur.
+ */
+const NumericField = ({
+  value: propValue,
+  onChange: commitValue,
+  min,
+  max,
+  step,
+  className,
+  syncKey,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+  min?: number;
+  max?: number;
+  step?: number;
+  className?: string;
+  syncKey?: string;
+}) => {
+  const [localValue, setLocalValue] = useState(String(propValue));
+
+  // Sync local state when the store value changes externally
+  useEffect(() => {
+    setLocalValue(String(propValue));
+  }, [propValue, syncKey]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    setLocalValue(raw);
+    // Commit immediately if it parses to a valid number (handles spinner arrows)
+    const parsed = parseFloat(raw);
+    if (!isNaN(parsed) && (min === undefined || parsed >= min)) {
+      commitValue(parsed);
+    }
+  };
+
+  const handleBlur = () => {
+    const parsed = parseFloat(localValue);
+    if (!isNaN(parsed) && (min === undefined || parsed >= min)) {
+      commitValue(parsed);
+      setLocalValue(String(parsed));
+    } else {
+      // Revert to prop value if invalid
+      setLocalValue(String(propValue));
+    }
+  };
+
+  return (
+    <Input
+      type="number"
+      min={min}
+      max={max}
+      step={step}
+      value={localValue}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      className={className}
+    />
+  );
+};
 
 /** Color input with transparent toggle */
 const ColorInput = ({
@@ -398,6 +468,485 @@ const ChartSection = ({
   );
 };
 
+/** ── Border preset helpers ── */
+const BORDER_PRESETS: Record<string, (g: number, c: string) => ColumnBorders> = {
+  ninguno: () => ({
+    superior: { activo: false, grosor: 1, color: '#000000' },
+    inferior: { activo: false, grosor: 1, color: '#000000' },
+    izquierdo: { activo: false, grosor: 1, color: '#000000' },
+    derecho: { activo: false, grosor: 1, color: '#000000' },
+  }),
+  todos: (g, c) => ({
+    superior: { activo: true, grosor: g, color: c },
+    inferior: { activo: true, grosor: g, color: c },
+    izquierdo: { activo: true, grosor: g, color: c },
+    derecho: { activo: true, grosor: g, color: c },
+  }),
+  externos: (g, c) => ({
+    superior: { activo: true, grosor: g, color: c },
+    inferior: { activo: true, grosor: g, color: c },
+    izquierdo: { activo: true, grosor: g, color: c },
+    derecho: { activo: true, grosor: g, color: c },
+  }),
+  inferior: (g, c) => ({
+    superior: { activo: false, grosor: g, color: c },
+    inferior: { activo: true, grosor: g, color: c },
+    izquierdo: { activo: false, grosor: g, color: c },
+    derecho: { activo: false, grosor: g, color: c },
+  }),
+  superior: (g, c) => ({
+    superior: { activo: true, grosor: g, color: c },
+    inferior: { activo: false, grosor: g, color: c },
+    izquierdo: { activo: false, grosor: g, color: c },
+    derecho: { activo: false, grosor: g, color: c },
+  }),
+  horizontal: (g, c) => ({
+    superior: { activo: true, grosor: g, color: c },
+    inferior: { activo: true, grosor: g, color: c },
+    izquierdo: { activo: false, grosor: g, color: c },
+    derecho: { activo: false, grosor: g, color: c },
+  }),
+  vertical: (g, c) => ({
+    superior: { activo: false, grosor: g, color: c },
+    inferior: { activo: false, grosor: g, color: c },
+    izquierdo: { activo: true, grosor: g, color: c },
+    derecho: { activo: true, grosor: g, color: c },
+  }),
+};
+
+function detectBorderPreset(bordes: ColumnBorders): string {
+  if (!bordes) return 'ninguno';
+  const s = bordes.superior?.activo;
+  const i = bordes.inferior?.activo;
+  const iz = bordes.izquierdo?.activo;
+  const d = bordes.derecho?.activo;
+  if (!s && !i && !iz && !d) return 'ninguno';
+  if (s && i && iz && d) return 'todos';
+  if (s && i && !iz && !d) return 'horizontal';
+  if (!s && !i && iz && d) return 'vertical';
+  if (!s && i && !iz && !d) return 'inferior';
+  if (s && !i && !iz && !d) return 'superior';
+  return 'todos';
+}
+
+const FONT_OPTIONS = ['Aptos', 'Arial', 'Helvetica', 'Times New Roman', 'Courier'];
+
+function makeDefaultColumn(anchoPct: number, index: number): GridColumn {
+  return {
+    ancho: anchoPct,
+    contenido: `Col ${index}`,
+    formato: { fuente: 'Aptos', tamano: 10, color_texto: '#000000', color_fondo: '#ffffff', alineacion: 'left', negrita: false },
+    bordes: BORDER_PRESETS.todos(1, '#000000'),
+  };
+}
+
+function makeDefaultLevel(id: number, tipo: 'estatico' | 'autorrelleno'): GridLevel {
+  const level: GridLevel = {
+    id, tipo, num_columnas: 3, alto_fila: 0.5,
+    estilo: { fuente: 'Aptos', tamano: 10 },
+    columnas: [makeDefaultColumn(33.33, 1), makeDefaultColumn(33.33, 2), makeDefaultColumn(33.34, 3)],
+  };
+  if (tipo === 'autorrelleno') {
+    level.configuracion_dinamica = { sombreado_alterno: false, color_par: '#ffffff', color_impar: '#f0f0f0' };
+  }
+  return level;
+}
+
+/** Table configuration panel */
+const TableSection = ({
+  element,
+  pageId,
+  updateElement,
+  tableScripts,
+}: {
+  element: any;
+  pageId: string;
+  updateElement: (pageId: string, elementId: string, updates: any) => void;
+  tableScripts: string[];
+}) => {
+  const config = element.configuracion || { script: '', formato: 'svg', parametros: {} };
+  const cuadricula: Cuadricula = element.cuadricula || { niveles: [] };
+  const niveles = cuadricula.niveles || [];
+
+  const [expandedLevel, setExpandedLevel] = useState<number | null>(niveles.length > 0 ? niveles[0].id : null);
+
+  const handleConfigChange = useCallback((field: string, value: any) => {
+    updateElement(pageId, element.id, {
+      configuracion: { ...config, [field]: value },
+    });
+  }, [element, config, pageId, updateElement]);
+
+  /** Always read fresh niveles from the store to avoid stale closures */
+  const getFreshNiveles = useCallback((): GridLevel[] => {
+    const state = useTemplateStore.getState();
+    const el = state.paginas[pageId]?.elementos[element.id];
+    return el?.cuadricula?.niveles || [];
+  }, [pageId, element.id]);
+
+  const setNiveles = useCallback((newNiveles: GridLevel[]) => {
+    updateElement(pageId, element.id, { cuadricula: { niveles: newNiveles } });
+  }, [element.id, pageId, updateElement]);
+
+  const updateLevel = useCallback((levelId: number, patch: Partial<GridLevel>) => {
+    const fresh = getFreshNiveles();
+    setNiveles(fresh.map(n => n.id === levelId ? { ...n, ...patch } : n));
+  }, [getFreshNiveles, setNiveles]);
+
+  const updateColumn = useCallback((levelId: number, colIdx: number, patch: Partial<GridColumn>) => {
+    const fresh = getFreshNiveles();
+    setNiveles(fresh.map(n => {
+      if (n.id !== levelId) return n;
+      const newCols = n.columnas.map((c, i) => i === colIdx ? { ...c, ...patch } : c);
+      return { ...n, columnas: newCols };
+    }));
+  }, [getFreshNiveles, setNiveles]);
+
+  const addLevel = useCallback((tipo: 'estatico' | 'autorrelleno') => {
+    const fresh = getFreshNiveles();
+    const maxId = fresh.reduce((m, n) => Math.max(m, n.id), 0);
+    const newLevel = makeDefaultLevel(maxId + 1, tipo);
+    setNiveles([...fresh, newLevel]);
+    setExpandedLevel(newLevel.id);
+  }, [getFreshNiveles, setNiveles]);
+
+  const removeLastLevel = useCallback(() => {
+    const fresh = getFreshNiveles();
+    if (fresh.length === 0) return;
+    const newNiveles = fresh.slice(0, -1);
+    setNiveles(newNiveles);
+    if (expandedLevel === fresh[fresh.length - 1].id) {
+      setExpandedLevel(newNiveles.length > 0 ? newNiveles[newNiveles.length - 1].id : null);
+    }
+  }, [getFreshNiveles, setNiveles, expandedLevel]);
+
+  const handleNumColumnsChange = useCallback((levelId: number, newCount: number) => {
+    const fresh = getFreshNiveles();
+    const level = fresh.find(n => n.id === levelId);
+    if (!level) return;
+    const current = level.columnas.length;
+    let newCols = [...level.columnas];
+    if (newCount > current) {
+      // Repartir el espacio libre entre las nuevas columnas
+      const usedPct = newCols.reduce((s, c) => s + c.ancho, 0);
+      const freePct = Math.max(0, 100 - usedPct);
+      const toAdd = newCount - current;
+      const eachNew = toAdd > 0 ? Math.round((freePct / toAdd) * 100) / 100 : 10;
+      for (let i = current; i < newCount; i++) {
+        newCols.push(makeDefaultColumn(Math.max(1, eachNew), i + 1));
+      }
+    } else {
+      // Simplemente quitar las últimas, sin redistribuir
+      newCols = newCols.slice(0, newCount);
+    }
+    setNiveles(fresh.map(n => n.id === levelId ? { ...n, num_columnas: newCount, columnas: newCols } : n));
+  }, [getFreshNiveles, setNiveles]);
+
+  const params = config.parametros || {};
+  const hasParams = Object.keys(params).length > 0;
+  const paramsText = JSON.stringify(params, null, 2);
+
+  return (
+    <div className="property-section">
+      <div className="property-section-title">
+        <Table2 className="w-3.5 h-3.5 inline mr-1" />
+        Configuración de Tabla
+      </div>
+
+      {/* ── Script selector ── */}
+      <div className="mb-3">
+        <Label className="text-xs text-muted-foreground mb-1.5 block">Script</Label>
+        <Select
+          value={config.script || '__none__'}
+          onValueChange={(v) => handleConfigChange('script', v === '__none__' ? '' : v)}
+        >
+          <SelectTrigger className="h-8">
+            <SelectValue placeholder="Seleccionar script..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__none__">Sin script</SelectItem>
+            {tableScripts.map((s) => (
+              <SelectItem key={s} value={s}>{s.replace('.py', '')}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* ── Parameters JSON ── */}
+      <div className="mb-3">
+        <Label className="text-xs text-muted-foreground mb-1.5 block">Parámetros (JSON)</Label>
+        <textarea
+          defaultValue={hasParams ? paramsText : ''}
+          key={`params-${element.id}`}
+          onBlur={(e) => {
+            const txt = e.target.value.trim();
+            if (!txt) { handleConfigChange('parametros', {}); return; }
+            try { handleConfigChange('parametros', JSON.parse(txt)); } catch { /* invalid */ }
+          }}
+          className="w-full h-24 px-3 py-2 text-xs font-mono border border-input rounded-md bg-background resize-y focus:outline-none focus:ring-2 focus:ring-ring"
+          placeholder='{ "clave": "valor" }'
+        />
+      </div>
+
+      {/* ── Level management ── */}
+      <div className="mb-3">
+        <div className="flex items-center justify-between mb-2">
+          <Label className="text-xs text-muted-foreground">
+            Niveles <span className="ml-1 px-1.5 py-0.5 bg-primary/10 text-primary rounded text-[10px] font-medium">{niveles.length}</span>
+          </Label>
+          <div className="flex gap-1">
+            <Button variant="outline" size="sm" className="h-6 text-[10px] px-2 gap-1" onClick={() => addLevel('estatico')}>
+              <Plus className="w-3 h-3" /> Estático
+            </Button>
+            <Button variant="outline" size="sm" className="h-6 text-[10px] px-2 gap-1" onClick={() => addLevel('autorrelleno')}>
+              <Plus className="w-3 h-3" /> Dinámico
+            </Button>
+            {niveles.length > 0 && (
+              <Button variant="ghost" size="sm" className="h-6 text-[10px] px-2 gap-1 text-destructive" onClick={removeLastLevel}>
+                <Minus className="w-3 h-3" />
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Accordion of levels ── */}
+      {niveles.map((nivel) => {
+        const isExpanded = expandedLevel === nivel.id;
+        return (
+          <div key={nivel.id} className="mb-2 border border-border rounded-md overflow-hidden">
+            {/* Header */}
+            <button
+              type="button"
+              className="w-full flex items-center gap-2 px-2 py-1.5 bg-muted/50 hover:bg-muted text-xs font-medium"
+              onClick={() => setExpandedLevel(isExpanded ? null : nivel.id)}
+            >
+              {isExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+              <span className={`px-1 py-0.5 rounded text-[9px] font-bold ${nivel.tipo === 'estatico' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}`}>
+                {nivel.tipo === 'estatico' ? 'E' : 'D'}
+              </span>
+              <span>Nivel {nivel.id}</span>
+              <span className="text-muted-foreground ml-auto">{nivel.num_columnas} cols</span>
+            </button>
+
+            {isExpanded && (
+              <div className="p-2 space-y-2">
+                {/* Level settings */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-[10px] text-muted-foreground">Columnas</Label>
+                    <Input type="number" min={1} max={20} value={nivel.num_columnas}
+                      onChange={(e) => handleNumColumnsChange(nivel.id, Math.max(1, Math.min(20, parseInt(e.target.value) || 1)))}
+                      className="h-7 text-xs" />
+                  </div>
+                  <div>
+                    <Label className="text-[10px] text-muted-foreground">Alto fila (cm)</Label>
+                    <NumericField
+                      value={nivel.alto_fila}
+                      onChange={(v) => updateLevel(nivel.id, { alto_fila: v })}
+                      min={0.3} max={3} step={0.1}
+                      syncKey={`af-${element.id}-${nivel.id}`}
+                      className="h-7 text-xs" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-[10px] text-muted-foreground">Fuente</Label>
+                    <Select value={nivel.estilo?.fuente || 'Aptos'}
+                      onValueChange={(v) => updateLevel(nivel.id, { estilo: { ...nivel.estilo, fuente: v } })}>
+                      <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {FONT_OPTIONS.map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-[10px] text-muted-foreground">Tamaño</Label>
+                    <NumericField
+                      value={nivel.estilo?.tamano || 10}
+                      onChange={(v) => updateLevel(nivel.id, { estilo: { ...nivel.estilo, tamano: Math.round(v) } })}
+                      min={6} max={72} step={1}
+                      syncKey={`ts-${element.id}-${nivel.id}`}
+                      className="h-7 text-xs" />
+                  </div>
+                </div>
+
+                {/* Dynamic config (autorrelleno only) */}
+                {nivel.tipo === 'autorrelleno' && (
+                  <div className="p-2 bg-amber-50 rounded border border-amber-200 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-[10px] text-muted-foreground">Sombreado alterno</Label>
+                      <button type="button" role="switch"
+                        aria-checked={nivel.configuracion_dinamica?.sombreado_alterno ?? false}
+                        onClick={() => updateLevel(nivel.id, {
+                          configuracion_dinamica: {
+                            ...(nivel.configuracion_dinamica || { sombreado_alterno: false, color_par: '#ffffff', color_impar: '#f0f0f0' }),
+                            sombreado_alterno: !(nivel.configuracion_dinamica?.sombreado_alterno)
+                          }
+                        })}
+                        className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors ${nivel.configuracion_dinamica?.sombreado_alterno ? 'bg-primary' : 'bg-muted'}`}>
+                        <span className={`inline-block h-3 w-3 rounded-full bg-white transition-transform ${nivel.configuracion_dinamica?.sombreado_alterno ? 'translate-x-3.5' : 'translate-x-0.5'}`} />
+                      </button>
+                    </div>
+                    {nivel.configuracion_dinamica?.sombreado_alterno && (
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <Label className="text-[10px] text-muted-foreground">Color par</Label>
+                          <input type="color" value={nivel.configuracion_dinamica.color_par || '#ffffff'}
+                            onChange={(e) => updateLevel(nivel.id, {
+                              configuracion_dinamica: { ...nivel.configuracion_dinamica!, color_par: e.target.value }
+                            })}
+                            className="w-full h-6 rounded cursor-pointer border border-input" />
+                        </div>
+                        <div>
+                          <Label className="text-[10px] text-muted-foreground">Color impar</Label>
+                          <input type="color" value={nivel.configuracion_dinamica.color_impar || '#f0f0f0'}
+                            onChange={(e) => updateLevel(nivel.id, {
+                              configuracion_dinamica: { ...nivel.configuracion_dinamica!, color_impar: e.target.value }
+                            })}
+                            className="w-full h-6 rounded cursor-pointer border border-input" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* ── Column config ── */}
+                <div className="space-y-1.5">
+                  {(() => {
+                    const totalPct = nivel.columnas.reduce((s, c) => s + (c.ancho || 0), 0);
+                    const exceeds = totalPct > 100.01;
+                    return (
+                      <>
+                        <div className="flex items-center justify-between">
+                          <Label className="text-[10px] text-muted-foreground font-medium">Columnas</Label>
+                          <span className={`text-xs font-mono ${exceeds ? 'text-red-600 font-bold' : 'text-muted-foreground'}`}>
+                            {totalPct.toFixed(1)}%
+                          </span>
+                        </div>
+                        {exceeds && (
+                          <div className="flex items-center gap-1.5 px-2 py-1.5 bg-red-50 border border-red-300 rounded text-red-700 text-xs">
+                            <span className="text-base">⚠</span>
+                            <span>El ancho total excede el 100% ({(totalPct - 100).toFixed(1)}% de más)</span>
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
+                  {nivel.columnas.map((col, colIdx) => (
+                    <div key={colIdx} className="p-1.5 bg-muted/30 rounded border border-border/50 space-y-1.5">
+                      <div className="text-[10px] font-medium text-muted-foreground">Col {colIdx + 1}</div>
+                      <div className="grid grid-cols-2 gap-1.5">
+                        <div>
+                          <Label className="text-[9px] text-muted-foreground">Ancho (%)</Label>
+                          <Input type="number" step={1} min={1} max={100}
+                            value={col.ancho}
+                            onChange={(e) => {
+                              const val = parseFloat(e.target.value) || 1;
+                              // Calcular máximo permitido: 100 - suma de las demás columnas
+                              const otrasSum = nivel.columnas.reduce((s, c, i) => i === colIdx ? s : s + c.ancho, 0);
+                              const maxAllowed = Math.round((100 - otrasSum) * 100) / 100;
+                              updateColumn(nivel.id, colIdx, { ancho: Math.min(val, Math.max(1, maxAllowed)) });
+                            }}
+                            className="h-6 text-[10px]" />
+                        </div>
+                        <div>
+                          <Label className="text-[9px] text-muted-foreground">Contenido</Label>
+                          <Input
+                            defaultValue={col.contenido}
+                            key={`ct-${element.id}-${nivel.id}-${colIdx}`}
+                            onBlur={(e) => updateColumn(nivel.id, colIdx, { contenido: e.target.value })}
+                            className="h-6 text-[10px]" />
+                        </div>
+                      </div>
+                      {/* Format row */}
+                      <div className="flex items-center gap-1">
+                        <Button variant={col.formato?.negrita ? 'secondary' : 'ghost'} size="sm" className="h-5 w-5 p-0"
+                          onClick={() => updateColumn(nivel.id, colIdx, { formato: { ...col.formato, negrita: !col.formato?.negrita } })}>
+                          <Bold className="w-3 h-3" />
+                        </Button>
+                        {(['left', 'center', 'right'] as const).map(align => (
+                          <Button key={align}
+                            variant={col.formato?.alineacion === align ? 'secondary' : 'ghost'}
+                            size="sm" className="h-5 w-5 p-0"
+                            onClick={() => updateColumn(nivel.id, colIdx, { formato: { ...col.formato, alineacion: align } })}>
+                            {align === 'left' ? <AlignLeft className="w-3 h-3" /> : align === 'center' ? <AlignCenter className="w-3 h-3" /> : <AlignRight className="w-3 h-3" />}
+                          </Button>
+                        ))}
+                        <div className="flex items-center gap-0.5 ml-auto">
+                          <Label className="text-[8px] text-muted-foreground">Txt</Label>
+                          <input type="color" value={col.formato?.color_texto || '#000000'}
+                            onChange={(e) => updateColumn(nivel.id, colIdx, { formato: { ...col.formato, color_texto: e.target.value } })}
+                            className="w-5 h-5 rounded cursor-pointer border border-input" />
+                          <Label className="text-[8px] text-muted-foreground ml-1">Fnd</Label>
+                          <input type="color" value={col.formato?.color_fondo || '#ffffff'}
+                            onChange={(e) => updateColumn(nivel.id, colIdx, { formato: { ...col.formato, color_fondo: e.target.value } })}
+                            className="w-5 h-5 rounded cursor-pointer border border-input"
+                            disabled={nivel.tipo === 'autorrelleno'} />
+                        </div>
+                      </div>
+                      {/* Borders row */}
+                      <div className="flex items-center gap-1.5">
+                        <div className="flex-1">
+                          <Label className="text-[9px] text-muted-foreground">Bordes</Label>
+                          <Select value={detectBorderPreset(col.bordes)}
+                            onValueChange={(preset) => {
+                              const grosor = col.bordes?.superior?.grosor || 1;
+                              const color = col.bordes?.superior?.color || '#000000';
+                              updateColumn(nivel.id, colIdx, { bordes: BORDER_PRESETS[preset](grosor, color) });
+                            }}>
+                            <SelectTrigger className="h-6 text-[10px]"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="ninguno">Ninguno</SelectItem>
+                              <SelectItem value="todos">Todos</SelectItem>
+                              <SelectItem value="externos">Externos</SelectItem>
+                              <SelectItem value="inferior">Inferior</SelectItem>
+                              <SelectItem value="superior">Superior</SelectItem>
+                              <SelectItem value="horizontal">Horizontal</SelectItem>
+                              <SelectItem value="vertical">Vertical</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label className="text-[9px] text-muted-foreground">Grosor</Label>
+                          <Input type="number" min={0.5} max={3} step={0.5}
+                            value={col.bordes?.superior?.grosor || 1}
+                            onChange={(e) => {
+                              const g = parseFloat(e.target.value) || 1;
+                              const preset = detectBorderPreset(col.bordes);
+                              const color = col.bordes?.superior?.color || '#000000';
+                              updateColumn(nivel.id, colIdx, { bordes: BORDER_PRESETS[preset](g, color) });
+                            }}
+                            className="h-6 text-[10px] w-14" />
+                        </div>
+                        <div>
+                          <Label className="text-[9px] text-muted-foreground">Color</Label>
+                          <input type="color" value={col.bordes?.superior?.color || '#000000'}
+                            onChange={(e) => {
+                              const grosor = col.bordes?.superior?.grosor || 1;
+                              const preset = detectBorderPreset(col.bordes);
+                              updateColumn(nivel.id, colIdx, { bordes: BORDER_PRESETS[preset](grosor, e.target.value) });
+                            }}
+                            className="w-full h-6 rounded cursor-pointer border border-input" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      {niveles.length === 0 && (
+        <div className="text-center py-4 text-xs text-muted-foreground">
+          Sin niveles. Añade un nivel estático o dinámico.
+        </div>
+      )}
+    </div>
+  );
+};
+
 const CM_TO_PX = 37.8;
 
 /**
@@ -444,6 +993,7 @@ export const PropertiesPanel = () => {
     selectedElementIds,
     configuracion,
     chartScripts,
+    tableScripts,
     updateElement,
     deleteElement,
     updateConfig,
@@ -723,6 +1273,16 @@ export const PropertiesPanel = () => {
           pageId={pagina_actual}
           updateElement={updateElement}
           chartScripts={chartScripts}
+        />
+      )}
+
+      {/* Table section - for table elements */}
+      {selectedElement.tipo === 'tabla' && (
+        <TableSection
+          element={selectedElement}
+          pageId={pagina_actual}
+          updateElement={updateElement}
+          tableScripts={tableScripts}
         />
       )}
 

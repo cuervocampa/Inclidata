@@ -736,6 +736,13 @@ def draw_table_from_grid(pdf, table_data, page_height, data_source, biblioteca_t
     y = table_data["geometria"]["y"] * CM_TO_POINTS
     ancho_maximo = table_data["geometria"].get("ancho_maximo", table_data["geometria"].get("ancho", 20)) * CM_TO_POINTS
     alto_maximo = table_data["geometria"].get("alto_maximo", table_data["geometria"].get("alto", 25)) * CM_TO_POINTS
+    ancho_maximo_cm = table_data["geometria"].get("ancho_maximo", table_data["geometria"].get("ancho", 20))
+
+    def _col_ancho_cm(col):
+        """Devuelve ancho de columna en cm.
+        El JSON guardado siempre tiene anchos en cm.
+        """
+        return col.get("ancho", 0)
     
     # Extraer niveles
     niveles = table_data.get("cuadricula", {}).get("niveles", [])
@@ -820,7 +827,7 @@ def draw_table_from_grid(pdf, table_data, page_height, data_source, biblioteca_t
                 for col_idx, col in enumerate(columnas):
                     # Copia profunda de la columna
                     col_render = {}
-                    col_render["ancho"] = col.get("ancho", 3.0)
+                    col_render["ancho"] = _col_ancho_cm(col)
                     col_render["formato"] = col.get("formato", {}).copy()
                     col_render["bordes"] = col.get("bordes", {})
                     
@@ -871,7 +878,7 @@ def draw_table_from_grid(pdf, table_data, page_height, data_source, biblioteca_t
             fila_render = []
             for col in columnas:
                 col_render = {}
-                col_render["ancho"] = col.get("ancho", 3.0)
+                col_render["ancho"] = _col_ancho_cm(col)
                 col_render["formato"] = col.get("formato", {}).copy()
                 col_render["bordes"] = col.get("bordes", {})
                 
@@ -891,7 +898,7 @@ def draw_table_from_grid(pdf, table_data, page_height, data_source, biblioteca_t
             fila_render = []
             for col in columnas:
                 col_render = {
-                    "ancho": col.get("ancho", 3.0),
+                    "ancho": _col_ancho_cm(col),
                     "formato": col.get("formato", {}),
                     "bordes": col.get("bordes", {}),
                     "contenido": col.get("contenido", "")

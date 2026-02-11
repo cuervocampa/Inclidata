@@ -21,6 +21,7 @@ from utils.asset_manager import (
 BASE_DIR = Path(__file__).resolve().parent.parent
 PLANTILLAS_DIR = BASE_DIR / "biblioteca_plantillas"
 GRAFICOS_DIR = BASE_DIR / "biblioteca_graficos"
+TABLAS_DIR = BASE_DIR / "biblioteca_tablas"
 
 
 def listar_plantillas_disponibles():
@@ -41,6 +42,16 @@ def listar_scripts_graficos():
     scripts = []
     if GRAFICOS_DIR.exists():
         for item in GRAFICOS_DIR.iterdir():
+            if item.is_dir() and (item / f"{item.name}.py").exists():
+                scripts.append(f"{item.name}.py")
+    return sorted(scripts)
+
+
+def listar_scripts_tablas():
+    """Lista scripts de tablas disponibles en biblioteca_tablas/."""
+    scripts = []
+    if TABLAS_DIR.exists():
+        for item in TABLAS_DIR.iterdir():
             if item.is_dir() and (item / f"{item.name}.py").exists():
                 scripts.append(f"{item.name}.py")
     return sorted(scripts)
@@ -138,7 +149,47 @@ def _convertir_elemento(elem_id, elem):
     if 'configuracion' in elem and tipo in ('grafico', 'tabla'):
         nuevo['configuracion'] = elem['configuracion']
 
+    # --- cuadricula: convertir anchos de columna de cm a % ---
+    # Los JSON en disco siempre almacenan anchos en cm.
+    # Convertir siempre a porcentaje para el editor visual.
+    if tipo == 'tabla' and 'cuadricula' in nuevo:
+        ancho_total_cm = nuevo['geometria'].get('ancho', 10)
+        for nivel in nuevo['cuadricula'].get('niveles', []):
+            columnas = nivel.get('columnas', [])
+            if not columnas:
+                continue
+            for col in columnas:
+                ancho_cm = col.get('ancho', 0)
+                if ancho_total_cm > 0:
+                    col['ancho'] = round((ancho_cm / ancho_total_cm) * 100, 2)
+                else:
+                    col['ancho'] = round(100 / len(columnas), 2)
+
     return nuevo
+
+
+def _convertir_anchos_pct_a_cm(data):
+    """Convierte anchos de columna de porcentaje (0-100) a cm antes de guardar.
+
+    El editor visual siempre trabaja con porcentajes.
+    Al guardar se convierten a cm para compatibilidad con el PDF generator
+    y el editor antiguo.
+    """
+    for page_id, page in data.get('paginas', {}).items():
+        for elem_id, elem in page.get('elementos', {}).items():
+            if elem.get('tipo') != 'tabla':
+                continue
+            cuadricula = elem.get('cuadricula')
+            if not cuadricula:
+                continue
+            ancho_total_cm = elem.get('geometria', {}).get('ancho', 10)
+            for nivel in cuadricula.get('niveles', []):
+                columnas = nivel.get('columnas', [])
+                if not columnas:
+                    continue
+                for col in columnas:
+                    pct = col.get('ancho', 0)
+                    col['ancho'] = round((pct / 100.0) * ancho_total_cm, 2)
 
 
 def _convertir_plantilla(data_json):
@@ -349,7 +400,8 @@ def layout():
                             "nombre_plantilla": "Nueva Plantilla Visual",
                             "num_paginas": 1
                         },
-                        "chartScripts": listar_scripts_graficos()
+                        "chartScripts": listar_scripts_graficos(),
+                        "tableScripts": listar_scripts_tablas()
                     }
                 ),
                 style={"height": "calc(100vh - 100px)", "width": "100%"}
@@ -543,6 +595,7 @@ def register_callbacks(app):
 
             _convertir_plantilla(data_json)
             data_json["chartScripts"] = listar_scripts_graficos()
+            data_json["tableScripts"] = listar_scripts_tablas()
 
             print(f"[editor_visual] Plantilla '{nombre_plantilla}' cargada OK — "
                   f"{len(data_json.get('paginas', {}))} páginas")
@@ -625,6 +678,7 @@ def register_callbacks(app):
 
         editor_state, count = _fusionar_grupo_en_estado(datos_grupo, editor_state)
         editor_state["chartScripts"] = listar_scripts_graficos()
+        editor_state["tableScripts"] = listar_scripts_tablas()
         pagina_actual = editor_state.get('pagina_actual', '1')
         print(f"[editor_visual] Grupo importado desde '{filename}' — {count} elementos en página {pagina_actual}")
         return editor_state, dmc.Notification(
@@ -709,6 +763,9 @@ def register_callbacks(app):
 
             # Extraer imágenes a {plantilla}/assets/
             _extraer_assets_a_carpeta(data, dest_dir)
+
+            # Convertir anchos de columna de % a cm para el JSON guardado
+            _convertir_anchos_pct_a_cm(data)
 
             # Registrar en almacén centralizado y limpiar base64
             for page_id, page in data.get("paginas", {}).items():
@@ -870,6 +927,9 @@ def register_callbacks(app):
 
             # Extraer imágenes a {plantilla}/assets/ y registrar en almacén
             _extraer_assets_a_carpeta(data, dest_dir)
+
+            # Convertir anchos de columna de % a cm para el JSON guardado
+            _convertir_anchos_pct_a_cm(data)
 
             # Registrar en almacén centralizado y limpiar base64 del JSON
             for page_id, page in data.get("paginas", {}).items():

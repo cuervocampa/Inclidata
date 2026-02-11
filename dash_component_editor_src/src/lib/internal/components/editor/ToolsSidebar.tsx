@@ -110,7 +110,7 @@ export const ToolsSidebar = () => {
         </h3>
         
         {/* Page Navigation */}
-        <div className="flex items-center justify-between mb-4 bg-secondary rounded-lg p-2">
+        <div className="flex items-center justify-between mb-4 p-1">
           <button 
             onClick={goToPrevPage}
             disabled={currentIndex === 0}

@@ -1,9 +1,56 @@
 import { useState } from 'react';
-import { FileText, Braces } from 'lucide-react';
+import { FileText, Braces, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import { useTemplateStore } from '@/store/templateStore';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
+
+const ZOOM_STEPS = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 3];
+
+const ZoomControls = () => {
+  const { zoom, setZoom } = useTemplateStore();
+  const pct = Math.round(zoom * 100);
+
+  const zoomIn = () => {
+    const next = ZOOM_STEPS.find(s => s > zoom + 0.01);
+    setZoom(next ?? 3);
+  };
+  const zoomOut = () => {
+    const prev = [...ZOOM_STEPS].reverse().find(s => s < zoom - 0.01);
+    setZoom(prev ?? 0.25);
+  };
+
+  return (
+    <div className="flex items-center gap-0.5">
+      <Button
+        variant="ghost" size="sm"
+        onClick={zoomOut}
+        disabled={zoom <= 0.25}
+        className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+        title="Reducir zoom"
+      >
+        <ZoomOut className="w-3.5 h-3.5" />
+      </Button>
+      <button
+        type="button"
+        onClick={() => setZoom(1)}
+        className="text-xs font-mono min-w-[3rem] text-center text-muted-foreground hover:text-foreground transition-colors"
+        title="Restaurar 100%"
+      >
+        {pct}%
+      </button>
+      <Button
+        variant="ghost" size="sm"
+        onClick={zoomIn}
+        disabled={zoom >= 3}
+        className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+        title="Aumentar zoom"
+      >
+        <ZoomIn className="w-3.5 h-3.5" />
+      </Button>
+    </div>
+  );
+};
 
 interface EditorHeaderProps {
   jsonInspectorOpen?: boolean;
@@ -50,7 +97,10 @@ export const EditorHeader = ({ jsonInspectorOpen, onToggleJsonInspector }: Edito
       </div>
 
       {/* Right-side actions */}
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-2">
+        {/* Zoom controls */}
+        <ZoomControls />
+
         {onToggleJsonInspector && (
           <Button
             variant={jsonInspectorOpen ? 'secondary' : 'ghost'}

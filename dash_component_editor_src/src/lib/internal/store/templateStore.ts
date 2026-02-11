@@ -45,6 +45,55 @@ export interface ChartConfig {
   parametros: Record<string, unknown>;
 }
 
+export interface ColumnBorder {
+  activo: boolean;
+  grosor: number;
+  color: string;
+}
+
+export interface ColumnBorders {
+  superior: ColumnBorder;
+  inferior: ColumnBorder;
+  izquierdo: ColumnBorder;
+  derecho: ColumnBorder;
+}
+
+export interface ColumnFormat {
+  fuente: string;
+  tamano: number;
+  color_texto: string;
+  color_fondo: string;
+  alineacion: 'left' | 'center' | 'right';
+  negrita: boolean;
+}
+
+export interface GridColumn {
+  ancho: number;
+  contenido: string;
+  formato: ColumnFormat;
+  bordes: ColumnBorders;
+}
+
+export interface DynamicConfig {
+  sombreado_alterno: boolean;
+  color_par: string;
+  color_impar: string;
+}
+
+export interface GridLevel {
+  id: number;
+  tipo: 'estatico' | 'autorrelleno';
+  num_columnas: number;
+  alto_fila: number;
+  estilo: { fuente: string; tamano: number };
+  columnas: GridColumn[];
+  configuracion_dinamica?: DynamicConfig;
+}
+
+export interface Cuadricula {
+  niveles: GridLevel[];
+}
+
 export interface ElementMetadata {
   zIndex: number;
   visible: boolean;
@@ -60,6 +109,7 @@ export interface TemplateElement {
   metadata: ElementMetadata;
   imagen?: ImageData;
   configuracion?: ChartConfig;
+  cuadricula?: Cuadricula;
 }
 
 export interface PageConfig {
@@ -91,6 +141,8 @@ export interface TemplateState {
   selectedElementIds: string[];
   pendingAction: PendingAction | null;
   chartScripts: string[];
+  tableScripts: string[];
+  zoom: number;
 }
 
 interface TemplateActions {
@@ -115,6 +167,8 @@ interface TemplateActions {
   resetTemplate: () => void;
   dispatchAction: (action: PendingAction) => void;
   setChartScripts: (scripts: string[]) => void;
+  setTableScripts: (scripts: string[]) => void;
+  setZoom: (zoom: number) => void;
 
   // Helpers
   getSelectedElement: () => TemplateElement | null;
@@ -139,7 +193,9 @@ const initialState: TemplateState = {
   selectedElementId: null,
   selectedElementIds: [],
   pendingAction: null,
-  chartScripts: []
+  chartScripts: [],
+  tableScripts: [],
+  zoom: 1
 };
 
 export const useTemplateStore = create<TemplateState & TemplateActions>((set, get) => ({
@@ -245,7 +301,10 @@ export const useTemplateStore = create<TemplateState & TemplateActions>((set, ge
                 metadata: updates.metadata ? { ...element.metadata, ...updates.metadata } : element.metadata,
                 configuracion: updates.configuracion
                   ? { ...element.configuracion, ...updates.configuracion }
-                  : element.configuracion
+                  : element.configuracion,
+                cuadricula: updates.cuadricula !== undefined
+                  ? updates.cuadricula
+                  : element.cuadricula
               }
             }
           }
@@ -354,6 +413,14 @@ export const useTemplateStore = create<TemplateState & TemplateActions>((set, ge
     set({ chartScripts: scripts });
   },
 
+  setTableScripts: (scripts: string[]) => {
+    set({ tableScripts: scripts });
+  },
+
+  setZoom: (zoom: number) => {
+    set({ zoom: Math.min(3, Math.max(0.25, Math.round(zoom * 100) / 100)) });
+  },
+
   // Helpers
   getSelectedElement: () => {
     const state = get();
@@ -362,7 +429,7 @@ export const useTemplateStore = create<TemplateState & TemplateActions>((set, ge
   },
   
   exportJSON: () => {
-    const { selectedElementId, selectedElementIds, pendingAction, chartScripts, ...templateData } = get();
+    const { selectedElementId, selectedElementIds, pendingAction, chartScripts, tableScripts, zoom, ...templateData } = get();
     return JSON.stringify({
       paginas: templateData.paginas,
       pagina_actual: templateData.pagina_actual,

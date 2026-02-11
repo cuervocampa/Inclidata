@@ -1,4 +1,5 @@
 import { useDroppable } from '@dnd-kit/core';
+import { useCallback, useEffect, useRef } from 'react';
 import { useTemplateStore } from '@/store/templateStore';
 import { CanvasElement } from './CanvasElement';
 import { motion } from 'framer-motion';
@@ -51,21 +52,39 @@ const RulerTicks = ({ length, cmToPx, direction }: { length: number; cmToPx: num
 };
 
 export const EditorCanvas = () => {
-  const { paginas, pagina_actual, selectElement, clearSelection } = useTemplateStore();
+  const { paginas, pagina_actual, zoom, setZoom, clearSelection } = useTemplateStore();
   const currentPage = paginas[pagina_actual];
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const { setNodeRef, isOver } = useDroppable({
     id: 'canvas-drop-area',
     data: { pageId: pagina_actual }
   });
 
+  // Ctrl+wheel zoom
+  const handleWheel = useCallback((e: WheelEvent) => {
+    if (!e.ctrlKey && !e.metaKey) return;
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    setZoom(useTemplateStore.getState().zoom + delta);
+  }, [setZoom]);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    return () => el.removeEventListener('wheel', handleWheel);
+  }, [handleWheel]);
+
   if (!currentPage) return null;
+
+  const effectiveCmToPx = CM_TO_PX * zoom;
 
   const isLandscape = currentPage.configuracion.orientacion === 'landscape';
   const widthCm = isLandscape ? A4_HEIGHT_CM : A4_WIDTH_CM;
   const heightCm = isLandscape ? A4_WIDTH_CM : A4_HEIGHT_CM;
-  const canvasWidth = widthCm * CM_TO_PX;
-  const canvasHeight = heightCm * CM_TO_PX;
+  const canvasWidth = widthCm * effectiveCmToPx;
+  const canvasHeight = heightCm * effectiveCmToPx;
 
   const elements = Object.values(currentPage.elementos || {}).sort(
     (a, b) => (a.metadata?.zIndex || 0) - (b.metadata?.zIndex || 0)
@@ -78,7 +97,7 @@ export const EditorCanvas = () => {
   };
 
   return (
-    <div className="canvas-container flex items-center justify-center p-8">
+    <div ref={containerRef} className="canvas-container flex items-center justify-center p-8">
       <div className="flex flex-col items-start">
         {/* Horizontal ruler */}
         <div className="flex" style={{ marginLeft: RULER_SIZE }}>
@@ -88,7 +107,7 @@ export const EditorCanvas = () => {
             className="canvas-ruler canvas-ruler-h"
           >
             <rect width="100%" height="100%" fill="hsl(var(--secondary))" />
-            <RulerTicks length={canvasWidth} cmToPx={CM_TO_PX} direction="h" />
+            <RulerTicks length={canvasWidth} cmToPx={effectiveCmToPx} direction="h" />
             <line x1={0} y1={RULER_SIZE - 0.5} x2={canvasWidth} y2={RULER_SIZE - 0.5}
               stroke="hsl(var(--border))" strokeWidth={1} />
           </svg>
@@ -102,7 +121,7 @@ export const EditorCanvas = () => {
             className="canvas-ruler canvas-ruler-v"
           >
             <rect width="100%" height="100%" fill="hsl(var(--secondary))" />
-            <RulerTicks length={canvasHeight} cmToPx={CM_TO_PX} direction="v" />
+            <RulerTicks length={canvasHeight} cmToPx={effectiveCmToPx} direction="v" />
             <line x1={RULER_SIZE - 0.5} y1={0} x2={RULER_SIZE - 0.5} y2={canvasHeight}
               stroke="hsl(var(--border))" strokeWidth={1} />
           </svg>
@@ -132,7 +151,7 @@ export const EditorCanvas = () => {
                   linear-gradient(to right, hsl(var(--canvas-grid) / 0.15) 1px, transparent 1px),
                   linear-gradient(to bottom, hsl(var(--canvas-grid) / 0.15) 1px, transparent 1px)
                 `,
-                backgroundSize: `${CM_TO_PX}px ${CM_TO_PX}px, ${CM_TO_PX}px ${CM_TO_PX}px, ${CM_TO_PX / 2}px ${CM_TO_PX / 2}px, ${CM_TO_PX / 2}px ${CM_TO_PX / 2}px`,
+                backgroundSize: `${effectiveCmToPx}px ${effectiveCmToPx}px, ${effectiveCmToPx}px ${effectiveCmToPx}px, ${effectiveCmToPx / 2}px ${effectiveCmToPx / 2}px, ${effectiveCmToPx / 2}px ${effectiveCmToPx / 2}px`,
               }}
             />
 
@@ -142,7 +161,7 @@ export const EditorCanvas = () => {
                 key={element.id}
                 element={element}
                 pageId={pagina_actual}
-                cmToPx={CM_TO_PX}
+                cmToPx={effectiveCmToPx}
               />
             ))}
 

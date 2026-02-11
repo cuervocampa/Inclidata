@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTemplateStore, TemplateElement } from '@/store/templateStore';
 import { motion } from 'framer-motion';
-import { BarChart3 } from 'lucide-react';
+import { BarChart3, Table2 } from 'lucide-react';
 
 interface CanvasElementProps {
   element: TemplateElement;
@@ -270,12 +270,76 @@ export const CanvasElement = ({ element, pageId, cmToPx }: CanvasElementProps) =
           </div>
         );
       }
-      case 'tabla':
+      case 'tabla': {
+        const cuadricula = (element as any).cuadricula;
+        const niveles = cuadricula?.niveles || [];
+        const tableConfig = (element as any).configuracion || {};
+        const scriptLabel = tableConfig.script ? tableConfig.script.replace('.py', '') : '';
+
+        if (niveles.length === 0) {
+          return (
+            <div className="w-full h-full flex flex-col items-center justify-center bg-muted/50 text-muted-foreground border border-dashed border-border rounded gap-0.5">
+              <Table2 className="w-6 h-6 opacity-40" />
+              <span className="text-[10px]">Tabla vacía</span>
+            </div>
+          );
+        }
+
         return (
-          <div className="w-full h-full flex items-center justify-center bg-muted/50 text-muted-foreground text-xs border border-dashed border-border rounded">
-            📋 Tabla
+          <div className="w-full h-full flex flex-col overflow-hidden bg-white rounded">
+            {niveles.map((nivel: any) => {
+              const rowCount = nivel.tipo === 'autorrelleno' ? 2 : 1;
+              const rowHeightPx = (nivel.alto_fila || 0.5) * cmToPx;
+              const nivelFontSize = nivel.estilo?.tamano || 10;
+              return Array.from({ length: rowCount }, (_, rowIdx) => (
+                <div key={`${nivel.id}-${rowIdx}`} className="flex w-full" style={{ height: rowHeightPx }}>
+                  {(nivel.columnas || []).map((col: any, colIdx: number) => {
+                    const pct = col.ancho || 10;
+                    let bgColor = col.formato?.color_fondo || '#ffffff';
+                    if (nivel.tipo === 'autorrelleno' && nivel.configuracion_dinamica?.sombreado_alterno) {
+                      bgColor = rowIdx % 2 === 0
+                        ? nivel.configuracion_dinamica.color_par || '#ffffff'
+                        : nivel.configuracion_dinamica.color_impar || '#f0f0f0';
+                    }
+                    const text = nivel.tipo === 'autorrelleno' ? '...' : (col.contenido || '').slice(0, 8);
+                    const borders = col.bordes || {};
+                    const align = col.formato?.alineacion || 'left';
+                    const justify = align === 'center' ? 'center' : align === 'right' ? 'flex-end' : 'flex-start';
+                    const colFont = col.formato?.fuente || nivel.estilo?.fuente || 'sans-serif';
+                    return (
+                      <div key={colIdx} style={{
+                        width: `${pct}%`,
+                        backgroundColor: bgColor,
+                        color: col.formato?.color_texto || '#000',
+                        fontSize: nivelFontSize,
+                        fontFamily: colFont,
+                        fontWeight: col.formato?.negrita ? 'bold' : 'normal',
+                        borderTop: borders.superior?.activo ? `${borders.superior.grosor || 1}px solid ${borders.superior.color || '#000'}` : 'none',
+                        borderBottom: borders.inferior?.activo ? `${borders.inferior.grosor || 1}px solid ${borders.inferior.color || '#000'}` : 'none',
+                        borderLeft: borders.izquierdo?.activo ? `${borders.izquierdo.grosor || 1}px solid ${borders.izquierdo.color || '#000'}` : 'none',
+                        borderRight: borders.derecho?.activo ? `${borders.derecho.grosor || 1}px solid ${borders.derecho.color || '#000'}` : 'none',
+                        padding: '1px 2px',
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap' as const,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: justify,
+                      }}>
+                        {text}
+                      </div>
+                    );
+                  })}
+                </div>
+              ));
+            })}
+            {scriptLabel && (
+              <div className="text-[8px] text-muted-foreground text-center mt-auto py-0.5 bg-muted/30 truncate">
+                {scriptLabel}
+              </div>
+            )}
           </div>
         );
+      }
       default:
         return null;
     }

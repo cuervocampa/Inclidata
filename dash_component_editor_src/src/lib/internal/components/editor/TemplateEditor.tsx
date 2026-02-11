@@ -46,7 +46,19 @@ const defaultElements: Record<ElementType, { ancho: number; alto: number; estilo
     ancho: 10,
     alto: 5,
     estilo: {},
-    contenido: {}
+    contenido: {},
+    configuracion: { script: '', formato: 'svg', parametros: {} },
+    cuadricula: {
+      niveles: [{
+        id: 1, tipo: 'estatico', num_columnas: 3, alto_fila: 0.5,
+        estilo: { fuente: 'Aptos', tamano: 10 },
+        columnas: [
+          { ancho: 33.33, contenido: 'Col 1', formato: { fuente: 'Aptos', tamano: 10, color_texto: '#000000', color_fondo: '#ffffff', alineacion: 'left', negrita: false }, bordes: { superior: { activo: true, grosor: 1, color: '#000000' }, inferior: { activo: true, grosor: 1, color: '#000000' }, izquierdo: { activo: true, grosor: 1, color: '#000000' }, derecho: { activo: true, grosor: 1, color: '#000000' } } },
+          { ancho: 33.33, contenido: 'Col 2', formato: { fuente: 'Aptos', tamano: 10, color_texto: '#000000', color_fondo: '#ffffff', alineacion: 'left', negrita: false }, bordes: { superior: { activo: true, grosor: 1, color: '#000000' }, inferior: { activo: true, grosor: 1, color: '#000000' }, izquierdo: { activo: true, grosor: 1, color: '#000000' }, derecho: { activo: true, grosor: 1, color: '#000000' } } },
+          { ancho: 33.34, contenido: 'Col 3', formato: { fuente: 'Aptos', tamano: 10, color_texto: '#000000', color_fondo: '#ffffff', alineacion: 'left', negrita: false }, bordes: { superior: { activo: true, grosor: 1, color: '#000000' }, inferior: { activo: true, grosor: 1, color: '#000000' }, izquierdo: { activo: true, grosor: 1, color: '#000000' }, derecho: { activo: true, grosor: 1, color: '#000000' } } }
+        ]
+      }]
+    }
   }
 };
 
@@ -69,7 +81,7 @@ const toolLabels: Record<ElementType, string> = {
 };
 
 export const TemplateEditor = () => {
-  const { addElement, pagina_actual, paginas } = useTemplateStore();
+  const { addElement, pagina_actual, paginas, zoom } = useTemplateStore();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [activeType, setActiveType] = useState<ElementType | null>(null);
   const [jsonInspectorOpen, setJsonInspectorOpen] = useState(false);
@@ -108,8 +120,9 @@ export const TemplateEditor = () => {
       if (!canvasRect) return;
       
       // Calculate position in cm
-      const dropX = Math.max(0, ((event.activatorEvent as MouseEvent).clientX - canvasRect.left) / CM_TO_PX);
-      const dropY = Math.max(0, ((event.activatorEvent as MouseEvent).clientY - canvasRect.top) / CM_TO_PX);
+      const effectiveCmToPx = CM_TO_PX * zoom;
+      const dropX = Math.max(0, ((event.activatorEvent as MouseEvent).clientX - canvasRect.left) / effectiveCmToPx);
+      const dropY = Math.max(0, ((event.activatorEvent as MouseEvent).clientY - canvasRect.top) / effectiveCmToPx);
       
       // Get current max zIndex
       const currentPage = paginas[pagina_actual];
@@ -132,7 +145,8 @@ export const TemplateEditor = () => {
           zIndex: maxZIndex + 1,
           visible: true
         },
-        ...((defaults as any).configuracion ? { configuracion: (defaults as any).configuracion } : {})
+        ...((defaults as any).configuracion ? { configuracion: (defaults as any).configuracion } : {}),
+        ...((defaults as any).cuadricula ? { cuadricula: (defaults as any).cuadricula } : {})
       });
     }
   };
