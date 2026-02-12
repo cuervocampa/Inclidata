@@ -33,7 +33,8 @@ import {
   Plus,
   Minus,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Info
 } from 'lucide-react';
 import type { GridLevel, GridColumn, ColumnBorders, Cuadricula } from '@/store/templateStore';
 import { motion } from 'framer-motion';
@@ -382,17 +383,6 @@ const ChartSection = ({
     });
   }, [element, config, pageId, updateElement]);
 
-  const params = config.parametros || {};
-  const hasParams = Object.keys(params).length > 0;
-  const paramsText = JSON.stringify(params, null, 2);
-
-  const placeholderExample = `{
-  "sensor": "desp_a",
-  "mostrar_titulo": true,
-  "mostrar_leyenda": false,
-  "dpi": 600
-}`;
-
   return (
     <div className="property-section">
       <div className="property-section-title">
@@ -436,34 +426,40 @@ const ChartSection = ({
         </Select>
       </div>
 
-      {/* Parameters JSON editor */}
-      <div>
-        <Label className="text-xs text-muted-foreground mb-1.5 block">Parámetros (JSON)</Label>
-        <p className="text-[10px] text-muted-foreground mb-1.5 leading-snug">
-          Objeto JSON con los parámetros que recibe el script.
-          Usa <code className="bg-muted px-0.5 rounded">"$CURRENT"</code> para
-          inyectar el valor activo del informe en tiempo de generación.
-        </p>
-        <textarea
-          defaultValue={hasParams ? paramsText : ''}
-          key={element.id}
-          onBlur={(e) => {
-            const txt = e.target.value.trim();
-            if (!txt) {
-              handleConfigChange('parametros', {});
-              return;
-            }
-            try {
-              const parsed = JSON.parse(txt);
-              handleConfigChange('parametros', parsed);
-            } catch {
-              // invalid JSON — keep current value
-            }
-          }}
-          className="w-full h-36 px-3 py-2 text-xs font-mono border border-input rounded-md bg-background resize-y focus:outline-none focus:ring-2 focus:ring-ring"
-          placeholder={placeholderExample}
-        />
-      </div>
+      {/* Parameter help */}
+      <details className="group mb-1">
+        <summary className="flex items-center gap-1.5 cursor-pointer text-xs text-muted-foreground hover:text-foreground select-none py-1">
+          <Info className="w-3.5 h-3.5" />
+          <span>Ayuda: parámetros del script</span>
+        </summary>
+        <div className="mt-1.5 p-2.5 bg-muted/50 border border-border rounded-md text-[10px] text-muted-foreground leading-relaxed space-y-2">
+          <p>
+            Los parámetros se almacenan en el JSON del elemento
+            (<strong>Inspector JSON → Elemento</strong>).
+          </p>
+          <div>
+            <p className="font-semibold text-foreground/70 mb-0.5">Valores dinámicos (desde Graficar):</p>
+            <ul className="list-none space-y-0.5 ml-1">
+              <li><code className="bg-muted px-0.5 rounded">$CURRENT</code> → sensor activo</li>
+              <li><code className="bg-muted px-0.5 rounded">$CURRENT_fecha_seleccionada</code> → fecha de corte</li>
+              <li><code className="bg-muted px-0.5 rounded">$CURRENT_ultimas_camp</code> → n.º campañas</li>
+              <li><code className="bg-muted px-0.5 rounded">$CURRENT_fecha_inicial</code> / <code className="bg-muted px-0.5 rounded">$CURRENT_fecha_final</code></li>
+            </ul>
+          </div>
+          <div>
+            <p className="font-semibold text-foreground/70 mb-0.5">Valores fijos (se usan tal cual):</p>
+            <ul className="list-none space-y-0.5 ml-1">
+              <li><code className="bg-muted px-0.5 rounded">"sensor": "INC-01"</code> → sensor específico</li>
+              <li><code className="bg-muted px-0.5 rounded">"dpi": 600</code> → resolución fija</li>
+            </ul>
+          </div>
+          <div className="font-mono bg-background/80 rounded p-1.5 border border-border/50 text-[9px] whitespace-pre">{`{
+  "sensor": "$CURRENT",
+  "mostrar_titulo": true,
+  "dpi": 600
+}`}</div>
+        </div>
+      </details>
     </div>
   );
 };
@@ -641,10 +637,6 @@ const TableSection = ({
     setNiveles(fresh.map(n => n.id === levelId ? { ...n, num_columnas: newCount, columnas: newCols } : n));
   }, [getFreshNiveles, setNiveles]);
 
-  const params = config.parametros || {};
-  const hasParams = Object.keys(params).length > 0;
-  const paramsText = JSON.stringify(params, null, 2);
-
   return (
     <div className="property-section">
       <div className="property-section-title">
@@ -671,21 +663,48 @@ const TableSection = ({
         </Select>
       </div>
 
-      {/* ── Parameters JSON ── */}
-      <div className="mb-3">
-        <Label className="text-xs text-muted-foreground mb-1.5 block">Parámetros (JSON)</Label>
-        <textarea
-          defaultValue={hasParams ? paramsText : ''}
-          key={`params-${element.id}`}
-          onBlur={(e) => {
-            const txt = e.target.value.trim();
-            if (!txt) { handleConfigChange('parametros', {}); return; }
-            try { handleConfigChange('parametros', JSON.parse(txt)); } catch { /* invalid */ }
-          }}
-          className="w-full h-24 px-3 py-2 text-xs font-mono border border-input rounded-md bg-background resize-y focus:outline-none focus:ring-2 focus:ring-ring"
-          placeholder='{ "clave": "valor" }'
-        />
-      </div>
+      {/* ── Parameter & cell content help ── */}
+      <details className="group mb-3">
+        <summary className="flex items-center gap-1.5 cursor-pointer text-xs text-muted-foreground hover:text-foreground select-none py-1">
+          <Info className="w-3.5 h-3.5" />
+          <span>Ayuda: parámetros y contenido de celdas</span>
+        </summary>
+        <div className="mt-1.5 p-2.5 bg-muted/50 border border-border rounded-md text-[10px] text-muted-foreground leading-relaxed space-y-2">
+          <p>
+            Los parámetros se almacenan en el JSON del elemento
+            (<strong>Inspector JSON → Elemento</strong>).
+          </p>
+          <div>
+            <p className="font-semibold text-foreground/70 mb-0.5">Contenido de celdas por tipo de nivel:</p>
+            <ul className="list-none space-y-0.5 ml-1">
+              <li><span className="inline-block px-1 py-0.5 rounded text-[9px] font-bold bg-blue-100 text-blue-700 mr-1">E</span> Estático: texto fijo → <code className="bg-muted px-0.5 rounded">Prof.</code>, <code className="bg-muted px-0.5 rounded">A</code>, <code className="bg-muted px-0.5 rounded">B</code></li>
+              <li><span className="inline-block px-1 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-700 mr-1">D</span> Dinámico: <code className="bg-muted px-0.5 rounded">[campo]</code> → datos del script</li>
+            </ul>
+          </div>
+          <div>
+            <p className="font-semibold text-foreground/70 mb-0.5">Campos dinámicos comunes:</p>
+            <ul className="list-none space-y-0.5 ml-1">
+              <li><code className="bg-muted px-0.5 rounded">[prof]</code> → profundidad</li>
+              <li><code className="bg-muted px-0.5 rounded">[desp_a]</code> / <code className="bg-muted px-0.5 rounded">[desp_b]</code> → desplazamiento eje A/B</li>
+              <li><code className="bg-muted px-0.5 rounded">fecha_1</code>, <code className="bg-muted px-0.5 rounded">fecha_2</code>… → reemplazados por fechas reales</li>
+            </ul>
+          </div>
+          <div>
+            <p className="font-semibold text-foreground/70 mb-0.5">Valores dinámicos (desde Graficar):</p>
+            <ul className="list-none space-y-0.5 ml-1">
+              <li><code className="bg-muted px-0.5 rounded">$CURRENT</code> → sensor activo</li>
+              <li><code className="bg-muted px-0.5 rounded">$CURRENT_fecha_seleccionada</code> → fecha de corte</li>
+              <li><code className="bg-muted px-0.5 rounded">$CURRENT_ultimas_camp</code> → n.º campañas</li>
+            </ul>
+          </div>
+          <div className="font-mono bg-background/80 rounded p-1.5 border border-border/50 text-[9px] leading-snug">
+            <div className="text-foreground/50 mb-0.5">{'// Ejemplo: nivel estático'}</div>
+            <div>Col 1: <strong>Prof.</strong> | Col 2: <strong>A</strong> | Col 3: <strong>B</strong></div>
+            <div className="text-foreground/50 mt-1 mb-0.5">{'// Ejemplo: nivel dinámico'}</div>
+            <div>Col 1: <strong>[prof]</strong> | Col 2: <strong>[desp_a]</strong> | Col 3: <strong>[desp_b]</strong></div>
+          </div>
+        </div>
+      </details>
 
       {/* ── Level management ── */}
       <div className="mb-3">

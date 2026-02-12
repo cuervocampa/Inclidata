@@ -492,32 +492,40 @@ def layout():
             ], style={"width": "100%"}),
 
             dmc.Divider(style={"marginTop": "40px", "marginBottom": "20px"}),
-            dmc.Grid([
-                dmc.GridCol(
-                    dcc.Graph(id='grafico_temporal', config={'responsive': False}, style={'height': '400px'}),
-                    span=9  # Ocupa el 70% de la fila
+            # Serie temporal (40%) + Polar (40%) + Controles (20%)
+            html.Div([
+                # Serie temporal
+                html.Div(
+                    dcc.Graph(id='grafico_temporal', config={'responsive': True}, style={'height': '100%'}),
+                    style={'width': '40%', 'height': '600px', 'flexShrink': '0'}
                 ),
-                dmc.GridCol([
-                    dmc.Title("Profundidades", order=4),
-                    dmc.Space(h=20),  # espacio entre componentes
+                # Gráfico polar
+                html.Div(
+                    dcc.Graph(id='grafico_polar', config={'responsive': True}, style={'height': '100%'}),
+                    style={'width': '40%', 'height': '600px', 'flexShrink': '0'}
+                ),
+                # Controles
+                html.Div([
                     dmc.MultiSelect(
                         id='profundidades_multiselect',
-                        data=[],  # Inicialmente vacío
+                        label="Profundidades",
+                        data=[],
                         placeholder="Selecciona profundidades"
                     ),
-                    dmc.Space(h=20),  # espacio entre componentes
+                    dmc.Space(h=15),
                     dmc.MultiSelect(
                         id='desplazamientos_multiselect',
+                        label="Desplazamientos",
                         data=[
                             {"value": "desp_a", "label": "desp_a"},
                             {"value": "desp_b", "label": "desp_b"},
                             {"value": "desp_total", "label": "desp_total"}
                         ],
-                        value=["desp_a"],  # Valor por defecto
-                        placeholder="Selecciona tipo de desplazamiento"
-                    )
-                ], span=3)  # Ocupa el 30% de la fila
-            ], style={"width": "100%"}),
+                        value=["desp_a"],
+                        placeholder="Selecciona tipo"
+                    ),
+                ], style={'width': '20%', 'flexShrink': '0', 'paddingLeft': '10px', 'paddingTop': '10px'}),
+            ], style={'display': 'flex', 'width': '100%'}),
 
             # generación de informe pdf
             # Modal para configurar el informe
@@ -1519,6 +1527,99 @@ def register_callbacks(app):
         )
 
         return fig_temporal
+
+    # Callback para actualizar el gráfico polar (desplazamiento resultante A/B)
+    @app.callback(
+        Output("grafico_polar", "figure"),
+        [Input("profundidades_multiselect", "value"),
+         Input("graficar-tubo", "data"),
+         Input("fechas_multiselect", "value"),
+         Input("color_scheme_selector", "value"),
+         Input("unidades_eje", "value")]
+    )
+    def actualizar_grafico_polar(profundidades_seleccionadas, data, fechas_seleccionadas, color_scheme, eje):
+        if not profundidades_seleccionadas or not data or not fechas_seleccionadas:
+            fig_vacia = go.Figure()
+            fig_vacia.update_layout(autosize=False, uirevision='constant')
+            return fig_vacia
+
+        fig_polar = go.Figure()
+
+        # Ordenar fechas cronológicamente
+        fechas_ordenadas = sorted(fechas_seleccionadas, key=lambda x: datetime.fromisoformat(x))
+
+        for profundidad in profundidades_seleccionadas:
+            r_values = []
+            theta_values = []
+            hover_texts = []
+            fechas_traza = []
+
+            for fecha in fechas_ordenadas:
+                if fecha not in data or "calc" not in data[fecha]:
+                    continue
+                for punto in data[fecha]["calc"]:
+                    if str(punto.get(eje)) == str(profundidad):
+                        desp_a = punto.get("desp_a", 0) or 0
+                        desp_b = punto.get("desp_b", 0) or 0
+                        r = math.sqrt(desp_a ** 2 + desp_b ** 2)
+                        theta = math.degrees(math.atan2(desp_b, desp_a))
+                        r_values.append(r)
+                        theta_values.append(theta)
+                        fechas_traza.append(fecha)
+                        hover_texts.append(
+                            f"{fecha[:10]}<br>"
+                            f"A: {desp_a:.2f}  B: {desp_b:.2f}<br>"
+                            f"R: {r:.2f}  θ: {theta:.1f}°"
+                        )
+                        break
+
+            if r_values:
+                fig_polar.add_trace(go.Scatterpolar(
+                    r=r_values,
+                    theta=theta_values,
+                    mode="markers+lines",
+                    name=f"Prof {profundidad}",
+                    text=hover_texts,
+                    hoverinfo="text+name",
+                    marker=dict(size=5),
+                    line=dict(width=1.5),
+                ))
+
+        fig_polar.update_layout(
+            title=dict(
+                text="<b>Gráfico Polar (A vs B)</b>",
+                font=dict(family="Arial", size=16, color="#c1c2c5"),
+                x=0, xanchor="left", yanchor="top"
+            ),
+            polar=dict(
+                bgcolor='rgba(0,0,0,0)',
+                domain=dict(x=[0, 1], y=[0, 0.92]),  # maximizar área del polar
+                angularaxis=dict(
+                    direction="counterclockwise",
+                    rotation=0,  # 0° = eje A+ (derecha)
+                    gridcolor='#555555',
+                    linecolor='#666666',
+                    tickfont=dict(color='#888888', size=10),
+                    tickvals=[0, 90, 180, 270],
+                    ticktext=["A+", "B+", "A−", "B−"],
+                ),
+                radialaxis=dict(
+                    gridcolor='#555555',
+                    linecolor='#666666',
+                    tickfont=dict(color='#888888', size=9),
+                    angle=45,
+                ),
+            ),
+            margin=dict(l=30, r=30, t=50, b=30),
+            legend=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='#c1c2c5', size=10)),
+            showlegend=True,
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            autosize=False,
+            uirevision='constant'
+        )
+
+        return fig_polar
 
     # Callback to update the slider properties based on fechas_multiselect data
     from datetime import datetime

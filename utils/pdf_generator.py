@@ -866,8 +866,7 @@ def draw_table_from_grid(pdf, table_data, page_height, data_source, biblioteca_t
                     
                     # Aplicar sombreado alterno si está configurado
                     if sombreado_alterno:
-                        if col_render["formato"].get("color_fondo") == "transparent":
-                            col_render["formato"]["color_fondo"] = color_par if fila_idx % 2 == 0 else color_impar
+                        col_render["formato"]["color_fondo"] = color_par if fila_idx % 2 == 0 else color_impar
                     
                     fila_render.append(col_render)
                 

@@ -104,7 +104,7 @@ export const ToolsSidebar = () => {
       </div>
 
       {/* Page Management Section */}
-      <div className="p-4 flex-1">
+      <div className="p-4 flex-1 min-h-0 flex flex-col">
         <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
           Páginas
         </h3>
@@ -144,7 +144,7 @@ export const ToolsSidebar = () => {
 
         {/* Orientation Toggle */}
         <h4 className="text-xs font-medium text-muted-foreground mb-2">Orientación</h4>
-        <div className="flex gap-2">
+        <div className="flex gap-2 mb-3">
           <button
             onClick={() => setPageOrientation(pagina_actual, 'portrait')}
             className={`orientation-btn flex-1 ${currentPage?.configuracion.orientacion === 'portrait' ? 'active' : ''}`}
@@ -158,11 +158,9 @@ export const ToolsSidebar = () => {
             <MonitorSmartphone className="w-5 h-5" />
           </button>
         </div>
-      </div>
 
-      {/* Page Thumbnails */}
-      <div className="p-4 border-t border-border max-h-48 overflow-y-auto scrollbar-thin">
-        <div className="grid grid-cols-3 gap-2">
+        {/* Page Thumbnails */}
+        <div className="grid grid-cols-3 gap-2 flex-1 min-h-0 overflow-y-auto scrollbar-thin content-start">
           {pageIds.map((pageId) => (
             <button
               key={pageId}

@@ -22,7 +22,9 @@
     "ext": "png",
     "md5": "b80fb2c69dd50f13ba751d244e1b0eef",
     "usages": [
-      "INCL_AR_prueba_kk_01"
+      "INCL_AR_prueba_kk_01",
+      "INCL_AR_kk_2",
+      "INCL_AR"
     ]
   }
 }

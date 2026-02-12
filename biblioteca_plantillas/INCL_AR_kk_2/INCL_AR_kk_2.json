@@ -2721,19 +2721,34 @@
         "el_1770932113240_lzsu0yixi": {
           "tipo": "tabla",
           "geometria": {
-            "x": 5.8201058201058204,
-            "y": 0.6172839506172842,
+            "x": 5.855379188712522,
+            "y": 0.6525573192239862,
             "ancho": 9.929453262786597,
             "alto": 25.776014109347443
           },
-          "estilo": {},
-          "contenido": {},
+          "estilo": {
+            "backgroundColor": "transparent",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 0,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "left"
+          },
+          "contenido": {
+            "texto": null,
+            "src": null
+          },
           "metadata": {
             "zIndex": 1,
-            "visible": true
+            "visible": true,
+            "grupo": null
           },
           "configuracion": {
-            "script": "",
+            "script": "ejemplo_tabla_kk.py",
             "formato": "svg",
             "parametros": {}
           },
@@ -3076,7 +3091,7 @@
   },
   "pagina_actual": "4",
   "configuracion": {
-    "nombre_plantilla": "INCL_AR",
+    "nombre_plantilla": "INCL_AR_kk_2",
     "version": "1.0",
     "num_paginas": 4,
     "orientacion": "landscape"
