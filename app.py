@@ -10,6 +10,7 @@ from dash import dcc, html
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 import dash_mantine_components as dmc
+from dash_iconify import DashIconify
 
 # Importar layouts de cada página
 from pages import (
@@ -33,30 +34,49 @@ app = dash.Dash(
     suppress_callback_exceptions=True,
 )
 
-# Define la barra lateral con switch de modo oscuro
+# --- Sidebar con iconos y estilo premium ---
+NAV_ITEMS = [
+    {"label": "Info",               "href": "/",                  "icon": "lucide:info"},
+    {"label": "Importar",           "href": "/importar",          "icon": "lucide:upload"},
+    {"label": "Graficar",           "href": "/graficar",          "icon": "lucide:bar-chart-3"},
+    {"label": "Correcciones",       "href": "/correcciones",      "icon": "lucide:wrench"},
+    {"label": "Importar umbrales",  "href": "/importar_umbrales", "icon": "lucide:alert-triangle"},
+    {"label": "Editor plantillas",  "href": "/editor_plantilla",  "icon": "lucide:file-text"},
+    {"label": "Editor Visual",      "href": "/editor-visual",     "icon": "lucide:layout-dashboard"},
+]
+
 sidebar = html.Div(
     [
-        html.H2("Menú", className="display-4"),
-        html.Hr(),
-        # Switch para alternar modo claro/oscuro
-        dmc.Group([
-            dmc.Text("🌙 Modo oscuro", size="sm"),
-            dmc.Switch(id="color-scheme-toggle", size="md", checked=False)
-        ], gap="xs", style={"marginBottom": "15px"}),
-        html.P("Navegación", className="lead"),
+        # Header
+        html.Div("IncliData", className="sidebar-header"),
+
+        # Dark mode toggle
+        html.Div([
+            DashIconify(icon="lucide:moon", width=16, style={"color": "var(--id-text-muted)"}),
+            html.Span("Modo oscuro", className="sidebar-toggle-label"),
+            dmc.Switch(id="color-scheme-toggle", size="md", checked=False),
+        ], className="sidebar-toggle-container"),
+
+        # Nav section label
+        html.Div("Navegación", className="sidebar-nav-label"),
+
+        # Nav items (keep dbc.NavLink for active="exact" auto-highlighting)
         dbc.Nav(
             [
-                dbc.NavLink("Info", href="/", active="exact"),
-                dbc.NavLink("Importar", href="/importar", active="exact"),
-                dbc.NavLink("Graficar", href="/graficar", active="exact"),
-                dbc.NavLink("Correcciones", href="/correcciones", active="exact"),
-                dbc.NavLink("Importar umbrales", href="/importar_umbrales", active="exact"),
-                # dbc.NavLink("Plantilla gpt", href="/configuracion_plantilla_gpt", active="exact"),
-                dbc.NavLink("Editor plantillas", href="/editor_plantilla", active="exact"),
-                dbc.NavLink("Editor Visual (Nuevo)", href="/editor-visual", active="exact"),
+                dbc.NavLink(
+                    children=[
+                        DashIconify(icon=item["icon"], width=18, className="sidebar-nav-icon"),
+                        html.Span(item["label"]),
+                    ],
+                    href=item["href"],
+                    active="exact",
+                    className="sidebar-nav-item",
+                )
+                for item in NAV_ITEMS
             ],
             vertical=True,
-            pills=True,
+            pills=False,
+            id="sidebar-nav-list",
         ),
     ],
     id="sidebar",
@@ -65,20 +85,23 @@ sidebar = html.Div(
         "top": 0,
         "left": 0,
         "bottom": 0,
-        "width": "16rem",
-        "padding": "2rem 1rem",
-        "background-color": "#f8f9fa",
+        "width": "240px",
+        "padding": "1.5rem 0.75rem",
+        "display": "flex",
+        "flexDirection": "column",
+        "backgroundColor": "#F5F7FA",
+        "borderRight": "1px solid #E5E7EB",
     },
 )
 
-# Define el contenedor del contenido principal (panel derecho) con estilo oscuro por defecto
+# Define el contenedor del contenido principal
 content = html.Div(
     id="page-content",
     style={
-        "margin-left": "18rem",
-        "padding": "2rem 1rem",
-        "background-color": "#ffffff",
-        "color": "#000000",
+        "margin-left": "260px",
+        "padding": "2rem 1.5rem",
+        "background-color": "#FFFFFF",
+        "color": "#1F2937",
         "min-height": "100vh",
     }
 )
@@ -89,12 +112,12 @@ color_scheme_store = dcc.Store(id="color-scheme-store", data="light", storage_ty
 # Layout de la aplicación envuelto en MantineProvider (requisito DMC v2)
 app.layout = html.Div(
     id="app-container",
-    style={"background-color": "#ffffff", "min-height": "100vh"},  # Estilo claro por defecto
+    style={"background-color": "#FFFFFF", "min-height": "100vh"},
     children=[
         color_scheme_store,
         dmc.MantineProvider(
             id="mantine-provider",
-            forceColorScheme="light",  # Por defecto modo claro
+            forceColorScheme="light",
             theme={
                 "fontFamily": "Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
             },
@@ -122,20 +145,23 @@ def toggle_color_scheme(is_dark):
             "top": 0,
             "left": 0,
             "bottom": 0,
-            "width": "16rem",
-            "padding": "2rem 1rem",
-            "background-color": "#1a1b1e",
-            "color": "#c1c2c5",
+            "width": "240px",
+            "padding": "1.5rem 0.75rem",
+            "display": "flex",
+            "flexDirection": "column",
+            "backgroundColor": "hsl(225, 10%, 7%)",
+            "borderRight": "1px solid hsl(225, 6%, 18%)",
+            "color": "hsl(220, 9%, 78%)",
         }
         content_style = {
-            "margin-left": "18rem",
-            "padding": "2rem 1rem",
-            "background-color": "#141517",
-            "color": "#c1c2c5",
+            "margin-left": "260px",
+            "padding": "2rem 1.5rem",
+            "backgroundColor": "hsl(225, 8%, 8%)",
+            "color": "hsl(220, 9%, 78%)",
             "min-height": "100vh",
         }
         app_style = {
-            "background-color": "#141517",
+            "backgroundColor": "hsl(225, 8%, 8%)",
             "min-height": "100vh",
         }
         return "dark", sidebar_style, content_style, app_style
@@ -145,20 +171,23 @@ def toggle_color_scheme(is_dark):
             "top": 0,
             "left": 0,
             "bottom": 0,
-            "width": "16rem",
-            "padding": "2rem 1rem",
-            "background-color": "#f8f9fa",
-            "color": "#000000",
+            "width": "240px",
+            "padding": "1.5rem 0.75rem",
+            "display": "flex",
+            "flexDirection": "column",
+            "backgroundColor": "#F5F7FA",
+            "borderRight": "1px solid #E5E7EB",
+            "color": "#1F2937",
         }
         content_style = {
-            "margin-left": "18rem",
-            "padding": "2rem 1rem",
-            "background-color": "#ffffff",
-            "color": "#000000",
+            "margin-left": "260px",
+            "padding": "2rem 1.5rem",
+            "backgroundColor": "#FFFFFF",
+            "color": "#1F2937",
             "min-height": "100vh",
         }
         app_style = {
-            "background-color": "#ffffff",
+            "backgroundColor": "#FFFFFF",
             "min-height": "100vh",
         }
         return "light", sidebar_style, content_style, app_style

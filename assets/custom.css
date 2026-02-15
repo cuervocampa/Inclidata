@@ -1,40 +1,266 @@
-/* assets/custom.css - Estilos personalizados para modo oscuro */
+/* assets/custom.css - Estilos Premium Inclidata */
+
+/* === Google Fonts === */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* === CSS Custom Properties (Light Mode) === */
+:root {
+    /* Primary palette */
+    --id-primary: #3B8FD9;
+    --id-primary-hover: #3380c4;
+    --id-primary-10: rgba(59, 143, 217, 0.10);
+    --id-primary-40: rgba(59, 143, 217, 0.40);
+    --id-primary-5: rgba(59, 143, 217, 0.05);
+
+    /* Destructive */
+    --id-destructive: #E74856;
+    --id-destructive-lighter: #ef6b77;
+
+    /* Surfaces */
+    --id-background: #FFFFFF;
+    --id-card-bg: #F9FAFB;
+    --id-sidebar-bg: #F5F7FA;
+
+    /* Borders */
+    --id-border: #E5E7EB;
+    --id-sidebar-border: #E5E7EB;
+
+    /* Text */
+    --id-text-primary: #1F2937;
+    --id-text-muted: #6B7280;
+    --id-text-white: #FFFFFF;
+
+    /* Radii */
+    --id-radius-sm: 4px;
+    --id-radius-md: 6px;
+    --id-radius-lg: 8px;
+    --id-radius-xl: 12px;
+
+    /* Transitions */
+    --id-transition: 200ms ease-in-out;
+
+    /* Font */
+    --id-font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+/* === CSS Custom Properties (Dark Mode) === */
+[data-mantine-color-scheme="dark"] {
+    --id-background: hsl(225, 8%, 8%);
+    --id-card-bg: hsl(220, 10%, 11%);
+    --id-sidebar-bg: hsl(225, 10%, 7%);
+    --id-border: hsl(225, 6%, 18%);
+    --id-sidebar-border: hsl(225, 6%, 18%);
+    --id-text-primary: hsl(220, 9%, 78%);
+    --id-text-muted: hsl(220, 6%, 50%);
+}
+
+/* === Global Base === */
+body {
+    font-family: var(--id-font);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   SIDEBAR
+   ============================================ */
+
+#sidebar {
+    font-family: var(--id-font);
+}
+
+.sidebar-header {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--id-text-primary);
+    margin-bottom: 1.5rem;
+    padding: 0.5rem 0.75rem 0 0.75rem;
+}
+
+.sidebar-nav-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--id-text-muted);
+    padding: 0 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Override dbc.NavLink default Bootstrap pills styling */
+#sidebar-nav-list .nav-link {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    padding: 0.625rem 0.75rem !important;
+    border-radius: var(--id-radius-lg) !important;
+    color: var(--id-text-primary) !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    font-family: var(--id-font) !important;
+    transition: all var(--id-transition) !important;
+    margin-bottom: 2px !important;
+    background-color: transparent !important;
+    border: none !important;
+}
+
+#sidebar-nav-list .nav-link:hover {
+    background-color: var(--id-primary-10) !important;
+    color: var(--id-text-primary) !important;
+    text-decoration: none !important;
+}
+
+#sidebar-nav-list .nav-link.active {
+    background-color: var(--id-primary) !important;
+    color: var(--id-text-white) !important;
+}
+
+#sidebar-nav-list .nav-link.active .sidebar-nav-icon {
+    color: var(--id-text-white) !important;
+}
+
+.sidebar-nav-icon {
+    color: var(--id-text-muted);
+    flex-shrink: 0;
+}
+
+/* Dark mode toggle container */
+.sidebar-toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0 0.75rem 0.75rem 0.75rem;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid var(--id-border);
+}
+
+.sidebar-toggle-label {
+    font-size: 0.875rem;
+    color: var(--id-text-muted);
+}
+
+/* ============================================
+   UPLOAD AREA
+   ============================================ */
+
+.id-upload-area {
+    border: 2px dashed var(--id-primary-40) !important;
+    border-radius: var(--id-radius-lg) !important;
+    height: 64px !important;
+    background-color: transparent !important;
+    transition: all var(--id-transition);
+    cursor: pointer;
+}
+
+.id-upload-area:hover {
+    border-color: var(--id-primary) !important;
+    background-color: var(--id-primary-5) !important;
+}
+
+.id-upload-text {
+    color: var(--id-text-muted);
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.id-upload-icon {
+    color: var(--id-primary);
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+
+.id-btn {
+    height: 40px !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: var(--id-radius-md) !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    font-family: var(--id-font) !important;
+    transition: all var(--id-transition) !important;
+}
+
+.id-btn-outline {
+    background-color: transparent !important;
+    border: 1px solid var(--id-primary) !important;
+    color: var(--id-primary) !important;
+}
+
+.id-btn-outline:hover {
+    background-color: var(--id-primary-10) !important;
+}
+
+.id-btn-destructive {
+    background: linear-gradient(to right, var(--id-destructive), var(--id-destructive-lighter)) !important;
+    color: var(--id-text-white) !important;
+    border: none !important;
+}
+
+.id-btn-destructive:hover {
+    opacity: 0.9;
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+
+.id-card {
+    border-radius: var(--id-radius-xl) !important;
+    border: 1px solid var(--id-border) !important;
+    background-color: var(--id-card-bg) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+.id-graph-card {
+    border-radius: var(--id-radius-xl);
+    border: 1px solid var(--id-border);
+    background-color: var(--id-card-bg);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    padding: 1rem;
+}
+
+/* ============================================
+   DARK MODE OVERRIDES (existing rules, updated palette)
+   ============================================ */
 
 /* --- Estilos Generales para Modo Oscuro --- */
 [data-mantine-color-scheme="dark"] body {
-    background-color: #141517;
-    color: #c1c2c5;
+    background-color: hsl(225, 8%, 8%);
+    color: hsl(220, 9%, 78%);
 }
 
 /* --- Dash Core Components (dcc.Dropdown) --- */
 [data-mantine-color-scheme="dark"] .Select-control,
 [data-mantine-color-scheme="dark"] .Select-menu-outer,
 [data-mantine-color-scheme="dark"] .Select-option {
-    background-color: #25262b !important;
-    border-color: #373a40 !important;
-    color: #c1c2c5 !important;
+    background-color: hsl(220, 12%, 14%) !important;
+    border-color: hsl(225, 6%, 22%) !important;
+    color: hsl(220, 9%, 78%) !important;
 }
 
 [data-mantine-color-scheme="dark"] .Select-value-label,
 [data-mantine-color-scheme="dark"] .Select-placeholder,
 [data-mantine-color-scheme="dark"] .Select-input>input {
-    color: #c1c2c5 !important;
+    color: hsl(220, 9%, 78%) !important;
 }
 
 [data-mantine-color-scheme="dark"] .Select-option:hover {
-    background-color: #373a40 !important;
+    background-color: hsl(225, 6%, 22%) !important;
 }
 
 /* --- Dash Mantine Components (dmc.Select, dmc.MultiSelect) --- */
-/* Forzar background oscuro en inputs Mantine */
 [data-mantine-color-scheme="dark"] .mantine-Select-input,
 [data-mantine-color-scheme="dark"] .mantine-MultiSelect-input,
 [data-mantine-color-scheme="dark"] .mantine-Input-input,
 [data-mantine-color-scheme="dark"] input.mantine-Select-input,
 [data-mantine-color-scheme="dark"] input.mantine-MultiSelect-input {
-    background-color: #25262b !important;
-    color: #c1c2c5 !important;
-    border-color: #373a40 !important;
+    background-color: hsl(220, 12%, 14%) !important;
+    color: hsl(220, 9%, 78%) !important;
+    border-color: hsl(225, 6%, 22%) !important;
 }
 
 /* Dropdown menu */
@@ -42,40 +268,39 @@
 [data-mantine-color-scheme="dark"] .mantine-MultiSelect-dropdown,
 [data-mantine-color-scheme="dark"] .mantine-Menu-dropdown,
 [data-mantine-color-scheme="dark"] .mantine-Popover-dropdown {
-    background-color: #25262b !important;
-    border-color: #373a40 !important;
-    color: #c1c2c5 !important;
+    background-color: hsl(220, 12%, 14%) !important;
+    border-color: hsl(225, 6%, 22%) !important;
+    color: hsl(220, 9%, 78%) !important;
 }
 
 /* Items */
 [data-mantine-color-scheme="dark"] .mantine-Select-item,
 [data-mantine-color-scheme="dark"] .mantine-MultiSelect-item {
-    color: #c1c2c5 !important;
+    color: hsl(220, 9%, 78%) !important;
 }
 
 [data-mantine-color-scheme="dark"] .mantine-Select-item:hover,
 [data-mantine-color-scheme="dark"] .mantine-MultiSelect-item:hover,
 [data-mantine-color-scheme="dark"] .mantine-Select-item[data-selected],
 [data-mantine-color-scheme="dark"] .mantine-MultiSelect-item[data-selected] {
-    background-color: #373a40 !important;
+    background-color: hsl(225, 6%, 22%) !important;
     color: #ffffff !important;
 }
 
 /* Pills */
 [data-mantine-color-scheme="dark"] .mantine-MultiSelect-pill {
-    background-color: #373a40 !important;
-    color: #c1c2c5 !important;
+    background-color: hsl(225, 6%, 22%) !important;
+    color: hsl(220, 9%, 78%) !important;
 }
 
 /* --- Inputs Genéricos en dark mode --- */
 [data-mantine-color-scheme="dark"] input[type="text"],
 [data-mantine-color-scheme="dark"] input[type="number"],
 [data-mantine-color-scheme="dark"] select {
-    background-color: #25262b !important;
-    color: #c1c2c5 !important;
-    border-color: #373a40 !important;
+    background-color: hsl(220, 12%, 14%) !important;
+    color: hsl(220, 9%, 78%) !important;
+    border-color: hsl(225, 6%, 22%) !important;
 }
-
 
 /* --- Gráficos Plotly --- */
 [data-mantine-color-scheme="dark"] .js-plotly-plot .plotly .main-svg {
@@ -95,39 +320,38 @@
 }
 
 [data-mantine-color-scheme="dark"] .legendtext {
-    fill: #c1c2c5 !important;
+    fill: hsl(220, 9%, 78%) !important;
 }
 
-/* --- AgGrid (Fallback si callback falla) --- */
-/* Forzamos estilos aunque la clase sea ag-theme-alpine */
+/* --- AgGrid --- */
 [data-mantine-color-scheme="dark"] .ag-theme-alpine {
-    --ag-background-color: #25262b !important;
-    --ag-foreground-color: #c1c2c5 !important;
-    --ag-header-background-color: #1a1b1e !important;
-    --ag-odd-row-background-color: #2c2e33 !important;
-    --ag-row-hover-color: #373a40 !important;
-    --ag-border-color: #373a40 !important;
-    --ag-header-foreground-color: #c1c2c5 !important;
-    --ag-secondary-border-color: #373a40 !important;
-    --ag-row-border-color: #373a40 !important;
+    --ag-background-color: hsl(220, 12%, 14%) !important;
+    --ag-foreground-color: hsl(220, 9%, 78%) !important;
+    --ag-header-background-color: hsl(220, 10%, 11%) !important;
+    --ag-odd-row-background-color: hsl(220, 10%, 16%) !important;
+    --ag-row-hover-color: hsl(225, 6%, 22%) !important;
+    --ag-border-color: hsl(225, 6%, 22%) !important;
+    --ag-header-foreground-color: hsl(220, 9%, 78%) !important;
+    --ag-secondary-border-color: hsl(225, 6%, 22%) !important;
+    --ag-row-border-color: hsl(225, 6%, 22%) !important;
 }
 
 /* --- Bootstrap override --- */
 [data-mantine-color-scheme="dark"] .card,
 [data-mantine-color-scheme="dark"] .alert,
 [data-mantine-color-scheme="dark"] .modal-content {
-    background-color: #25262b !important;
-    color: #c1c2c5 !important;
-    border-color: #373a40 !important;
+    background-color: hsl(220, 12%, 14%) !important;
+    color: hsl(220, 9%, 78%) !important;
+    border-color: hsl(225, 6%, 22%) !important;
 }
 
 [data-mantine-color-scheme="dark"] .close {
-    color: #c1c2c5 !important;
+    color: hsl(220, 9%, 78%) !important;
 }
 
 /* --- Navegación --- */
 [data-mantine-color-scheme="dark"] .nav-link {
-    color: #c1c2c5 !important;
+    color: hsl(220, 9%, 78%) !important;
 }
 
 [data-mantine-color-scheme="dark"] .nav-link:hover {
@@ -135,24 +359,24 @@
 }
 
 [data-mantine-color-scheme="dark"] .nav-link.active {
-    background-color: #228be6 !important;
+    background-color: var(--id-primary) !important;
     color: #ffffff !important;
 }
 
 /* --- Mantine Paper Component --- */
 [data-mantine-color-scheme="dark"] .mantine-Paper-root {
-    background-color: #141517 !important;
-    border-color: #555555 !important;
+    background-color: hsl(225, 8%, 8%) !important;
+    border-color: hsl(225, 6%, 18%) !important;
 }
 
 /* --- Mantine Card Component --- */
 [data-mantine-color-scheme="dark"] .mantine-Card-root {
-    background-color: #1a1b1e !important;
-    border-color: #555555 !important;
+    background-color: hsl(220, 10%, 11%) !important;
+    border-color: hsl(225, 6%, 18%) !important;
 }
 
 [data-mantine-color-scheme="dark"] .mantine-Card-section {
-    border-color: #555555 !important;
+    border-color: hsl(225, 6%, 18%) !important;
 }
 
 /* --- Textos y Headers --- */
@@ -167,14 +391,12 @@
     color: #ffffff !important;
 }
 
-/* Textos generales en modo oscuro */
 [data-mantine-color-scheme="dark"] p,
 [data-mantine-color-scheme="dark"] label,
 [data-mantine-color-scheme="dark"] span {
-    color: #c1c2c5 !important;
+    color: hsl(220, 9%, 78%) !important;
 }
 
-/* Títulos dentro de Paper y Card - Color blanco */
 [data-mantine-color-scheme="dark"] .mantine-Paper-root .mantine-Text-root[data-fw="700"],
 [data-mantine-color-scheme="dark"] .mantine-Card-root .mantine-Text-root[data-fw="700"],
 [data-mantine-color-scheme="dark"] .mantine-Paper-root .mantine-Text-root[data-fw="500"],
@@ -182,33 +404,32 @@
     color: #ffffff !important;
 }
 
-/* Pre (código) dentro de Card en modo oscuro */
 [data-mantine-color-scheme="dark"] .mantine-Card-root pre {
-    color: #c1c2c5 !important;
-    background-color: #25262b !important;
+    color: hsl(220, 9%, 78%) !important;
+    background-color: hsl(220, 12%, 14%) !important;
 }
 
 [data-mantine-color-scheme="dark"] hr {
-    border-color: #555555 !important;
+    border-color: hsl(225, 6%, 18%) !important;
 }
 
 /* --- dcc.Upload Component --- */
 [data-mantine-color-scheme="dark"] .dash-upload {
-    border-color: #555555 !important;
-    background-color: #1a1b1e !important;
+    border-color: hsl(225, 6%, 18%) !important;
+    background-color: hsl(220, 10%, 11%) !important;
 }
 
 /* --- Divs con bordes inline (override) --- */
 [data-mantine-color-scheme="dark"] div[style*="border"] {
-    border-color: #555555 !important;
+    border-color: hsl(225, 6%, 18%) !important;
 }
 
 /* --- Mantine Modal --- */
 [data-mantine-color-scheme="dark"] .mantine-Modal-content,
 [data-mantine-color-scheme="dark"] .mantine-Modal-header,
 [data-mantine-color-scheme="dark"] .mantine-Modal-body {
-    background-color: #1a1b1e !important;
-    color: #c1c2c5 !important;
+    background-color: hsl(220, 10%, 11%) !important;
+    color: hsl(220, 9%, 78%) !important;
 }
 
 [data-mantine-color-scheme="dark"] .mantine-Modal-title {
@@ -216,15 +437,15 @@
 }
 
 [data-mantine-color-scheme="dark"] .mantine-Modal-close {
-    color: #c1c2c5 !important;
+    color: hsl(220, 9%, 78%) !important;
 }
 
 /* --- Mantine Drawer --- */
 [data-mantine-color-scheme="dark"] .mantine-Drawer-content,
 [data-mantine-color-scheme="dark"] .mantine-Drawer-header,
 [data-mantine-color-scheme="dark"] .mantine-Drawer-body {
-    background-color: #1a1b1e !important;
-    color: #c1c2c5 !important;
+    background-color: hsl(220, 10%, 11%) !important;
+    color: hsl(220, 9%, 78%) !important;
 }
 
 [data-mantine-color-scheme="dark"] .mantine-Drawer-title {
@@ -233,78 +454,78 @@
 
 /* --- Mantine Tabs --- */
 [data-mantine-color-scheme="dark"] .mantine-Tabs-tab {
-    color: #c1c2c5 !important;
-    border-color: #555555 !important;
+    color: hsl(220, 9%, 78%) !important;
+    border-color: hsl(225, 6%, 18%) !important;
 }
 
 [data-mantine-color-scheme="dark"] .mantine-Tabs-tab[data-active] {
     color: #ffffff !important;
-    border-color: #228be6 !important;
+    border-color: var(--id-primary) !important;
 }
 
 [data-mantine-color-scheme="dark"] .mantine-Tabs-panel {
-    color: #c1c2c5 !important;
+    color: hsl(220, 9%, 78%) !important;
 }
 
 /* --- Mantine Tooltip --- */
 [data-mantine-color-scheme="dark"] .mantine-Tooltip-tooltip {
-    background-color: #25262b !important;
-    color: #c1c2c5 !important;
-    border-color: #555555 !important;
+    background-color: hsl(220, 12%, 14%) !important;
+    color: hsl(220, 9%, 78%) !important;
+    border-color: hsl(225, 6%, 18%) !important;
 }
 
 /* --- Mantine Slider --- */
 [data-mantine-color-scheme="dark"] .mantine-Slider-track {
-    background-color: #373a40 !important;
+    background-color: hsl(225, 6%, 22%) !important;
 }
 
 [data-mantine-color-scheme="dark"] .mantine-Slider-label {
-    background-color: #25262b !important;
-    color: #c1c2c5 !important;
+    background-color: hsl(220, 12%, 14%) !important;
+    color: hsl(220, 9%, 78%) !important;
 }
 
 [data-mantine-color-scheme="dark"] .mantine-Slider-markLabel {
-    color: #909296 !important;
+    color: hsl(220, 6%, 50%) !important;
 }
 
 /* --- Mantine Checkbox --- */
 [data-mantine-color-scheme="dark"] .mantine-Checkbox-label {
-    color: #c1c2c5 !important;
+    color: hsl(220, 9%, 78%) !important;
 }
 
 /* --- Mantine NumberInput --- */
 [data-mantine-color-scheme="dark"] .mantine-NumberInput-input {
-    background-color: #25262b !important;
-    color: #c1c2c5 !important;
-    border-color: #373a40 !important;
+    background-color: hsl(220, 12%, 14%) !important;
+    color: hsl(220, 9%, 78%) !important;
+    border-color: hsl(225, 6%, 22%) !important;
 }
 
 /* --- Mantine TextInput --- */
 [data-mantine-color-scheme="dark"] .mantine-TextInput-input {
-    background-color: #25262b !important;
-    color: #c1c2c5 !important;
-    border-color: #373a40 !important;
+    background-color: hsl(220, 12%, 14%) !important;
+    color: hsl(220, 9%, 78%) !important;
+    border-color: hsl(225, 6%, 22%) !important;
 }
 
 /* --- Mantine Accordion --- */
 [data-mantine-color-scheme="dark"] .mantine-Accordion-control {
-    background-color: #1a1b1e !important;
-    color: #c1c2c5 !important;
+    background-color: hsl(220, 10%, 11%) !important;
+    color: hsl(220, 9%, 78%) !important;
 }
 
 [data-mantine-color-scheme="dark"] .mantine-Accordion-content {
-    background-color: #141517 !important;
-    color: #c1c2c5 !important;
+    background-color: hsl(225, 8%, 8%) !important;
+    color: hsl(220, 9%, 78%) !important;
 }
 
 [data-mantine-color-scheme="dark"] .mantine-Accordion-item {
-    border-color: #555555 !important;
+    border-color: hsl(225, 6%, 18%) !important;
 }
 
 /* --- Mantine Alert --- */
 [data-mantine-color-scheme="dark"] .mantine-Alert-root {
-    background-color: #25262b !important;
-    border-color: #555555 !important;
+    background-color: hsl(220, 12%, 14%) !important;
+    border-color: hsl(225, 6%, 18%) !important;
 }
 
 [data-mantine-color-scheme="dark"] .mantine-Alert-title {
@@ -312,84 +533,84 @@
 }
 
 [data-mantine-color-scheme="dark"] .mantine-Alert-message {
-    color: #c1c2c5 !important;
+    color: hsl(220, 9%, 78%) !important;
 }
 
 /* --- Mantine Table --- */
 [data-mantine-color-scheme="dark"] .mantine-Table-root {
-    background-color: #1a1b1e !important;
+    background-color: hsl(220, 10%, 11%) !important;
 }
 
 [data-mantine-color-scheme="dark"] .mantine-Table-root th {
-    background-color: #25262b !important;
+    background-color: hsl(220, 12%, 14%) !important;
     color: #ffffff !important;
-    border-color: #555555 !important;
+    border-color: hsl(225, 6%, 18%) !important;
 }
 
 [data-mantine-color-scheme="dark"] .mantine-Table-root td {
-    color: #c1c2c5 !important;
-    border-color: #555555 !important;
+    color: hsl(220, 9%, 78%) !important;
+    border-color: hsl(225, 6%, 18%) !important;
 }
 
 [data-mantine-color-scheme="dark"] .mantine-Table-root tr:hover {
-    background-color: #373a40 !important;
+    background-color: hsl(225, 6%, 22%) !important;
 }
 
 /* --- Mantine Divider --- */
 [data-mantine-color-scheme="dark"] .mantine-Divider-root {
-    border-color: #555555 !important;
+    border-color: hsl(225, 6%, 18%) !important;
 }
 
 [data-mantine-color-scheme="dark"] .mantine-Divider-label {
-    color: #909296 !important;
+    color: hsl(220, 6%, 50%) !important;
 }
 
 /* --- Mantine Badge --- */
 [data-mantine-color-scheme="dark"] .mantine-Badge-root {
-    color: #c1c2c5 !important;
+    color: hsl(220, 9%, 78%) !important;
 }
 
 /* --- Mantine HoverCard --- */
 [data-mantine-color-scheme="dark"] .mantine-HoverCard-dropdown {
-    background-color: #25262b !important;
-    border-color: #555555 !important;
-    color: #c1c2c5 !important;
+    background-color: hsl(220, 12%, 14%) !important;
+    border-color: hsl(225, 6%, 18%) !important;
+    color: hsl(220, 9%, 78%) !important;
 }
 
 /* --- Mantine Menu --- */
 [data-mantine-color-scheme="dark"] .mantine-Menu-item {
-    color: #c1c2c5 !important;
+    color: hsl(220, 9%, 78%) !important;
 }
 
 [data-mantine-color-scheme="dark"] .mantine-Menu-item:hover {
-    background-color: #373a40 !important;
+    background-color: hsl(225, 6%, 22%) !important;
 }
 
 /* --- Mantine SegmentedControl --- */
 [data-mantine-color-scheme="dark"] .mantine-SegmentedControl-root {
-    background-color: #25262b !important;
+    background-color: hsl(220, 12%, 14%) !important;
 }
 
 [data-mantine-color-scheme="dark"] .mantine-SegmentedControl-label {
-    color: #c1c2c5 !important;
+    color: hsl(220, 9%, 78%) !important;
 }
 
 [data-mantine-color-scheme="dark"] .mantine-SegmentedControl-indicator {
-    background-color: #373a40 !important;
+    background-color: hsl(225, 6%, 22%) !important;
 }
 
 /* --- Mantine Switch --- */
 [data-mantine-color-scheme="dark"] .mantine-Switch-label {
-    color: #c1c2c5 !important;
+    color: hsl(220, 9%, 78%) !important;
 }
 
 /* --- Mantine Group labels y textos descriptivos --- */
 [data-mantine-color-scheme="dark"] .mantine-InputWrapper-label {
-    color: #c1c2c5 !important;
+    color: hsl(220, 9%, 78%) !important;
 }
 
 [data-mantine-color-scheme="dark"] .mantine-InputWrapper-description {
-    color: #909296 !important;
+    color: hsl(220, 6%, 50%) !important;
 }
 
 [data-mantine-color-scheme="dark"] .mantine-InputWrapper-error {
@@ -400,4 +621,46 @@
 [data-mantine-color-scheme="dark"] b,
 [data-mantine-color-scheme="dark"] strong {
     color: #ffffff !important;
+}
+
+/* --- Dark mode overrides for new utility classes --- */
+[data-mantine-color-scheme="dark"] .id-card,
+[data-mantine-color-scheme="dark"] .id-graph-card {
+    background-color: var(--id-card-bg) !important;
+    border-color: var(--id-border) !important;
+}
+
+[data-mantine-color-scheme="dark"] .id-upload-area {
+    border-color: var(--id-primary-40) !important;
+    background-color: transparent !important;
+}
+
+[data-mantine-color-scheme="dark"] .id-upload-area:hover {
+    border-color: var(--id-primary) !important;
+    background-color: var(--id-primary-5) !important;
+}
+
+[data-mantine-color-scheme="dark"] .sidebar-header {
+    color: #ffffff;
+}
+
+[data-mantine-color-scheme="dark"] .sidebar-nav-label {
+    color: var(--id-text-muted);
+}
+
+[data-mantine-color-scheme="dark"] .sidebar-toggle-container {
+    border-color: var(--id-border);
+}
+
+[data-mantine-color-scheme="dark"] #sidebar-nav-list .nav-link {
+    color: var(--id-text-primary) !important;
+}
+
+[data-mantine-color-scheme="dark"] #sidebar-nav-list .nav-link:hover {
+    background-color: var(--id-primary-10) !important;
+}
+
+[data-mantine-color-scheme="dark"] #sidebar-nav-list .nav-link.active {
+    background-color: var(--id-primary) !important;
+    color: var(--id-text-white) !important;
 }

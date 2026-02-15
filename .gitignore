@@ -26,3 +26,6 @@ _kk.txt
 # OS
 .DS_Store
 Thumbs.db
+
+# Referencias temporales
+temp_inclinometer_reference/

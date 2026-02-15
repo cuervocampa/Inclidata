@@ -5,7 +5,7 @@ from dash import html, dcc, callback_context, ctx
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State, ALL, MATCH
 import dash_mantine_components as dmc
-import base64, json
+import base64, json, io
 from icecream import ic
 from datetime import datetime, timedelta
 import plotly.graph_objs as go
@@ -43,82 +43,117 @@ datos_tubo = {
 
 def layout():
     return html.Div([
-            html.Div(style={'height': '50px'}),  # Espacio al comienzo de la página
+            html.Div(style={'height': '1.5rem'}),  # Espacio al comienzo de la página
             dmc.Grid([
                 dmc.GridCol(
                     dmc.Card(
                         html.Div(
                             "Plano de localización de dispositivo",
-                            style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'height': '400px'}
+                            style={'display': 'flex', 'justifyContent': 'center', 'alignItems': 'center', 'height': '100%', 'minHeight': '200px',
+                                   'color': 'var(--id-text-muted)', 'fontSize': '0.875rem'}
                         ),
-                        shadow='sm', radius='md'
-                    ), span=6
+                        shadow='sm', radius='xl', className='id-card',
+                        style={'height': '100%'}
+                    ), span=8
                 ),
                 dmc.GridCol([
-                    dmc.Group(
-                        [
+                    dcc.Store(id='graficar-tubo', storage_type='memory'),
+                    html.Span(id="info-hovercard", style={"display": "none"}),
+
+                    # Cabecera: Inclinómetro + botón importar
+                    dmc.Paper([
+                        dmc.Group([
+                            dmc.Group([
+                                DashIconify(icon="lucide:radio-tower", width=18,
+                                            style={"color": "var(--id-primary)"}),
+                                dmc.Text("Inclinómetro", fw=600, size="sm",
+                                         style={"color": "var(--id-text-primary)"}),
+                                dmc.Text(id="sensor-nom-label", size="sm", c="dimmed"),
+                            ], gap="xs"),
                             dcc.Upload(
                                 id='graficar-uploader',
                                 multiple=False,
-                                accept='.json',  # Solo acepta archivos JSON
-                                children=['Drag and Drop o seleccionar sensores'],
-                                style={
-                                    'width': '100%',
-                                    'height': '60px',
-                                    'lineHeight': '60px',
-                                    'borderWidth': '2px',  # Línea más gruesa
-                                    'borderStyle': 'dashed',
-                                    'borderRadius': '5px',
-                                    'borderColor': 'blue',  # Color azul para la línea
-                                    'textAlign': 'center',
-                                    'margin': '10px 0',
-                                    'display': 'flex',
-                                    'justifyContent': 'center',
-                                    'alignItems': 'center',
-                                    'color': 'red'
-                                }
+                                accept='.json',
+                                children=dmc.Button(
+                                    "Importar",
+                                    leftSection=DashIconify(icon="lucide:upload", width=14),
+                                    variant="light", size="compact-sm", color="blue",
+                                ),
+                                style={'cursor': 'pointer'},
                             ),
-                            dcc.Store(id='graficar-tubo', storage_type='memory'),  # lee el json y lo deja en la memoria
-                            dmc.HoverCard(
-                                withArrow=True,
-                                position="bottom",
-                                shadow="md",
-                                styles={"dropdown": {"width": "100%"}},  # estilos aplicados al panel
-                                children=[
-                                    dmc.HoverCardTarget(
-                                        dmc.Text("Sensor:", fw=700)
-                                    ),
-                                    dmc.HoverCardDropdown(
-                                        html.Div([
-                                            html.Span("Sensor:", style={'fontWeight': 'bold'}),
-                                            html.Span(id="info-hovercard"),
-                                        ])
-                                    ),
-                                ],
-                            )
-                        ],
-                        style={'width': '100%'}  # Ambos componentes ocupan el 100% de la línea
-                    ),
-                    dmc.Group(
-                        [
-                            dmc.Button("Patrón", id="open-patron-drawer", n_clicks=None, fullWidth=True),
-                            dmc.Button("Configuración", id="open-config-drawer", n_clicks=None, fullWidth=True),
-                            dmc.Button("Configurar Umbrales", id="open-umbrales-drawer", fullWidth=True),
-                            # Botón para abrir el modal
-                            dmc.Button(
-                                "Generar Informe PDF",
-                                id="btn-abrir-modal-informe",
-                                leftSection=DashIconify(icon="mdi:file-pdf-box"),
-                                variant="filled",
-                                fullWidth=True,
-                                color="red"
-                            ),
+                        ], justify="space-between"),
+                    ], p="xs", radius="md", withBorder=True,
+                       style={"marginBottom": "0.5rem"}),
 
+                    # Botones de acción: 2 filas compactas
+                    dmc.SimpleGrid([
+                        dmc.Button(
+                            "Configuración", id="open-config-drawer", n_clicks=None,
+                            fullWidth=True, variant="outline", size="compact-sm",
+                            leftSection=DashIconify(icon="lucide:settings", width=14),
+                            className="id-btn id-btn-outline",
+                        ),
+                        dmc.Button(
+                            "Patrón", id="open-patron-drawer", n_clicks=None,
+                            fullWidth=True, variant="outline", size="compact-sm",
+                            leftSection=DashIconify(icon="lucide:scan-line", width=14),
+                            className="id-btn id-btn-outline",
+                        ),
+                    ], cols=2, spacing="xs", style={"marginBottom": "0.4rem"}),
+
+                    dmc.SimpleGrid([
+                        dmc.Button(
+                            "Umbrales", id="open-umbrales-drawer",
+                            fullWidth=True, variant="outline", size="compact-sm",
+                            leftSection=DashIconify(icon="lucide:alert-triangle", width=14),
+                            className="id-btn id-btn-outline",
+                        ),
+                        dmc.Button(
+                            "PDF", id="btn-abrir-modal-informe",
+                            leftSection=DashIconify(icon="lucide:file-down", width=14),
+                            variant="filled", fullWidth=True, size="compact-sm",
+                            className="id-btn", color="blue",
+                        ),
+                        dmc.Button(
+                            "Excel", id="btn-exportar-datos",
+                            leftSection=DashIconify(icon="lucide:grid-3x3", width=14),
+                            variant="outline", fullWidth=True, size="compact-sm",
+                            className="id-btn id-btn-outline",
+                        ),
+                    ], cols=3, spacing="xs", style={"marginBottom": "0.4rem"}),
+
+                    # Tarjeta info sensor (scroll si se corta)
+                    html.Div(id="sensor-info-card",
+                             style={"maxHeight": "200px", "overflowY": "auto"}),
+                    # Modal exportar datos
+                    dmc.Modal(
+                        id="modal-exportar-datos",
+                        title="Exportar Datos",
+                        centered=True,
+                        size="sm",
+                        children=[
+                            dmc.Text("Selecciona el formato de exportación:", size="sm", style={"marginBottom": "1rem"}),
+                            dmc.Group([
+                                dmc.Button(
+                                    "Exportar JSON",
+                                    id="btn-exportar-json",
+                                    leftSection=DashIconify(icon="lucide:file-json", width=16),
+                                    variant="outline",
+                                    className="id-btn id-btn-outline",
+                                ),
+                                dmc.Button(
+                                    "Exportar Excel",
+                                    id="btn-exportar-excel",
+                                    leftSection=DashIconify(icon="lucide:file-spreadsheet", width=16),
+                                    variant="filled",
+                                    color="green",
+                                    className="id-btn",
+                                ),
+                            ], justify="center", gap="md"),
                         ],
-                        style={'display': 'flex', 'flexDirection': 'column'},
-                        gap="1"  # Espaciamiento entre botones
                     ),
-                ], span=6)
+                    dcc.Download(id="descargar-datos-export"),
+                ], span=4)
             ]),
             dmc.Drawer(
                 title="Configurar Patrón",
@@ -389,16 +424,17 @@ def layout():
             dmc.Divider(style={"marginTop": "20px", "marginBottom": "20px"}),
             dmc.Grid([
                 dmc.GridCol( # gráficos de desplazamientos vs profunfidadad
+                  html.Div(
                     dmc.Tabs([
                         dmc.TabsList([
                             dmc.TabsTab("Desplazamientos", value="grafico1",
-                                        style={'fontWeight': 'bold', 'fontSize': '1.1rem'}),
+                                        style={'fontWeight': '600', 'fontSize': '0.875rem'}),
                             dmc.TabsTab("Incrementales", value="grafico2",
-                                        style={'fontWeight': 'bold', 'fontSize': '1.1rem'}),
+                                        style={'fontWeight': '600', 'fontSize': '0.875rem'}),
                             dmc.TabsTab("Checksum", value="grafico_chk",
-                                        style={'fontWeight': 'bold', 'fontSize': '1.1rem'}),
+                                        style={'fontWeight': '600', 'fontSize': '0.875rem'}),
                             dmc.TabsTab("Despl. compuestos", value="grafico3",
-                                        style={'fontWeight': 'bold', 'fontSize': '1.1rem'}),
+                                        style={'fontWeight': '600', 'fontSize': '0.875rem'}),
                         ]),
                         dmc.TabsPanel(
                             html.Div([
@@ -465,15 +501,17 @@ def layout():
                             value="grafico3"
                         )
                     ], value="grafico1"),
+                  className="id-graph-card"),
                     span=9  # Ocupa el 70% de la fila
                 ),
 
-                dmc.GridCol([
-                    dmc.Title("Fechas", order=4),
-                    dmc.Space(h=20),  # espacio entre componentes
+                dmc.GridCol(
+                  html.Div([
+                    dmc.Title("Fechas", order=4, style={"color": "var(--id-text-primary)"}),
+                    dmc.Space(h=20),
                     dmc.MultiSelect(
                         id='fechas_multiselect',
-                        data=[],  # Inicialmente vacío
+                        data=[],
                         placeholder="Selecciona opciones",
                         searchable=True
                     ),
@@ -481,14 +519,15 @@ def layout():
                     dcc.Slider(
                         id='slider_fechas',
                         min=0,
-                        max=1,  # This will be updated dynamically with the number of dates available
-                        value=1,  # Initially set to the most recent date (last index)
-                        marks={},  # Marks will be set dynamically to show dates
+                        max=1,
+                        value=1,
+                        marks={},
                         tooltip={"placement": "bottom", "always_visible": False},
-                        className='slider-ocultar-tooltip-marks'  # Clase CSS para ocultar tooltip y marcas
+                        className='slider-ocultar-tooltip-marks'
                     ),
                     html.Div(id='slider_fecha_tooltip', style={'marginTop': '10px', 'fontWeight': 'bold'}),
-                ], span=3)  # Ocupa el 30% de la fila
+                  ], className="id-graph-card"),
+                span=3)  # Ocupa el 30% de la fila
             ], style={"width": "100%"}),
 
             dmc.Divider(style={"marginTop": "40px", "marginBottom": "20px"}),
@@ -497,11 +536,13 @@ def layout():
                 # Serie temporal
                 html.Div(
                     dcc.Graph(id='grafico_temporal', config={'responsive': True}, style={'height': '100%'}),
+                    className='id-graph-card',
                     style={'width': '40%', 'height': '600px', 'flexShrink': '0'}
                 ),
                 # Gráfico polar
                 html.Div(
                     dcc.Graph(id='grafico_polar', config={'responsive': True}, style={'height': '100%'}),
+                    className='id-graph-card',
                     style={'width': '40%', 'height': '600px', 'flexShrink': '0'}
                 ),
                 # Controles
@@ -524,8 +565,9 @@ def layout():
                         value=["desp_a"],
                         placeholder="Selecciona tipo"
                     ),
-                ], style={'width': '20%', 'flexShrink': '0', 'paddingLeft': '10px', 'paddingTop': '10px'}),
-            ], style={'display': 'flex', 'width': '100%'}),
+                ], className='id-graph-card',
+                   style={'width': '20%', 'flexShrink': '0', 'paddingLeft': '10px', 'paddingTop': '10px'}),
+            ], style={'display': 'flex', 'width': '100%', 'gap': '1rem'}),
 
             # generación de informe pdf
             # Modal para configurar el informe
@@ -721,7 +763,8 @@ def register_callbacks(app):
     """
     @app.callback(
         [Output("info-hovercard", "children"),
-         Output("graficar-tubo", "data")],
+         Output("graficar-tubo", "data"),
+         Output("sensor-nom-label", "children")],
         [Input("graficar-uploader", "contents")],
         [State("graficar-uploader", "filename")]
     )
@@ -731,42 +774,48 @@ def register_callbacks(app):
             decoded = base64.b64decode(content_string)
             try:
                 data = json.loads(decoded)
+                nom_sensor = data.get("info", {}).get("nom_sensor", filename)
 
                 # Crear el nuevo diccionario
                 nuevo_diccionario = {
                     "info": data["info"],
-                    "umbrales": data.get("umbrales", {})  # Si no existe, devuelve {}
+                    "umbrales": data.get("umbrales", {})
                 }
 
-                # Recorrer las claves del diccionario original y guardo sólo 'calc' de las campañas 'Active'
+                # Recorrer las claves del diccionario original y guardo 'calc' + metadatos de las campañas 'Active'
                 for index, (clave, valor) in enumerate(data.items()):
                     if clave != "info" and clave != "umbrales" and "calc" in valor and valor.get("campaign_info", {}).get("active") == True:
                         nuevo_diccionario[clave] = {
+                            "campaign_info": valor.get("campaign_info", {}),
+                            "info_readout": valor.get("info_readout", {}),
                             "calc": [
                                 {
                                     "index": item["index"],
                                     "cota_abs": item["cota_abs"],
                                     "depth": item["depth"],
-                                    "incr_dev_a": item["incr_dev_a"],
-                                    "incr_dev_b": item["incr_dev_b"],
-                                    "checksum_a": item["checksum_a"],
-                                    "checksum_b": item["checksum_b"],
-                                    "incr_checksum_a": item["incr_checksum_a"],  # ← AÑADIR ESTA LÍNEA
-                                    "incr_checksum_b": item["incr_checksum_b"],  # ← AÑADIR ESTA LÍNEA
-                                    "incr_dev_abs_a": item["incr_dev_abs_a"],
-                                    "incr_dev_abs_b": item["incr_dev_abs_b"],
-                                    "desp_a": item["desp_a"],
-                                    "desp_b": item["desp_b"]
+                                    "incr_dev_a": item.get("incr_dev_a"),
+                                    "incr_dev_b": item.get("incr_dev_b"),
+                                    "checksum_a": item.get("checksum_a"),
+                                    "checksum_b": item.get("checksum_b"),
+                                    "incr_checksum_a": item.get("incr_checksum_a"),
+                                    "incr_checksum_b": item.get("incr_checksum_b"),
+                                    "incr_dev_abs_a": item.get("incr_dev_abs_a"),
+                                    "incr_dev_abs_b": item.get("incr_dev_abs_b"),
+                                    "desp_a": item.get("desp_a"),
+                                    "desp_b": item.get("desp_b")
                                 }
                                 for item in valor["calc"] if isinstance(item, dict) and "index" in item
                             ],
+                            "raw": valor.get("raw", []),
+                            "spike": valor.get("spike", []),
+                            "bias": valor.get("bias", []),
                         }
 
-                return f"\t{filename}", nuevo_diccionario
+                return f"\t{filename}", nuevo_diccionario, nom_sensor
             except Exception as e:
-                ic(e)  # Añadido para mostrar el error en caso de fallo
-                return f"\t{filename}", None
-        return "", None
+                ic(e)
+                return f"\t{filename}", None, filename
+        return "", None, "—"
     """
     - Actualiza las fechas por defecto en el selector de fechas según los datos del archivo subido.
     - **Inputs**:
@@ -3386,4 +3435,165 @@ def register_callbacks(app):
                         }
 
         return leyenda_actualizada
+
+    # --- Callback: Tarjeta info básica del sensor ---
+    @app.callback(
+        Output("sensor-info-card", "children"),
+        Input("graficar-tubo", "data")
+    )
+    def update_sensor_info_card(data):
+        if not data:
+            return html.Div()
+
+        info = data.get("info", {})
+        nom_sensor = info.get("nom_sensor", "—")
+
+        # Buscar campaña de referencia y datos generales
+        campaigns = {k: v for k, v in data.items() if k not in ("info", "umbrales")}
+        n_campaigns = len(campaigns)
+        ref_fecha = "—"
+        importador = "—"
+        alarm = "—"
+        probe_serial = "—"
+
+        for fecha, camp in sorted(campaigns.items()):
+            ci = camp.get("campaign_info", {})
+            ir = camp.get("info_readout", {})
+            if ci.get("reference"):
+                ref_fecha = fecha.split("T")[0] if "T" in fecha else fecha
+            # Tomar datos de la última campaña
+            if ci.get("importador"):
+                importador = ci["importador"]
+            if ci.get("alarm"):
+                alarm = ci["alarm"]
+            if ir.get("probe_serial"):
+                probe_serial = ir["probe_serial"].strip()
+
+        def _row(label, value):
+            return html.Div([
+                html.Span(label, style={"fontWeight": "600", "fontSize": "0.75rem", "color": "var(--id-text-muted)", "minWidth": "110px"}),
+                html.Span(str(value), style={"fontSize": "0.75rem", "color": "var(--id-text-primary)"}),
+            ], style={"display": "flex", "gap": "0.5rem", "padding": "0.25rem 0"})
+
+        return html.Div([
+            html.Div([
+                DashIconify(icon="lucide:info", width=14, style={"color": "var(--id-primary)"}),
+                html.Span("Info Sensor", style={"fontWeight": "600", "fontSize": "0.8rem", "color": "var(--id-text-primary)"}),
+            ], style={"display": "flex", "alignItems": "center", "gap": "0.4rem", "marginBottom": "0.5rem"}),
+            _row("Sensor:", nom_sensor),
+            _row("Importador:", importador),
+            _row("Sonda:", probe_serial),
+            _row("Alarma:", alarm),
+            _row("Referencia:", ref_fecha),
+            _row("Campañas:", n_campaigns),
+            _row("Adquisición:", info.get("adquisicion", "—")),
+            _row("Disposición:", info.get("disposicion", "—")),
+        ], className="id-graph-card", style={"padding": "0.75rem"})
+
+    # --- Callback: Abrir modal exportar datos ---
+    @app.callback(
+        Output("modal-exportar-datos", "opened"),
+        Input("btn-exportar-datos", "n_clicks"),
+        State("modal-exportar-datos", "opened"),
+        prevent_initial_call=True
+    )
+    def toggle_modal_exportar(n_clicks, is_open):
+        if n_clicks:
+            return not is_open
+        return is_open
+
+    # --- Callback: Exportar JSON ---
+    @app.callback(
+        Output("descargar-datos-export", "data", allow_duplicate=True),
+        Input("btn-exportar-json", "n_clicks"),
+        State("graficar-tubo", "data"),
+        State("graficar-uploader", "contents"),
+        State("graficar-uploader", "filename"),
+        prevent_initial_call=True
+    )
+    def exportar_json(n_clicks, tubo_data, contents, filename):
+        if not n_clicks or not contents:
+            return dash.no_update
+        # Exportar el JSON original completo
+        content_type, content_string = contents.split(',')
+        decoded = base64.b64decode(content_string)
+        nombre = filename if filename else "datos_sensor.json"
+        return dcc.send_bytes(decoded, nombre)
+
+    # --- Callback: Exportar Excel ---
+    @app.callback(
+        Output("descargar-datos-export", "data", allow_duplicate=True),
+        Input("btn-exportar-excel", "n_clicks"),
+        State("graficar-tubo", "data"),
+        State("graficar-uploader", "contents"),
+        State("graficar-uploader", "filename"),
+        prevent_initial_call=True
+    )
+    def exportar_excel(n_clicks, tubo_data, contents, filename):
+        if not n_clicks or not contents:
+            return dash.no_update
+
+        # Decodificar JSON original completo
+        content_type, content_string = contents.split(',')
+        decoded = base64.b64decode(content_string)
+        data = json.loads(decoded)
+
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            # 1) Info inclinómetro
+            info = data.get("info", {})
+            info_flat = {}
+            for k, v in info.items():
+                if isinstance(v, dict):
+                    for sk, sv in v.items():
+                        info_flat[f"{k}.{sk}"] = sv
+                else:
+                    info_flat[k] = v
+            df_info = pd.DataFrame([info_flat])
+            df_info.to_excel(writer, sheet_name="Info", index=False)
+
+            # 2) Umbrales
+            umbrales_data = data.get("umbrales", {})
+            valores = umbrales_data.get("valores", [])
+            if valores:
+                df_umbrales = pd.DataFrame(valores)
+            else:
+                df_umbrales = pd.DataFrame([umbrales_data]) if umbrales_data else pd.DataFrame()
+            if not df_umbrales.empty:
+                df_umbrales.to_excel(writer, sheet_name="Umbrales", index=False)
+
+            # Recopilar campañas
+            campaigns = {k: v for k, v in data.items() if k not in ("info", "umbrales")}
+            sorted_dates = sorted(campaigns.keys())
+
+            # 3) Info campañas
+            camp_rows = []
+            for fecha in sorted_dates:
+                camp = campaigns[fecha]
+                row = {"fecha": fecha}
+                for k, v in camp.get("campaign_info", {}).items():
+                    row[f"ci_{k}"] = v
+                for k, v in camp.get("info_readout", {}).items():
+                    row[f"ir_{k}"] = v
+                camp_rows.append(row)
+            if camp_rows:
+                pd.DataFrame(camp_rows).to_excel(writer, sheet_name="Campañas", index=False)
+
+            # 4-7) Raw, Calc, Spike, Bias — filas=fechas expandidas con profundidades
+            for section_name, sheet_name in [("raw", "Raw"), ("calc", "Calc"), ("spike", "Spike"), ("bias", "Bias")]:
+                all_rows = []
+                for fecha in sorted_dates:
+                    section_data = campaigns[fecha].get(section_name, [])
+                    if isinstance(section_data, list):
+                        for item in section_data:
+                            if isinstance(item, dict):
+                                row = {"fecha": fecha}
+                                row.update(item)
+                                all_rows.append(row)
+                if all_rows:
+                    pd.DataFrame(all_rows).to_excel(writer, sheet_name=sheet_name, index=False)
+
+        output.seek(0)
+        nombre_base = (filename or "datos_sensor").replace(".json", "")
+        return dcc.send_bytes(output.getvalue(), f"{nombre_base}.xlsx")
 
