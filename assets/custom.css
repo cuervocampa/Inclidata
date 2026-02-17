@@ -323,17 +323,44 @@ body {
     fill: hsl(220, 9%, 78%) !important;
 }
 
-/* --- AgGrid --- */
-[data-mantine-color-scheme="dark"] .ag-theme-alpine {
-    --ag-background-color: hsl(220, 12%, 14%) !important;
-    --ag-foreground-color: hsl(220, 9%, 78%) !important;
-    --ag-header-background-color: hsl(220, 10%, 11%) !important;
-    --ag-odd-row-background-color: hsl(220, 10%, 16%) !important;
-    --ag-row-hover-color: hsl(225, 6%, 22%) !important;
-    --ag-border-color: hsl(225, 6%, 22%) !important;
-    --ag-header-foreground-color: hsl(220, 9%, 78%) !important;
-    --ag-secondary-border-color: hsl(225, 6%, 22%) !important;
-    --ag-row-border-color: hsl(225, 6%, 22%) !important;
+/* --- AgGrid (Quartz theme — Mantine-style tables) --- */
+.ag-theme-quartz {
+    --ag-font-family: var(--id-font);
+    --ag-font-size: 0.875rem;
+    --ag-background-color: var(--id-card-bg);
+    --ag-foreground-color: var(--id-text-primary);
+    --ag-header-background-color: var(--id-background);
+    --ag-header-foreground-color: var(--id-text-primary);
+    --ag-header-cell-hover-background-color: var(--id-primary-5);
+    --ag-border-color: var(--id-border);
+    --ag-secondary-border-color: var(--id-border);
+    --ag-row-border-color: var(--id-border);
+    --ag-odd-row-background-color: var(--id-primary-5);
+    --ag-row-hover-color: var(--id-primary-10);
+    --ag-selected-row-background-color: var(--id-primary-10);
+    --ag-range-selection-background-color: var(--id-primary-10);
+    --ag-border-radius: var(--id-radius-md);
+    --ag-wrapper-border-radius: var(--id-radius-lg);
+    --ag-cell-horizontal-padding: 12px;
+    --ag-header-height: 40px;
+    --ag-row-height: 38px;
+    --ag-input-focus-border-color: var(--id-primary);
+}
+
+[data-mantine-color-scheme="dark"] .ag-theme-quartz {
+    --ag-background-color: var(--id-card-bg);
+    --ag-foreground-color: var(--id-text-primary);
+    --ag-header-background-color: #1c1917;
+    --ag-header-foreground-color: #e7e5e4;
+    --ag-border-color: var(--id-border);
+    --ag-secondary-border-color: var(--id-border);
+    --ag-row-border-color: var(--id-border);
+    --ag-odd-row-background-color: rgba(255, 255, 255, 0.03);
+    --ag-row-hover-color: rgba(255, 255, 255, 0.06);
+    --ag-selected-row-background-color: var(--id-primary-10);
+    --ag-range-selection-background-color: var(--id-primary-10);
+    --ag-input-focus-border-color: var(--id-primary);
+    --ag-checkbox-checked-color: var(--id-primary);
 }
 
 /* --- Bootstrap override --- */

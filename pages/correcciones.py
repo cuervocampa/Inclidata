@@ -14,7 +14,7 @@ import json
 import os
 from pathlib import Path
 import math
-
+from dash_iconify import DashIconify
 
 
 #from TD_medias.vol_td.main import height
@@ -25,148 +25,169 @@ from utils.funciones_importar import valores_calc_directos
 
 # Layout function
 def layout():
-    return dmc.Grid([
-        html.Div(style={'height': '50px'}),
+    return html.Div([
+        html.Div(style={'height': '1.5rem'}),
 
-            # Upload section
-            dmc.Grid(
-                children=[
-                    dmc.GridCol(
-                        dcc.Upload(
-                            id='archivo-uploader',
-                            multiple=False,
-                            accept='.json',
-                            children=['Drag and Drop o seleccionar archivo'],
-                            style={
-                                'width': '100%', 'height': '60px', 'lineHeight': '60px', 'borderWidth': '2px',
-                                'borderStyle': 'dashed', 'borderRadius': '5px', 'borderColor': 'blue',
-                                'textAlign': 'center', 'margin': '10px 0', 'display': 'flex',
-                                'justifyContent': 'center',
-                                'alignItems': 'center', 'color': 'blue'
-                            }
-                        ),
-                        span=4
+        # ============================================
+        # SECCIÓN 1: CARGA DE ARCHIVO + INFO
+        # ============================================
+        html.Div(
+            dmc.Grid([
+                # Upload
+                dmc.GridCol(
+                    dcc.Upload(
+                        id='archivo-uploader',
+                        multiple=False,
+                        accept='.json',
+                        children=html.Div([
+                            DashIconify(icon="lucide:upload", width=18, className="id-upload-icon"),
+                            html.Span("Arrastra o selecciona archivo .json", className="id-upload-text")
+                        ], style={'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'gap': '0.5rem', 'height': '100%'}),
+                        className='id-upload-area',
+                        style={'width': '100%', 'cursor': 'pointer'}
                     ),
-                    dmc.GridCol(
-                        html.Div(id='informacion-archivo', style={'width': '100%', 'display':'flex', 'alignItems': 'center','height': '100%'}),
-                        span=4
+                    span=4
+                ),
+                # Info archivo
+                dmc.GridCol(
+                    html.Div(id='informacion-archivo', style={'width': '100%', 'display': 'flex', 'alignItems': 'center', 'height': '100%'}),
+                    span=4
+                ),
+                # Selector de campaña
+                dmc.GridCol(
+                    dmc.Group([
+                        dmc.Text('Campaña a Graficar:', fw=600, size="sm", style={"color": "var(--id-text-primary)"}),
+                        dmc.Select(
+                            id='camp_a_graficar',
+                            placeholder='Selecciona una fecha',
+                            clearable=True,
+                            data=[],
+                            style={'minWidth': '200px'}
+                        )
+                    ], gap="md", style={'width': '100%', 'alignItems': 'center'}),
+                    span=4
+                )
+            ], style={'width': '100%'}),
+            className='id-card',
+            style={'padding': '1rem', 'marginBottom': '1rem'}
+        ),
+
+        # Stores
+        dcc.Store(id='corregir-tubo', storage_type='memory'),
+        dcc.Store(id='corregir_archivo', storage_type='memory'),
+        dcc.Store(id="json_spikes", storage_type='memory'),
+        dcc.Store(id="json_bias", storage_type='memory'),
+        dcc.Store(id='tabla_inicial', data={}, storage_type='memory'),
+        dcc.Store(id='log_cambios', data={}, storage_type='memory'),
+        dcc.Store(id='bias-table-change-flag', data=False, storage_type='memory'),
+        dcc.Store(id="error-store", data={"opened": False, "message": ""}),
+
+        # ============================================
+        # SECCIÓN 2: TABLA DE CAMPAÑAS + LOG
+        # ============================================
+        html.Div(
+            dmc.Grid([
+                dmc.GridCol(
+                    AgGrid(
+                        id='tabla-json',
+                        className='ag-theme-quartz',
+                        style={'height': '200px', 'width': '100%', 'margin': '0 auto'},
+                        columnDefs=[
+                            {'headerName': 'Fecha', 'field': 'Fecha', 'editable': False, 'resizable': True},
+                            {'headerName': 'Referencia', 'field': 'Referencia', 'editable': True,
+                             'cellEditor': 'agSelectCellEditor', 'cellEditorParams': {'values': [True, False]}, 'resizable': True},
+                            {'headerName': 'Activa', 'field': 'Activa', 'editable': True,
+                             'cellEditor': 'agSelectCellEditor', 'cellEditorParams': {'values': [True, False]}, 'resizable': True},
+                            {'headerName': 'Cuarentena', 'field': 'Cuarentena', 'editable': True,
+                             'cellEditor': 'agSelectCellEditor', 'cellEditorParams': {'values': [True, False]}, 'resizable': True},
+                            {'headerName': 'Correc Spike', 'field': 'spike', 'editable': False, 'resizable': True},
+                            {'headerName': 'Correc Bias', 'field': 'bias', 'editable': False, 'resizable': True},
+                            {'headerName': 'Limpiar', 'field': 'Limpiar', 'editable': True, 'cellEditor': 'agCheckboxCellEditor', 'resizable': True},
+                        ],
+                        defaultColDef={
+                            'flex': 1,
+                            'minWidth': 100,
+                            'resizable': True,
+                            'wrapHeaderText': True,
+                            'autoSizeAllColumns': True
+                        },
+                        rowData=[],
+                        columnSize='responsiveSizeToFit'
                     ),
-                    dmc.GridCol(
+                    span=8
+                ),
+                dmc.GridCol(
+                    children=[
                         html.Div(
+                            id='log-cambios',
+                            className='id-card',
+                            style={'height': '200px', 'overflowY': 'auto', 'padding': '0.75rem', 'fontSize': '0.875rem'}
+                        ),
+                        dmc.Group(
                             children=[
-                                html.B('Campaña a Graficar: '),
-                                dmc.Select(
-                                    id='camp_a_graficar',
-                                    placeholder='Selecciona una fecha',
-                                    clearable=True,
-                                    data=[],
-                                    style={'minWidth': '200px'}
+                                dmc.Button(
+                                    "Guardar Tabla", id='guardar_tabla',
+                                    leftSection=DashIconify(icon="lucide:save", width=14),
+                                    variant='outline', color='green',
+                                    className="id-btn id-btn-outline",
+                                ),
+                                dmc.Button(
+                                    "Configuración", id="correc-open-drawer-1", n_clicks=None,
+                                    leftSection=DashIconify(icon="lucide:settings", width=14),
+                                    variant='outline', color='blue',
+                                    className="id-btn id-btn-outline",
                                 )
                             ],
-                            style={'width': '100%', 'display': 'flex','justifyContent': 'flex-start', 'alignItems': 'center', 'gap': '20px'}
+                            style={'marginTop': '0.75rem', 'width': '100%'},
+                            grow=True
                         ),
-                        span=4
-                    )
-                ],
-                style={'width': '100%'}
-            ),
-            dcc.Store(id='corregir-tubo', storage_type='memory'),  # archivo json, se parte del original y se incorporan modificaciones
-            dcc.Store(id='corregir_archivo', storage_type='memory'),  # nombre del archivo json. Pensado para funcionamiento en local
-            dcc.Store(id="json_spikes", storage_type='memory'), # Campaña seleccionada con las correcciones spikes
-            dcc.Store(id="json_bias", storage_type='memory'), # Campaña seleccionada con las correcciones bias
-            dcc.Store(id='tabla_inicial', data={}, storage_type='memory'),  # tabla resumen de campañas de 'corregir-tubo'
-            dcc.Store(id='log_cambios', data={}, storage_type='memory'),  # interacciones que se van haciendo en la tabla
-            dcc.Store(id='bias-table-change-flag', data=False, storage_type='memory'), # variable para que se actualice json_bias en la primera carga
-            dcc.Store(id="error-store", data={"opened": False, "message": ""}), # gestión de mensajes de error en bias-table
-
-            # Table and Info Section
-            dmc.Grid(
-                children=[
-                    dmc.GridCol(
-                        AgGrid(
-                            id='tabla-json',
-                            className='ag-theme-alpine-dark',
-                            style={
-                                'height': '200px', 'width': '100%', 'margin': '0 auto'
-                            },
-                            columnDefs=[
-                                {'headerName': 'Fecha', 'field': 'Fecha', 'editable': False, 'resizable': True},
-                                {'headerName': 'Referencia', 'field': 'Referencia', 'editable': True,
-                                 'cellEditor': 'agSelectCellEditor', 'cellEditorParams': {'values': [True, False]}, 'resizable': True},
-                                {'headerName': 'Activa', 'field': 'Activa', 'editable': True,
-                                 'cellEditor': 'agSelectCellEditor', 'cellEditorParams': {'values': [True, False]}, 'resizable': True},
-                                {'headerName': 'Cuarentena', 'field': 'Cuarentena', 'editable': True,
-                                 'cellEditor': 'agSelectCellEditor', 'cellEditorParams': {'values': [True, False]}, 'resizable': True},
-                                {'headerName': 'Correc Spike', 'field': 'spike', 'editable': False, 'resizable': True},
-                                {'headerName': 'Correc Bias', 'field': 'bias', 'editable': False, 'resizable': True},
-                                {'headerName': 'Limpiar', 'field': 'Limpiar', 'editable': True, 'cellEditor': 'agCheckboxCellEditor', 'resizable': True},
+                        dmc.Modal(
+                            id="guardar-cambios-tabla",
+                            title="Confirmación",
+                            children=[
+                                html.Div(id="guardar-mensaje-tabla"),
+                                dmc.Button("Cerrar", id="cerrar-cambios-tabla", variant="outline",
+                                           className="id-btn id-btn-outline", style={"marginTop": "10px"})
                             ],
-                            defaultColDef={
-                                'flex': 1,  # Ajustar el ancho de las columnas para que ocupen el ancho disponible
-                                'minWidth': 100,  # Ancho mínimo de cada columna
-                                'resizable': True,
-                                'wrapHeaderText': True,  # Ajuste automático de encabezado si es necesario
-                                'autoSizeAllColumns': True  # Ajustar automáticamente todas las columnas
-                            },
-                            rowData=[],  # Inicialmente vacío
-                            columnSize='responsiveSizeToFit' # Ajustar el tamaño de las columnas automáticamente para evitar scroll horizontal
+                            centered=True,
+                            size="md",
+                            opened=False
                         ),
-                        span=8
-                    ),
-                    dmc.GridCol(
-                        children=[
-                            html.Div(id='log-cambios',
-                                     style={'height': '200px', 'overflowY': 'auto', 'border': '1px solid #ccc', 'padding': '10px'}),
-                            # Botones Guardar y Configuración en la misma línea
-                            dmc.Group(
-                                children=[
-                                    dmc.Button("Guardar Tabla", id='guardar_tabla', variant='outline', color='green'),
-                                    dmc.Button("Configuración", id="correc-open-drawer-1", n_clicks=None, variant='outline', color='blue')
-                                ],
-                                style={'marginTop': '10px', 'width': '100%'},
-                                grow=True
-                            ),
-                            dmc.Modal(
-                                id="guardar-cambios-tabla",
-                                title="Confirmación",
-                                children=[
-                                    html.Div(id="guardar-mensaje-tabla"),
-                                    dmc.Button("Cerrar", id="cerrar-cambios-tabla", variant="outline",
-                                               style={"marginTop": "10px"})
-                                ],
-                                centered=True,
-                                size="md",
-                                opened=False
-                            ),
-                        ],
-                        span=4
-                    )
-                ],
-                style={'width': '100%'}
-            ),
-            
-            # Espaciador vertical
-            dmc.Space(h=30),
+                    ],
+                    span=4
+                )
+            ], style={'width': '100%'}),
+            className='id-card',
+            style={'padding': '1rem', 'marginBottom': '1rem'}
+        ),
 
-            # BLOQUE GRÁFICOS PRINCIPALES - con altura mínima fija
-            html.Div([
-                dmc.Grid([
-                dmc.GridCol(  # gráficos de desplazamientos vs profunfidadad
+        dmc.Space(h=20),
+
+        # ============================================
+        # SECCIÓN 3: GRÁFICOS PRINCIPALES (Tabs)
+        # ============================================
+        html.Div(
+            dmc.Grid([
+                dmc.GridCol(
                     dmc.Tabs([
                         dmc.TabsList([
-                            dmc.TabsTab("Desplazamientos", value="corr_grafico1", style={'fontWeight': 'bold', 'fontSize': '0.9rem', 'whiteSpace': 'nowrap', 'padding': '8px 12px'}),
-                            dmc.TabsTab("Incrementales", value="corr_grafico2", style={'fontWeight': 'bold', 'fontSize': '0.9rem', 'whiteSpace': 'nowrap', 'padding': '8px 12px'}),
-                            dmc.TabsTab("Compuestos", value="corr_grafico3", style={'fontWeight': 'bold', 'fontSize': '0.9rem', 'whiteSpace': 'nowrap', 'padding': '8px 12px'})
-                        ], style={'flexWrap': 'nowrap'}),
+                            dmc.TabsTab("Desplazamientos", value="corr_grafico1",
+                                        style={'fontWeight': '600', 'fontSize': '0.875rem'}),
+                            dmc.TabsTab("Incrementales", value="corr_grafico2",
+                                        style={'fontWeight': '600', 'fontSize': '0.875rem'}),
+                            dmc.TabsTab("Compuestos", value="corr_grafico3",
+                                        style={'fontWeight': '600', 'fontSize': '0.875rem'})
+                        ]),
                         dmc.TabsPanel(
                             html.Div([
                                 dmc.Grid([
                                     dmc.GridCol([
                                         dcc.Graph(id='corr_grafico_incli_1_a', config={'responsive': True}, style={'height': '800px'}),
-                                        dmc.Text("Desplazamiento A (mm)", ta="center")], span=6, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
+                                        dmc.Text("Desplazamiento A (mm)", ta="center", c="dimmed", size="sm")
+                                    ], span=6, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                                     dmc.GridCol([
                                         dcc.Graph(id='corr_grafico_incli_1_b', config={'responsive': True}, style={'height': '800px'}),
-                                        dmc.Text("Desplazamiento B (mm)", ta="center")
+                                        dmc.Text("Desplazamiento B (mm)", ta="center", c="dimmed", size="sm")
                                     ], span=6, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                                 ])
                             ]),
@@ -177,11 +198,11 @@ def layout():
                                 dmc.Grid([
                                     dmc.GridCol([
                                         dcc.Graph(id='corr_grafico_incli_2_a', config={'responsive': True}, style={'height': '800px'}),
-                                        dmc.Text("Incremental A (mm)", ta="center")
+                                        dmc.Text("Incremental A (mm)", ta="center", c="dimmed", size="sm")
                                     ], span=6, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                                     dmc.GridCol([
                                         dcc.Graph(id='corr_grafico_incli_2_b', config={'responsive': True}, style={'height': '800px'}),
-                                        dmc.Text("Incremental B (mm)", ta="center")
+                                        dmc.Text("Incremental B (mm)", ta="center", c="dimmed", size="sm")
                                     ], span=6, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                                 ])
                             ]),
@@ -192,587 +213,380 @@ def layout():
                                 dmc.Grid([
                                     dmc.GridCol([
                                         dcc.Graph(id='corr_grafico_incli_3_a', config={'responsive': True}, style={'height': '800px'}),
-                                        dmc.Text("Desplazamiento A", ta="center")],
-                                        span=4, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
+                                        dmc.Text("Desplazamiento A", ta="center", c="dimmed", size="sm")
+                                    ], span=4, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                                     dmc.GridCol([
                                         dcc.Graph(id='corr_grafico_incli_3_b', config={'responsive': True}, style={'height': '800px'}),
-                                        dmc.Text("Desplazamiento B", ta="center")],
-                                        span=4, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
+                                        dmc.Text("Desplazamiento B", ta="center", c="dimmed", size="sm")
+                                    ], span=4, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                                     dmc.GridCol([
                                         dcc.Graph(id='corr_grafico_incli_3_total', config={'responsive': True}, style={'height': '800px'}),
-                                        dmc.Text("Desplazamientos  (mm)", ta="center")
+                                        dmc.Text("Desplazamientos (mm)", ta="center", c="dimmed", size="sm")
                                     ], span=4, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                                 ])
                             ]),
                             value="corr_grafico3"
                         )
                     ], value="corr_grafico1"),
-                    span=12  # Ocupa todo el ancho
+                    span=12
                 )
-                ], style={"width": "100%"})
-            ], style={'minHeight': '700px', 'width': '100%', 'marginBottom': '20px'}),
-            # drawer con la configuración del GRAFICO 1: correc-drawer-1
-            dmc.Drawer(
-                title=dmc.Text("Configuración gráficos", fw="bold", size="lg"),
-                id="correc-drawer-1",
-                padding="md",
-                size="sm",
-                children=[
-                    # Sección: Altura de gráficos
-                    dmc.Text("Altura de gráficos", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
-                    dmc.Slider(
-                        label="Altura de los gráficos (px)",
-                        id="corr_alto_graficos_slider_grafico1",
-                        min=400,
-                        max=1000,
-                        step=100,
-                        value=800,
-                        marks=[
-                            {"value": 400, "label": "400"},
-                            {"value": 500, "label": "500"},
-                            {"value": 600, "label": "600"},
-                            {"value": 700, "label": "700"},
-                            {"value": 800, "label": "800"},
-                            {"value": 900, "label": "900"},
-                            {"value": 1000, "label": "1000"},
-                        ],
-                        style={"marginBottom": "30px"}
-                    ),
-                    
-                    dmc.Divider(style={"marginTop": "15px", "marginBottom": "20px"}),
-                    
-                    # Sección: Orden del eje vertical
-                    dmc.Text("Orden del eje vertical", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
-                    dmc.SegmentedControl(
-                        id="correc_orden_eje",
-                        value="descendente",
-                        data=[
-                            {"value": "ascendente", "label": "↑ Ascendente"},
-                            {"value": "descendente", "label": "↓ Descendente"},
-                        ],
-                        fullWidth=True,
-                        color="blue",
-                        radius="xl",
-                        size="md",
-                        style={"marginBottom": "20px"}
-                    ),
-                    
-                    dmc.Divider(style={"marginTop": "15px", "marginBottom": "20px"}),
-                    
-                    # Sección: Estilo de colores
-                    dmc.Text("Estilo de colores", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
-                    dmc.SegmentedControl(
-                        id="correcciones_color_grafico1",
-                        value="monocromo",
-                        data=[
-                            {"value": "monocromo", "label": "Monocromo"},
-                            {"value": "multicromo", "label": "Multicromo"},
-                        ],
-                        fullWidth=True,
-                        color="blue",
-                        radius="xl",
-                        size="md",
-                        style={"marginBottom": "20px"}
-                    ),
-                    
-                    # Sección: Campañas previas
-                    dmc.Text("Campañas previas", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
-                    dmc.Group(
-                        children=[
-                            dmc.Text("Número a mostrar"),
-                            dmc.NumberInput(
-                                id="correc_num_camp_previas_grafico1",
-                                value=10,
-                                min=0,
-                                max=1000,
-                                step=1,
-                                disabled=False,
-                                style={"width": "100px"}
-                            )
-                        ],
-                        style={"width": "100%", "alignItems": "center", "justifyContent": "space-between", "marginBottom": "20px"}
-                    ),
-                    
-                    dmc.Divider(style={"marginTop": "10px", "marginBottom": "20px"}),
-                    
-                    # Sección: Escala Desplazamiento
-                    dmc.Text("Escala gráficos Desplazamiento", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
-                    dmc.SegmentedControl(
-                        id="correc_escala_graficos_desplazamiento",
-                        value="manual",
-                        data=[
-                            {"value": "automatica", "label": "Automática"},
-                            {"value": "manual", "label": "Manual"},
-                        ],
-                        fullWidth=True,
-                        color="blue",
-                        radius="xl",
-                        size="sm",
-                        style={"marginBottom": "15px"}
-                    ),
-                    dmc.Group(
-                        [
-                            dmc.Text("Max", style={"width": "30px"}),
-                            dmc.NumberInput(
-                                id="correc_valor_positivo_desplazamiento",
-                                value=20,
-                                min=-1000,
-                                max=1000,
-                                step=5,
-                                disabled=True,
-                                style={"flex": 1},
-                            ),
-                            dmc.Text("Min", style={"width": "30px", "marginLeft": "10px"}),
-                            dmc.NumberInput(
-                                id="correc_valor_negativo_desplazamiento",
-                                value=-20,
-                                min=-1000,
-                                max=1000,
-                                step=5,
-                                disabled=True,
-                                style={"flex": 1},
-                            ),
-                        ],
-                        ta="center",
-                        gap="xs",
-                        style={"width": "100%", "marginBottom": "20px"},
-                    ),
-                    
-                    # Sección: Escala Incremento
-                    dmc.Text("Escala gráficos Incremento", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
-                    dmc.SegmentedControl(
-                        id="correc_escala_graficos_incremento",
-                        value="manual",
-                        data=[
-                            {"value": "automatica", "label": "Automática"},
-                            {"value": "manual", "label": "Manual"},
-                        ],
-                        fullWidth=True,
-                        color="blue",
-                        radius="xl",
-                        size="sm",
-                        style={"marginBottom": "15px"}
-                    ),
-                    dmc.Group(
-                        [
-                            dmc.Text("Max", style={"width": "30px"}),
-                            dmc.NumberInput(
-                                id="correc_valor_positivo_incremento",
-                                value=1,
-                                min=-1000,
-                                max=1000,
-                                step=1,
-                                disabled=True,
-                                style={"flex": 1},
-                            ),
-                            dmc.Text("Min", style={"width": "30px", "marginLeft": "10px"}),
-                            dmc.NumberInput(
-                                id="correc_valor_negativo_incremento",
-                                value=-1,
-                                min=-1000,
-                                max=1000,
-                                step=1,
-                                disabled=True,
-                                style={"flex": 1},
-                            ),
-                        ],
-                        ta="center",
-                        gap="xs",
-                        style={"width": "100%", "marginBottom": "30px"},
-                    ),
-                    
-                    dmc.Divider(style={"marginTop": "10px", "marginBottom": "20px"}),
-                    
-                    dmc.Button("Cerrar", id="close-correc-drawer-1", variant="outline", fullWidth=True)
-                ],
-                opened=False,
-                position="right"
-            ),
-            # Correcciones de spikes
-            dmc.Space(h=30),
+            ], style={"width": "100%"}),
+            className='id-graph-card',
+            style={'marginBottom': '1.5rem'}
+        ),
 
-            # BLOQUE SPIKES - con altura mínima fija
-            html.Div([
-                dmc.Grid([
-                # Primera columna - 70% de ancho, contiene los gráficos
-                dmc.GridCol([
+        # Drawer configuración gráficos
+        dmc.Drawer(
+            title=dmc.Text("Configuración gráficos", fw="bold", size="lg"),
+            id="correc-drawer-1",
+            padding="md",
+            size="sm",
+            children=[
+                dmc.Text("Altura de gráficos", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
+                dmc.Slider(
+                    label="Altura de los gráficos (px)",
+                    id="corr_alto_graficos_slider_grafico1",
+                    min=400, max=1000, step=100, value=800,
+                    marks=[
+                        {"value": 400, "label": "400"}, {"value": 500, "label": "500"},
+                        {"value": 600, "label": "600"}, {"value": 700, "label": "700"},
+                        {"value": 800, "label": "800"}, {"value": 900, "label": "900"},
+                        {"value": 1000, "label": "1000"},
+                    ],
+                    style={"marginBottom": "30px"}
+                ),
+                dmc.Divider(style={"marginTop": "15px", "marginBottom": "20px"}),
+                dmc.Text("Orden del eje vertical", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
+                dmc.SegmentedControl(
+                    id="correc_orden_eje", value="descendente",
+                    data=[{"value": "ascendente", "label": "↑ Ascendente"}, {"value": "descendente", "label": "↓ Descendente"}],
+                    fullWidth=True, color="blue", radius="xl", size="md", style={"marginBottom": "20px"}
+                ),
+                dmc.Divider(style={"marginTop": "15px", "marginBottom": "20px"}),
+                dmc.Text("Estilo de colores", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
+                dmc.SegmentedControl(
+                    id="correcciones_color_grafico1", value="monocromo",
+                    data=[{"value": "monocromo", "label": "Monocromo"}, {"value": "multicromo", "label": "Multicromo"}],
+                    fullWidth=True, color="blue", radius="xl", size="md", style={"marginBottom": "20px"}
+                ),
+                dmc.Text("Campañas previas", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
+                dmc.Group(
+                    children=[dmc.Text("Número a mostrar"), dmc.NumberInput(id="correc_num_camp_previas_grafico1", value=10, min=0, max=1000, step=1, disabled=False, style={"width": "100px"})],
+                    style={"width": "100%", "alignItems": "center", "justifyContent": "space-between", "marginBottom": "20px"}
+                ),
+                dmc.Divider(style={"marginTop": "10px", "marginBottom": "20px"}),
+                dmc.Text("Escala gráficos Desplazamiento", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
+                dmc.SegmentedControl(
+                    id="correc_escala_graficos_desplazamiento", value="manual",
+                    data=[{"value": "automatica", "label": "Automática"}, {"value": "manual", "label": "Manual"}],
+                    fullWidth=True, color="blue", radius="xl", size="sm", style={"marginBottom": "15px"}
+                ),
+                dmc.Group(
+                    [dmc.Text("Max", style={"width": "30px"}), dmc.NumberInput(id="correc_valor_positivo_desplazamiento", value=20, min=-1000, max=1000, step=5, disabled=True, style={"flex": 1}),
+                     dmc.Text("Min", style={"width": "30px", "marginLeft": "10px"}), dmc.NumberInput(id="correc_valor_negativo_desplazamiento", value=-20, min=-1000, max=1000, step=5, disabled=True, style={"flex": 1})],
+                    ta="center", gap="xs", style={"width": "100%", "marginBottom": "20px"}
+                ),
+                dmc.Text("Escala gráficos Incremento", fw="bold", size="sm", c="dimmed", style={"marginBottom": "10px"}),
+                dmc.SegmentedControl(
+                    id="correc_escala_graficos_incremento", value="manual",
+                    data=[{"value": "automatica", "label": "Automática"}, {"value": "manual", "label": "Manual"}],
+                    fullWidth=True, color="blue", radius="xl", size="sm", style={"marginBottom": "15px"}
+                ),
+                dmc.Group(
+                    [dmc.Text("Max", style={"width": "30px"}), dmc.NumberInput(id="correc_valor_positivo_incremento", value=1, min=-1000, max=1000, step=1, disabled=True, style={"flex": 1}),
+                     dmc.Text("Min", style={"width": "30px", "marginLeft": "10px"}), dmc.NumberInput(id="correc_valor_negativo_incremento", value=-1, min=-1000, max=1000, step=1, disabled=True, style={"flex": 1})],
+                    ta="center", gap="xs", style={"width": "100%", "marginBottom": "30px"}
+                ),
+                dmc.Divider(style={"marginTop": "10px", "marginBottom": "20px"}),
+                dmc.Button("Cerrar", id="close-correc-drawer-1", variant="outline", fullWidth=True, className="id-btn id-btn-outline")
+            ],
+            opened=False,
+            position="right"
+        ),
+
+        dmc.Space(h=20),
+
+        # ============================================
+        # SECCIÓN 4: CORRECCIÓN DE SPIKES
+        # ============================================
+        dmc.Divider(label="Sección: Corrección de Spikes", labelPosition="center", color="gray", variant="dashed",
+                    style={"marginBottom": "1.5rem"}),
+
+        dmc.Grid([
+            # Gráficos spikes (70%)
+            dmc.GridCol(
+                html.Div(
                     dmc.Grid([
                         dmc.GridCol([
                             dcc.Graph(id='corr_graf_spike_a', config={'responsive': True}, style={'height': '800px'}),
-                            dmc.Text("Incr CheckSum A", ta="center")],
-                            span=3, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
+                            dmc.Text("Incr CheckSum A", ta="center", c="dimmed", size="sm")
+                        ], span=3, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                         dmc.GridCol([
                             dcc.Graph(id='corr_graf_spike_b', config={'responsive': True}, style={'height': '800px'}),
-                            dmc.Text("Incr CheckSum B", ta="center")],
-                            span=3, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
+                            dmc.Text("Incr CheckSum B", ta="center", c="dimmed", size="sm")
+                        ], span=3, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                         dmc.GridCol([
                             dcc.Graph(id='corr_graf_stats_a', config={'responsive': True}, style={'height': '800px'}),
-                            dmc.Text("Estadística seleccionada", ta="center")],
-                            span=6, style={'padding': '0', 'margin': '0', 'overflow': 'visible'})
-                    ], style={'width': '100%', 'display': 'flex', 'flexWrap': 'nowrap'})
-                ], span=8, style={'padding': '0', 'margin': '0'}),
+                            dmc.Text("Estadística seleccionada", ta="center", c="dimmed", size="sm")
+                        ], span=6, style={'padding': '0', 'margin': '0', 'overflow': 'visible'})
+                    ], style={'width': '100%', 'display': 'flex', 'flexWrap': 'nowrap'}),
+                    className='id-graph-card'
+                ),
+                span=8, style={'padding': '0', 'margin': '0'}
+            ),
 
+            # Panel spikes (30%)
+            dmc.GridCol(
+                html.Div([
+                    dmc.Title("Corrección de spikes", order=3, ta="center",
+                              style={"color": "var(--id-text-primary)", "marginBottom": "1rem"}),
+                    dmc.Group([
+                        dmc.Text("Campañas anteriores", fw=500, size="sm"),
+                        dmc.Select(
+                            id='n_spikes', value='5', clearable=False,
+                            data=[{'value': 'max', 'label': 'max'}] + [{'value': str(i), 'label': str(i)} for i in range(1, 21)],
+                            style={'width': '140px'}
+                        ),
+                    ], gap="md", style={'width': '100%', 'marginBottom': '0.75rem'}, justify="space-between"),
 
-                # Segunda columna - 30% de ancho, contiene la tabla 'spikes'
-                dmc.GridCol([
-                    html.H2("Corrección de spikes", style={'textAlign': 'center', 'width': '100%'}),
-                    html.Div(style={"height": "20px"}),
-                    # Primer grupo
-                    dmc.Group(
-                        [
-                            html.H4("Campañas anteriores"),
-                            #dmc.Text("Campañas anteriores", fw="bold"),
-                            dmc.Select(
-                                id='n_spikes',
-                                value='5',  # Valor por defecto
-                                clearable=False,
-                                data=[{'value': 'max', 'label': 'max'}] + [{'value': str(i), 'label': str(i)} for i in
-                                                                           range(1, 21)],
-                                style={'width': '200px', 'marginLeft': 'auto'}  # Alineado a la derecha
-                            ),
-                        ],
-                        gap="md",
-                        style={'width': '100%', 'marginBottom': '15px', 'padding': '0 15px'},
-                        justify="space-between"
-                    ),
+                    dmc.Group([
+                        dmc.Text("Estadísticas Spikes", fw=500, size="sm"),
+                        dmc.Select(
+                            id='estadisticas_spikes', value='incr_checksum_a', clearable=False,
+                            data=[
+                                {'value': 'a0', 'label': 'a0'}, {'value': 'a180', 'label': 'a180'},
+                                {'value': 'b0', 'label': 'b0'}, {'value': 'b180', 'label': 'b180'},
+                                {'value': 'incr_checksum_a', 'label': 'incr_checksum_a'}, {'value': 'incr_checksum_b', 'label': 'incr_checksum_b'},
+                                {'value': 'incr_dev_a', 'label': 'incr_dev_a'}, {'value': 'incr_dev_b', 'label': 'incr_dev_b'}
+                            ],
+                            style={'width': '140px'}
+                        )
+                    ], gap="md", style={'width': '100%', 'marginBottom': '0.75rem'}, justify="space-between"),
 
-                    # dropdown de estadística a elegir
-                    dmc.Group(
-                        [
-                            html.H4("Estadísticas Spikes"),
-                            #dmc.Text("Estadísticas Spikes", fw="bold"),
-                            dmc.Select(
-                                id='estadisticas_spikes',
-                                value='incr_checksum_a',  # Valor por defecto
-                                clearable=False,
-                                data=[
-                                    {'value': 'a0', 'label': 'a0'},
-                                    {'value': 'a180', 'label': 'a180'},
-                                    {'value': 'b0', 'label': 'b0'},
-                                    {'value': 'b180', 'label': 'b180'},
-                                    {'value': 'incr_checksum_a', 'label': 'incr_checksum_a'},
-                                    {'value': 'incr_checksum_b', 'label': 'incr_checksum_b'},
-                                    {'value': 'incr_dev_a', 'label': 'incr_dev_a'},
-                                    {'value': 'incr_dev_b', 'label': 'incr_dev_b'}
-                                ],
-                                style={'width': '200px', 'marginLeft': 'auto'}  # Alineado a la derecha
-                            )
-                        ],
-                        gap="md",
-                        style={'width': '100%', 'marginBottom': '15px', 'padding': '0 15px'},
-                        justify="space-between"
-                    ),
-                    # dropdown de corrección a realizar
-                    dmc.Group(
-                        [
-                            html.H4("Criterio corrección"),
-                            #dmc.Text("Criterio corrección", fw="bold"),
-                            dmc.Select(
-                                id='spikes_criterio',
-                                value= 'media',  # Valor por defecto
-                                clearable=False,
-                                data=[
-                                    {'value': 'media', 'label': 'media'},
-                                    {'value': 'mediana', 'label': 'mediana'},
-                                    {'value': 'moda', 'label': 'moda'}
-                                ],
-                                style={'width': '200px', 'marginLeft': 'auto'}  # Alineado a la derecha
-                            )
-                        ],
-                        gap="md",
-                        style={'width': '100%', 'marginBottom': '15px', 'padding': '0 15px'},
-                        justify="space-between"
-                    ),
-                    # Dropdown and button above the table
+                    dmc.Group([
+                        dmc.Text("Criterio corrección", fw=500, size="sm"),
+                        dmc.Select(
+                            id='spikes_criterio', value='media', clearable=False,
+                            data=[{'value': 'media', 'label': 'media'}, {'value': 'mediana', 'label': 'mediana'}, {'value': 'moda', 'label': 'moda'}],
+                            style={'width': '140px'}
+                        )
+                    ], gap="md", style={'width': '100%', 'marginBottom': '0.75rem'}, justify="space-between"),
+
                     dmc.Group(
                         children=[
-                            dmc.MultiSelect(
-                                id='spike_profundidad',
-                                placeholder='Selecciona profundidad',
-                                data=[],  # This will be populated dynamically
-                                style={'flex': '1'}
-                            ),
+                            dmc.MultiSelect(id='spike_profundidad', placeholder='Selecciona profundidad', data=[], style={'flex': '1'}),
                             dmc.Button(
-                                "Cargar Temporal Spike",
-                                id='temporal_spike',
-                                variant='outline',
-                                color='blue',
-                                style={'width': '200px'}  # Mismo ancho que los selectbox superiores
+                                "Temporal Spike", id='temporal_spike',
+                                leftSection=DashIconify(icon="lucide:clock", width=14),
+                                variant='outline', color='blue',
+                                className="id-btn id-btn-outline",
                             )
                         ],
-                        style={'marginBottom': '20px', 'padding': '0 15px', 'width': '100%'},
-                        justify="space-between",
-                        gap="md"
+                        style={'marginBottom': '1rem', 'width': '100%'},
+                        justify="space-between", gap="md"
                     ),
                     AgGrid(
                         id='spikes-table',
-                        className='ag-theme-alpine-dark',
-                        rowData=[],  # Inicialmente vacío
+                        className='ag-theme-quartz',
+                        rowData=[],
                         columnDefs=[
                             {'headerName': 'Selec', 'field': 'Corregir', 'cellRenderer': 'agCheckboxCellRenderer'},
                             {'headerName': 'Prof', 'field': 'Profundidad'},
                         ],
-                        defaultColDef={
-                            'flex': 1,  # Ajustar el ancho de las columnas para que ocupen el ancho disponible
-                            'minWidth': 100,  # Ancho mínimo de cada columna
-                            'resizable': True,
-                            'wrapHeaderText': True,  # Ajuste automático de encabezado si es necesario
-                            'autoSizeAllColumns': True  # Ajustar automáticamente todas las columnas
-                        },
-                        columnSize='responsiveSizeToFit' # Ajustar el tamaño de las columnas automáticamente para evitar scroll horizontal
+                        defaultColDef={'flex': 1, 'minWidth': 100, 'resizable': True, 'wrapHeaderText': True, 'autoSizeAllColumns': True},
+                        columnSize='responsiveSizeToFit'
                     ),
                     dmc.Modal(
                         id="temporal-spike-modal",
                         title="Detalles del Histórico Temporal",
                         children=[
-                            # Grupo para el texto y el multiselect alineados horizontalmente
-                            dmc.Group(
-                                [
-                                    html.H4("Elegir variables"),
-                                    #dmc.Text("Elegir variables", style={"marginRight": "10px", "fontWeight": "bold"}),
-                                    dmc.MultiSelect(
-                                        id='temporal-spike-variables',
-                                        data=[
-                                            {"value": "a0", "label": "a0"},
-                                            {"value": "a180", "label": "a180"},
-                                            {"value": "b0", "label": "b0"},
-                                            {"value": "b180", "label": "b180"},
-                                            {"value": "checksum_a", "label": "checksum_a"},
-                                            {"value": "checksum_b", "label": "checksum_b"},
-                                            {"value": "incr_checksum_a", "label": "incr_checksum_a"},
-                                            {"value": "incr_checksum_b", "label": "incr_checksum_b"},
-                                        ],
-                                        value=["incr_checksum_a", "incr_checksum_b"],  # Valores por defecto
-                                        style={"flex": "1", "minWidth": "200px"}
-                                    ),
-                                ],
-                                ta="center",
-                                style={"marginBottom": "20px"}
-                            ),
-                            # Gráfico
+                            dmc.Group([
+                                dmc.Text("Elegir variables", fw=600, size="sm"),
+                                dmc.MultiSelect(
+                                    id='temporal-spike-variables',
+                                    data=[
+                                        {"value": "a0", "label": "a0"}, {"value": "a180", "label": "a180"},
+                                        {"value": "b0", "label": "b0"}, {"value": "b180", "label": "b180"},
+                                        {"value": "checksum_a", "label": "checksum_a"}, {"value": "checksum_b", "label": "checksum_b"},
+                                        {"value": "incr_checksum_a", "label": "incr_checksum_a"}, {"value": "incr_checksum_b", "label": "incr_checksum_b"},
+                                    ],
+                                    value=["incr_checksum_a", "incr_checksum_b"],
+                                    style={"flex": "1", "minWidth": "200px"}
+                                ),
+                            ], ta="center", style={"marginBottom": "20px"}),
                             dcc.Graph(id='temporal-spike-graph', config={'responsive': False}, style={'height': '600px'})
                         ],
-                        opened=False,
-                        size="xl",
-                        centered=True
+                        opened=False, size="xl", centered=True
                     ),
                     dmc.Modal(
-                        id="error-modal",
-                        title="Error",
-                        children=[
-                            html.Div(id="error-message"),
-                            #dmc.Button("Cerrar", id="close-error-modal", variant="outline", style={"marginTop": "10px"})
-                        ],
-                        centered=True,
-                        size="md",
-                        opened=False,
+                        id="error-modal", title="Error",
+                        children=[html.Div(id="error-message")],
+                        centered=True, size="md", opened=False,
                     )
-                ], span=4, style={'padding': '0', 'margin': '0'}),
-                ], style={'width': '100%', 'display': 'flex', 'flexWrap': 'nowrap'})
-            ], style={'minHeight': '700px', 'width': '100%', 'marginBottom': '20px'}),
+                ], className='id-card', style={'padding': '1rem'}),
+                span=4, style={'padding': '0', 'margin': '0'}
+            ),
+        ], style={'width': '100%', 'display': 'flex', 'flexWrap': 'nowrap', 'marginBottom': '1.5rem'}),
 
-            # Correcciones de bias
-            # Separador visual entre bloques con línea divisoria
-            dmc.Space(h=50),
-            dmc.Divider(label="Sección: Corrección de Bias", labelPosition="center", color="gray", variant="dashed"),
-            dmc.Space(h=50),
+        # ============================================
+        # SECCIÓN 5: CORRECCIÓN DE BIAS
+        # ============================================
+        dmc.Divider(label="Sección: Corrección de Bias", labelPosition="center", color="gray", variant="dashed",
+                    style={"marginBottom": "1.5rem"}),
 
-            # BLOQUE BIAS - con altura mínima fija
-            html.Div([
-
-            dmc.Grid([
-                # Primera columna - 70% de ancho, contiene los gráficos
-                dmc.GridCol([
+        dmc.Grid([
+            # Gráficos bias (70%)
+            dmc.GridCol(
+                html.Div(
                     dmc.Grid([
                         dmc.GridCol(dcc.Graph(id='corr_graf_bias_a', config={'responsive': True}, style={'height': '800px'}), span=4, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                         dmc.GridCol(dcc.Graph(id='corr_estad_bias_a', config={'responsive': True}, style={'height': '800px'}), span=2, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                         dmc.GridCol(dcc.Graph(id='corr_graf_bias_b', config={'responsive': True}, style={'height': '800px'}), span=4, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
                         dmc.GridCol(dcc.Graph(id='corr_estad_bias_b', config={'responsive': True}, style={'height': '800px'}), span=2, style={'padding': '0', 'margin': '0', 'overflow': 'visible'}),
-                    ], style={'width': '100%', 'display': 'flex', 'flexWrap': 'nowrap'})
-                ], span=8, style={'padding': '0', 'margin': '0'}), # ancho de la columna de gráficos
+                    ], style={'width': '100%', 'display': 'flex', 'flexWrap': 'nowrap'}),
+                    className='id-graph-card'
+                ),
+                span=8, style={'padding': '0', 'margin': '0'}
+            ),
 
-                # Segunda columna - 30% de ancho, contiene la definición de correcciones bias
-                dmc.GridCol([
-                    html.H2("Corrección de bias", style={'textAlign': 'center', 'width': '100%'}),
-                    html.Div(style={"height": "20px"}),
-                    # Modal para el análisis de checksum o lo que sea, por definir
-                    dmc.Group(
-                        children=[
-                            html.H4("Evolución temporal"),
-                            dmc.Button(
-                                "Cargar Análisis Bias",
-                                id='boton_ventana_modal_bias',
-                                variant='outline',
-                                color='blue',
-                                style={'width': '200px'}
-                            )
-                        ],
-                        gap="md",
-                        style={'width': '100%', 'marginBottom': '15px', 'padding': '0 15px'},
-                        justify="space-between"
-                    ),
-                    dmc.Group(
-                        children=[
-                            html.H4("Evolución temporal std"),
-                            dmc.Button(
-                                "Cargar Evolución std",
-                                id='boton_ventana_modal_bias_1',
-                                variant='outline',
-                                color='blue',
-                                style={'width': '200px'}
-                            )
-                        ],
-                        gap="md",
-                        style={'width': '100%', 'marginBottom': '15px', 'padding': '0 15px'},
-                        justify="space-between"
-                    ),
+            # Panel bias (30%)
+            dmc.GridCol(
+                html.Div([
+                    dmc.Title("Corrección de bias", order=3, ta="center",
+                              style={"color": "var(--id-text-primary)", "marginBottom": "1rem"}),
 
                     dmc.Group(
                         children=[
-                            html.H4("Empotramiento teórico"),
-                            dmc.NumberInput(
-                                id='empotramiento',
-                                value=5, # valor por defecto
-                                min=1, max=99,
-                                step=1,
-                                style={"width": "200px"}  # Mismo ancho que los botones
+                            dmc.Text("Evolución temporal", fw=500, size="sm"),
+                            dmc.Button(
+                                "Análisis Bias", id='boton_ventana_modal_bias',
+                                leftSection=DashIconify(icon="lucide:line-chart", width=14),
+                                variant='outline', color='blue',
+                                className="id-btn id-btn-outline",
                             )
                         ],
-                        gap="md",
-                        style={'width': '100%', 'marginBottom': '15px', 'padding': '0 15px'},
-                        justify="space-between"
+                        gap="md", style={'width': '100%', 'marginBottom': '0.75rem'}, justify="space-between"
                     ),
-                    # ventana modal del analisis del checksum por intervalos
+                    dmc.Group(
+                        children=[
+                            dmc.Text("Evolución temporal std", fw=500, size="sm"),
+                            dmc.Button(
+                                "Evolución std", id='boton_ventana_modal_bias_1',
+                                leftSection=DashIconify(icon="lucide:trending-up", width=14),
+                                variant='outline', color='blue',
+                                className="id-btn id-btn-outline",
+                            )
+                        ],
+                        gap="md", style={'width': '100%', 'marginBottom': '0.75rem'}, justify="space-between"
+                    ),
+                    dmc.Group(
+                        children=[
+                            dmc.Text("Empotramiento teórico", fw=500, size="sm"),
+                            dmc.NumberInput(id='empotramiento', value=5, min=1, max=99, step=1, style={"width": "140px"})
+                        ],
+                        gap="md", style={'width': '100%', 'marginBottom': '0.75rem'}, justify="space-between"
+                    ),
+
+                    # Modales
                     dmc.Modal(
-                        id="ventana_modal_bias",
-                        title="Bùsqueda de parámetro",
+                        id="ventana_modal_bias", title="Búsqueda de parámetro",
                         children=[
-                            # Grupo para el texto y el multiselect alineados horizontalmente
-                            dmc.Group(
-                                [
-                                    dmc.Text("Elegir variables", style={"marginRight": "10px", "fontWeight": "bold"}),
-                                    dmc.Select(
-                                        id='temporal-bias-variables',
-                                        data=[
-                                            {"value": "checksum_a", "label": "checksum_a"},
-                                            {"value": "checksum_b", "label": "checksum_b"},
-                                            {"value": "incr_dev_a", "label": "incr_dev_a"},
-                                            {"value": "incr_dev_b", "label": "incr_dev_b"},
-
-                                        ],
-                                        value="checksum_a",#["checksum_a", "checksum_b"],  # Valores por defecto
-                                        #maxSelectedValues=1,  # Solo permite una opción seleccionada
-                                        #clearable=False,  # Evita que se puedan eliminar todas las opciones
-                                        style={"flex": "1", "minWidth": "200px"}
-                                    ),
-                                ],
-                                ta="center",
-                                style={"marginBottom": "20px"}
-                            ),
-                            # Gráficos en el modal
+                            dmc.Group([
+                                dmc.Text("Elegir variables", fw=600, size="sm"),
+                                dmc.Select(
+                                    id='temporal-bias-variables',
+                                    data=[
+                                        {"value": "checksum_a", "label": "checksum_a"}, {"value": "checksum_b", "label": "checksum_b"},
+                                        {"value": "incr_dev_a", "label": "incr_dev_a"}, {"value": "incr_dev_b", "label": "incr_dev_b"},
+                                    ],
+                                    value="checksum_a",
+                                    style={"flex": "1", "minWidth": "200px"}
+                                ),
+                            ], ta="center", style={"marginBottom": "20px"}),
                             dcc.Graph(id='modal_bias_graph_1', config={'responsive': False}, style={'height': '600px'}),
                         ],
-                        opened=False,
-                        size="xl",
-                        centered=True
+                        opened=False, size="xl", centered=True
                     ),
-                    # ventana modal del analisis del std del  checksum
                     dmc.Modal(
-                        id="ventana_modal_bias_1",
-                        title="Bùsqueda de parámetro",
-                        children=[
-                            # Gráficos en el modal
-                            dcc.Graph(id='modal_bias_graph_2', config={'responsive': False}, style={'height': '600px'}),
-                        ],
-                        opened=False,
-                        size="xl",
-                        centered=True
+                        id="ventana_modal_bias_1", title="Búsqueda de parámetro",
+                        children=[dcc.Graph(id='modal_bias_graph_2', config={'responsive': False}, style={'height': '600px'})],
+                        opened=False, size="xl", centered=True
                     ),
 
-                    # separación
-                    html.Div(style={"height": "20px"}),
-                    # tabla de configuración de bias a aplicar
+                    dmc.Space(h=15),
+
+                    # Tabla bias
                     AgGrid(
                         id='bias-table',
-                        className='ag-theme-alpine-dark',
-                        #rowData=[],  # Inicialmente vacío
+                        className='ag-theme-quartz',
                         rowData=[
                             {'Correccion': 'Bias_1_A', 'Selec': False, 'Prof_inf': 0, 'Prof_sup': 0, 'Delta': ''},
                             {'Correccion': 'Bias_1_B', 'Selec': False, 'Prof_inf': 0, 'Prof_sup': 0, 'Delta': ''},
                             {'Correccion': 'Bias_2_A', 'Selec': False, 'Prof_inf': 0, 'Prof_sup': 0, 'Delta': ''},
                             {'Correccion': 'Bias_2_B', 'Selec': False, 'Prof_inf': 0, 'Prof_sup': 0, 'Delta': ''}
-                        ],  # Datos iniciales
+                        ],
                         columnDefs=[
-                                    {'headerName': 'Corrección', 'field': 'Correccion', 'editable': False},
-                                    {'headerName': 'Selec.', 'field': 'Selec','editable': True, 'cellRenderer': 'agCheckboxCellRenderer'},
-                                    {'headerName': 'Prof. inf.', 'field': 'Prof_inf', 'editable': True, 'cellEditor': 'agTextCellEditor'},
-                                    {'headerName': 'Prof. sup.', 'field': 'Prof_sup', 'editable': True, 'cellEditor': 'agTextCellEditor'},
-                                    {'headerName': 'Delta', 'field': 'Delta', 'editable': True, 'cellEditor': 'agTextCellEditor'},
-                                ], # Inicialmente vacío
-                        defaultColDef={
-                            'flex': 1,  # Ajustar el ancho de las columnas para que ocupen el ancho disponible
-                            'minWidth': 100,  # Ancho mínimo de cada columna
-                            'resizable': True,
-                            'wrapHeaderText': True,  # Ajuste automático de encabezado si es necesario
-                            'autoSizeAllColumns': True  # Ajustar automáticamente todas las columnas
-                        },
+                            {'headerName': 'Corrección', 'field': 'Correccion', 'editable': False},
+                            {'headerName': 'Selec.', 'field': 'Selec', 'editable': True, 'cellRenderer': 'agCheckboxCellRenderer'},
+                            {'headerName': 'Prof. inf.', 'field': 'Prof_inf', 'editable': True, 'cellEditor': 'agTextCellEditor'},
+                            {'headerName': 'Prof. sup.', 'field': 'Prof_sup', 'editable': True, 'cellEditor': 'agTextCellEditor'},
+                            {'headerName': 'Delta', 'field': 'Delta', 'editable': True, 'cellEditor': 'agTextCellEditor'},
+                        ],
+                        defaultColDef={'flex': 1, 'minWidth': 100, 'resizable': True, 'wrapHeaderText': True, 'autoSizeAllColumns': True},
                         columnSize='responsiveSizeToFit',
-                        dashGridOptions={
-                            'getRowHeight': 'function(params) { return 40; }'  # Altura fija de 40 píxeles
-                        },
-                        style={'width': '100%', 'height': '220px'}  # Altura inicial
-                    ),
-                    # separación antes de sugerencias
-                    html.Div(style={"height": "20px"}),
-                    # botón para aplicar los cambios de bias
-                    dmc.Group(
-                        children=[
-                            html.H4("Sugerir correcciones"),
-                            dmc.Button("Sugerir", id="sugerir_bias", color="blue", variant="outline", style={'width': '200px'})
-                        ],
-                        gap="md",
-                        style={'width': '100%', 'marginBottom': '15px', 'padding': '0 15px'},
-                        justify="space-between"
-                    ),
-                    html.Div(style={"height": "10px"}),
-                    dmc.Group(
-                        children=[
-                            html.H4("Aplicar cambios Spikes y Bias", style={"fontWeight": "bold"}),
-                            dmc.Button("Guardar cambios", id="save_json", style={
-                                "backgroundColor": "#4c78af",
-                                "color": "white",
-                                "border": "none",
-                                "width": "200px"
-                            }),
-                            dmc.Modal(
-                                id="guardar-modal",
-                                title="Confirmación",
-                                children=[
-                                    html.Div(id="guardar-mensaje"),
-                                    dmc.Button("Cerrar", id="cerrar-guardar-modal", variant="outline",
-                                               style={"marginTop": "10px"})
-                                ],
-                                centered=True,
-                                size="md",
-                                opened=False
-                            ),
-                        ],
-                        gap="md",
-                        style={
-                            'width': '100%',
-                            'marginBottom': '20px',
-                            'padding': '10px 15px',
-                            'borderRadius': '8px',
-                            'backgroundColor': 'rgba(173, 216, 230, 0.5)'
-                        },
-                        justify="space-between"
+                        dashGridOptions={'getRowHeight': 'function(params) { return 40; }'},
+                        style={'width': '100%', 'height': '220px'}
                     ),
 
-                ], span=4, style={'padding': '0', 'margin': '0'}), # definición de la columna de la tabla, ancho 4
-                ], style={'width': '100%', 'display': 'flex', 'flexWrap': 'nowrap'}),
-            ], style={'minHeight': '700px', 'width': '100%', 'marginBottom': '20px'}),  # Cierre del html.Div del bloque bias
+                    dmc.Space(h=15),
 
-        ])
+                    dmc.Group(
+                        children=[
+                            dmc.Text("Sugerir correcciones", fw=500, size="sm"),
+                            dmc.Button(
+                                "Sugerir", id="sugerir_bias",
+                                leftSection=DashIconify(icon="lucide:lightbulb", width=14),
+                                variant="outline", color="blue",
+                                className="id-btn id-btn-outline",
+                            )
+                        ],
+                        gap="md", style={'width': '100%', 'marginBottom': '0.75rem'}, justify="space-between"
+                    ),
+
+                    # Acción principal: Guardar
+                    html.Div(
+                        dmc.Group(
+                            children=[
+                                dmc.Text("Aplicar cambios Spikes y Bias", fw=600, size="sm",
+                                         style={"color": "var(--id-text-primary)"}),
+                                dmc.Button(
+                                    "Guardar cambios", id="save_json",
+                                    leftSection=DashIconify(icon="lucide:check-circle", width=14),
+                                    className="id-btn", color="blue",
+                                ),
+                                dmc.Modal(
+                                    id="guardar-modal", title="Confirmación",
+                                    children=[
+                                        html.Div(id="guardar-mensaje"),
+                                        dmc.Button("Cerrar", id="cerrar-guardar-modal", variant="outline",
+                                                   className="id-btn id-btn-outline", style={"marginTop": "10px"})
+                                    ],
+                                    centered=True, size="md", opened=False
+                                ),
+                            ],
+                            gap="md", justify="space-between",
+                            style={'width': '100%'}
+                        ),
+                        className='id-card',
+                        style={'padding': '0.75rem', 'marginTop': '0.5rem'}
+                    ),
+
+                ], className='id-card', style={'padding': '1rem'}),
+                span=4, style={'padding': '0', 'margin': '0'}
+            ),
+        ], style={'width': '100%', 'display': 'flex', 'flexWrap': 'nowrap', 'marginBottom': '1.5rem'}),
+
+    ])
 
 
 
@@ -1143,9 +957,8 @@ def register_callbacks(app):
         [Input('mantine-provider', 'forceColorScheme')]
     )
     def update_aggrid_theme(color_scheme):
-        if color_scheme == "dark":
-            return "ag-theme-alpine-dark", "ag-theme-alpine-dark", "ag-theme-alpine-dark"
-        return "ag-theme-alpine", "ag-theme-alpine", "ag-theme-alpine"
+        # ag-theme-quartz usa CSS variables, mismo className para ambos modos
+        return "ag-theme-quartz", "ag-theme-quartz", "ag-theme-quartz"
 
     @app.callback(
         Output("json_spikes", "data"),  # Update the "json_spikes" Store
@@ -1422,8 +1235,8 @@ def register_callbacks(app):
                 #color = item_correspondiente['style']['color']
                 index = series_a_graficar.index(fecha)
                 color = get_color_for_index(index, color_scheme, camp_previas)
-                grosor = 2
-                opacity = 0.7
+                grosor = 1.5
+                opacity = 0.4
 
                 # se pasa a una lista el diccionario
                 cota_abs_list = [punto["cota_abs"] for punto in data[fecha]["calc"]]
@@ -1482,7 +1295,7 @@ def register_callbacks(app):
                 desp_a_list = [punto["desp_a_corr"] for punto in corr_bias[fecha_seleccionada]["calc"]]
                 fig1_a.add_trace(go.Scatter(x=desp_a_list, y=eje_y, mode="lines", name=f"{fecha} - Desp A_corr",
                     line=dict(
-                        c=color,  # Puedes usar un color en formato string o hexadecimal
+                        color=color,  # Puedes usar un color en formato string o hexadecimal
                         width=grosor,  # Aumenta el grosor de la línea (valores más altos = más grueso)
                         dash="dash"  # Define el estilo de la línea (puede ser "dash", "dot", "dashdot", etc.)
                     ),
@@ -1495,7 +1308,7 @@ def register_callbacks(app):
                 desp_b_list = [punto["desp_b_corr"] for punto in corr_bias[fecha_seleccionada]["calc"]]
                 fig1_b.add_trace(go.Scatter(x=desp_b_list, y=eje_y, mode="lines", name=f"{fecha} - Desp B_corr",
                                             line=dict(
-                                                c=color,  # Puedes usar un color en formato string o hexadecimal
+                                                color=color,  # Puedes usar un color en formato string o hexadecimal
                                                 width=grosor,
                                                 # Aumenta el grosor de la línea (valores más altos = más grueso)
                                                 dash="dash"
@@ -1510,8 +1323,8 @@ def register_callbacks(app):
         # Luego agregar la serie seleccionada (= corregida temporal) para que quede encima
         if fecha_seleccionada in series_a_graficar: # este condicional sobra
             fecha = fecha_seleccionada
-            color = 'darkblue'
-            grosor = 4
+            color = '#E63946'
+            grosor = 3
             opacity = 1.0
             # marker = dict(size=4, c='yellow', symbol='circle')
             # se pasa a una lista el diccionario
@@ -1681,9 +1494,16 @@ def register_callbacks(app):
         for fecha in conjunto_fechas:
 
             index = conjunto_fechas.index(fecha)
-            color = get_color_for_index(index, color_scheme, camp_previas)
-            grosor = 2
-            opacity = 0.7
+            es_seleccionada = (fecha == fecha_seleccionada)
+
+            if es_seleccionada:
+                color = '#E63946'  # Rojo destacado para la serie a corregir
+                grosor = 3
+                opacity = 1.0
+            else:
+                color = get_color_for_index(index, color_scheme, camp_previas)
+                grosor = 1.5
+                opacity = 0.4
 
             # Gráfico 1: icnre Checksums
             fig1_a.add_trace(go.Scatter(x=dfs['incr_checksum_a'][fecha], y=dfs['incr_checksum_a'].index, mode="lines",
@@ -2060,6 +1880,7 @@ def register_callbacks(app):
                 # Por defecto, al cargar la tabla se calculan las sugerencias, pero se deja en False
                 df_bias_table['Prof_inf'] = df_bias_table['Prof_inf'].astype(float)
                 df_bias_table['Prof_sup'] = df_bias_table['Prof_sup'].astype(float)
+                df_bias_table['Delta'] = pd.to_numeric(df_bias_table['Delta'], errors='coerce').fillna(0.0)
 
                 # Fila Bias_1_A
                 df_bias_table.loc[0, 'Selec'] = True if sugerir else False
