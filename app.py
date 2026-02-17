@@ -89,8 +89,8 @@ sidebar = html.Div(
         "padding": "1.5rem 0.75rem",
         "display": "flex",
         "flexDirection": "column",
-        "backgroundColor": "#F5F7FA",
-        "borderRight": "1px solid #E5E7EB",
+        "backgroundColor": "#fafaf9",
+        "borderRight": "1px solid #d6d3d1",
     },
 )
 
@@ -100,8 +100,8 @@ content = html.Div(
     style={
         "margin-left": "260px",
         "padding": "2rem 1.5rem",
-        "background-color": "#FFFFFF",
-        "color": "#1F2937",
+        "background-color": "#f5f5f4",
+        "color": "#1c1917",
         "min-height": "100vh",
     }
 )
@@ -112,7 +112,7 @@ color_scheme_store = dcc.Store(id="color-scheme-store", data="light", storage_ty
 # Layout de la aplicación envuelto en MantineProvider (requisito DMC v2)
 app.layout = html.Div(
     id="app-container",
-    style={"background-color": "#FFFFFF", "min-height": "100vh"},
+    style={"background-color": "#f5f5f4", "min-height": "100vh"},
     children=[
         color_scheme_store,
         dmc.MantineProvider(
@@ -149,19 +149,19 @@ def toggle_color_scheme(is_dark):
             "padding": "1.5rem 0.75rem",
             "display": "flex",
             "flexDirection": "column",
-            "backgroundColor": "hsl(225, 10%, 7%)",
-            "borderRight": "1px solid hsl(225, 6%, 18%)",
-            "color": "hsl(220, 9%, 78%)",
+            "backgroundColor": "#0c0a09",
+            "borderRight": "1px solid #44403c",
+            "color": "#e7e5e4",
         }
         content_style = {
             "margin-left": "260px",
             "padding": "2rem 1.5rem",
-            "backgroundColor": "hsl(225, 8%, 8%)",
-            "color": "hsl(220, 9%, 78%)",
+            "backgroundColor": "#1c1917",
+            "color": "#e7e5e4",
             "min-height": "100vh",
         }
         app_style = {
-            "backgroundColor": "hsl(225, 8%, 8%)",
+            "backgroundColor": "#1c1917",
             "min-height": "100vh",
         }
         return "dark", sidebar_style, content_style, app_style
@@ -175,19 +175,19 @@ def toggle_color_scheme(is_dark):
             "padding": "1.5rem 0.75rem",
             "display": "flex",
             "flexDirection": "column",
-            "backgroundColor": "#F5F7FA",
-            "borderRight": "1px solid #E5E7EB",
-            "color": "#1F2937",
+            "backgroundColor": "#fafaf9",
+            "borderRight": "1px solid #d6d3d1",
+            "color": "#1c1917",
         }
         content_style = {
             "margin-left": "260px",
             "padding": "2rem 1.5rem",
-            "backgroundColor": "#FFFFFF",
-            "color": "#1F2937",
+            "backgroundColor": "#f5f5f4",
+            "color": "#1c1917",
             "min-height": "100vh",
         }
         app_style = {
-            "backgroundColor": "#FFFFFF",
+            "backgroundColor": "#f5f5f4",
             "min-height": "100vh",
         }
         return "light", sidebar_style, content_style, app_style

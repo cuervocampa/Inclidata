@@ -3,31 +3,31 @@
 /* === Google Fonts === */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-/* === CSS Custom Properties (Light Mode) === */
+/* === CSS Custom Properties (Light Mode) — Warm Neutral / Stone === */
 :root {
-    /* Primary palette */
-    --id-primary: #3B8FD9;
-    --id-primary-hover: #3380c4;
-    --id-primary-10: rgba(59, 143, 217, 0.10);
-    --id-primary-40: rgba(59, 143, 217, 0.40);
-    --id-primary-5: rgba(59, 143, 217, 0.05);
+    /* Primary palette — slate-blue accent for contrast against warm bg */
+    --id-primary: #4A6FA5;
+    --id-primary-hover: #3E5F8F;
+    --id-primary-10: rgba(74, 111, 165, 0.10);
+    --id-primary-40: rgba(74, 111, 165, 0.40);
+    --id-primary-5: rgba(74, 111, 165, 0.05);
 
     /* Destructive */
-    --id-destructive: #E74856;
-    --id-destructive-lighter: #ef6b77;
+    --id-destructive: #C45B5B;
+    --id-destructive-lighter: #D47A7A;
 
-    /* Surfaces */
-    --id-background: #FFFFFF;
-    --id-card-bg: #F9FAFB;
-    --id-sidebar-bg: #F5F7FA;
+    /* Surfaces — stone palette (warm neutral) */
+    --id-background: #f5f5f4;       /* stone-100 */
+    --id-card-bg: #FFFFFF;          /* white cards over stone bg */
+    --id-sidebar-bg: #fafaf9;       /* stone-50 */
 
-    /* Borders */
-    --id-border: #E5E7EB;
-    --id-sidebar-border: #E5E7EB;
+    /* Borders — warm gray */
+    --id-border: #e7e5e4;           /* stone-200 */
+    --id-sidebar-border: #d6d3d1;   /* stone-300 */
 
-    /* Text */
-    --id-text-primary: #1F2937;
-    --id-text-muted: #6B7280;
+    /* Text — warm darks */
+    --id-text-primary: #1c1917;     /* stone-900 */
+    --id-text-muted: #78716c;       /* stone-500 */
     --id-text-white: #FFFFFF;
 
     /* Radii */
@@ -43,15 +43,15 @@
     --id-font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
 }
 
-/* === CSS Custom Properties (Dark Mode) === */
+/* === CSS Custom Properties (Dark Mode) — Warm Dark === */
 [data-mantine-color-scheme="dark"] {
-    --id-background: hsl(225, 8%, 8%);
-    --id-card-bg: hsl(220, 10%, 11%);
-    --id-sidebar-bg: hsl(225, 10%, 7%);
-    --id-border: hsl(225, 6%, 18%);
-    --id-sidebar-border: hsl(225, 6%, 18%);
-    --id-text-primary: hsl(220, 9%, 78%);
-    --id-text-muted: hsl(220, 6%, 50%);
+    --id-background: #1c1917;       /* stone-900 */
+    --id-card-bg: #292524;          /* stone-800 */
+    --id-sidebar-bg: #0c0a09;       /* stone-950 */
+    --id-border: #44403c;           /* stone-700 */
+    --id-sidebar-border: #44403c;
+    --id-text-primary: #e7e5e4;     /* stone-200 */
+    --id-text-muted: #a8a29e;       /* stone-400 */
 }
 
 /* === Global Base === */
@@ -663,4 +663,50 @@ body {
 [data-mantine-color-scheme="dark"] #sidebar-nav-list .nav-link.active {
     background-color: var(--id-primary) !important;
     color: var(--id-text-white) !important;
+}
+
+/* ============================================
+   RESPONSIVE CHART CONTAINERS
+   ============================================ */
+
+/* Graph cards: ensure Plotly charts fit without overflow */
+.id-graph-card {
+    overflow: hidden;
+}
+
+.id-graph-card .js-plotly-plot,
+.id-graph-card .plotly {
+    width: 100% !important;
+}
+
+/* Mobile: stack temporal+polar section vertically */
+@media (max-width: 992px) {
+    #page-content {
+        margin-left: 0 !important;
+        padding: 1rem !important;
+    }
+    #sidebar {
+        display: none !important;
+    }
+    /* Stack the bottom flex row */
+    .id-temporal-polar-row {
+        flex-direction: column !important;
+    }
+    .id-temporal-polar-row > div {
+        width: 100% !important;
+        height: auto !important;
+        min-height: 400px;
+    }
+}
+
+/* Tablet: reduce padding */
+@media (max-width: 1200px) and (min-width: 993px) {
+    #page-content {
+        padding: 1.5rem 1rem !important;
+    }
+}
+
+/* Ensure Plotly charts are always responsive */
+.js-plotly-plot .plotly .main-svg {
+    width: 100% !important;
 }
