@@ -737,3 +737,45 @@ body {
 .js-plotly-plot .plotly .main-svg {
     width: 100% !important;
 }
+
+/* ============================================
+   IMPORT PAGE — Fixed Stepper Header
+   ============================================ */
+
+.import-stepper-header {
+    position: fixed;
+    top: 12px;
+    left: 252px;
+    right: 12px;
+    z-index: 50;
+    background-color: var(--id-card-bg);
+    border: 1px solid var(--id-border);
+    border-radius: var(--id-radius-lg);
+    padding: 0.75rem 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    /* No navigation — pointer events disabled */
+    pointer-events: none;
+}
+
+/* Re-enable pointer events only on the stepper dots themselves
+   so they render correctly (hover states via CSS still apply) */
+.import-stepper-header * {
+    pointer-events: none !important;
+}
+
+/* Step fade-in animation */
+@keyframes import-step-fadein {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Dark mode: keep stepper header background consistent */
+[data-mantine-color-scheme="dark"] .import-stepper-header {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
