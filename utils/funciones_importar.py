@@ -532,7 +532,7 @@ def import_soil_dux(files, index_0, cota):
     return data
 
 # Funciones auxiliares   +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-def insertar_camp(data, fechas_agg, selected_filename, data_path):
+def insertar_camp(data, fechas_agg, selected_filename, data_path, fallback_data=None):
     # inserta las campañas seleccionadas
 
     try:
@@ -540,13 +540,25 @@ def insertar_camp(data, fechas_agg, selected_filename, data_path):
         if not selected_filename:
             raise ValueError("No se ha seleccionado ningún archivo para guardar.")
 
+        # Buscar el archivo: primero directo en data_path, luego recursivamente
         file_path = os.path.join(data_path, selected_filename)
 
+        if not os.path.exists(file_path):
+            # Buscar recursivamente en data_path por nombre de archivo
+            for root, dirs, files in os.walk(data_path):
+                if selected_filename in files:
+                    file_path = os.path.join(root, selected_filename)
+                    print(f"Archivo encontrado en: {file_path}")
+                    break
+
         # Cargar el contenido actual del archivo JSON
-        # realmente se puede optimizar porque el archivo json ya esta en memoria, pero esto penaliza poco
+        # Si el archivo no existe en disco (ej. subido por drag-and-drop desde fuera de data/),
+        # usar fallback_data (tubo en memoria) como base
         if os.path.exists(file_path):
             with open(file_path, 'r') as json_file:
                 existing_data = json.load(json_file)
+        elif fallback_data is not None:
+            existing_data = dict(fallback_data)
         else:
             existing_data = {}
 
@@ -579,12 +591,15 @@ def insertar_camp(data, fechas_agg, selected_filename, data_path):
             sorted_data[k] = existing_data[k]
 
         # Guardar el archivo actualizado
+        print(f"Guardando archivo en: {file_path}")
         with open(file_path, 'w') as json_file:
             json.dump(sorted_data, json_file, indent=4)
 
         return "campañas añadidas"
     except Exception as e:
         print(f"Error al actualizar el archivo JSON 1: {e}")
+        import traceback
+        traceback.print_exc()
         return "Error"
 
 def es_fecha_isoformat(clave):

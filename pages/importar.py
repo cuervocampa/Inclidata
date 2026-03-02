@@ -150,6 +150,7 @@ def layout():
         dcc.Store(id='tubo', storage_type='memory'),
         dcc.Store(id='camp_added', storage_type='memory'),
         dcc.Store(id='campanas-tabla-store', storage_type='memory'),
+        dcc.Store(id='selected-filename-store', storage_type='memory'),
 
         # ── Stepper horizontal fijado en el top ───────────────────────────────
         html.Div([
@@ -175,19 +176,33 @@ def layout():
             html.Div([
                 _step_title("lucide:file-search", "Paso 1 · Seleccionar archivo base"),
                 html.Div([
-                    Select(
-                        id='import-file-dropdown',
-                        data=[
-                            {"label": file, "value": file}
-                            for file in sorted(os.listdir(data_path))
-                            if os.path.isfile(os.path.join(data_path, file))
-                        ],
-                        placeholder="Selecciona un archivo...",
-                        style={'width': '100%', 'marginBottom': '15px'},
-                        searchable=True,
-                        clearable=True,
-                        leftSection=DashIconify(icon="lucide:file-search", width=14)
+                    dcc.Upload(
+                        id='import-base-file-upload',
+                        multiple=False,
+                        accept='.json',
+                        className='id-upload-area',
+                        style={'width': '100%', 'marginBottom': '1rem'},
+                        children=html.Div(
+                            [
+                                DashIconify(icon="lucide:file-json", width=28,
+                                            className='id-upload-icon'),
+                                html.Div([
+                                    html.Span("Arrastra el archivo JSON aquí",
+                                              style={'fontWeight': '600', 'fontSize': '0.9rem'}),
+                                    html.Br(),
+                                    html.Span("o haz clic para seleccionar",
+                                              style={'color': 'var(--id-text-muted)',
+                                                     'fontSize': '0.8rem'}),
+                                ], style={'textAlign': 'center'}),
+                            ],
+                            style={'display': 'flex', 'alignItems': 'center',
+                                   'justifyContent': 'center', 'height': '100%',
+                                   'gap': '0.75rem', 'flexDirection': 'column',
+                                   'padding': '1.5rem 0'}
+                        )
                     ),
+                    html.Div(id='import-base-file-name',
+                             style={'marginBottom': '0.75rem'}),
                     Button(
                         "Continuar",
                         id='import-first-button',
@@ -233,6 +248,21 @@ def layout():
 # ── Callbacks ─────────────────────────────────────────────────────────────────
 def register_callbacks(app):
 
+    # ── Mostrar nombre del archivo base subido ────────────────────────────────
+    @app.callback(
+        Output('import-base-file-name', 'children'),
+        Input('import-base-file-upload', 'filename'),
+        prevent_initial_call=True
+    )
+    def show_base_filename(filename):
+        if not filename:
+            return None
+        return Group([
+            DashIconify(icon="lucide:file-check", width=16,
+                        style={"color": "var(--id-primary)"}),
+            Text(filename, size="sm", fw=500),
+        ], gap="xs")
+
     # ── Paso 1 → 2 ───────────────────────────────────────────────────────────
     @app.callback(
         [Output('step-1-error', 'children'),
@@ -241,39 +271,53 @@ def register_callbacks(app):
          Output('import-stepper', 'active'),
          Output('step-container-1', 'style'),
          Output('step-container-2', 'style'),
-         Output('campanas-tabla-store', 'data')],
+         Output('campanas-tabla-store', 'data'),
+         Output('selected-filename-store', 'data')],
         Input('import-first-button', 'n_clicks'),
-        State('import-file-dropdown', 'value'),
+        [State('import-base-file-upload', 'contents'),
+         State('import-base-file-upload', 'filename')],
         prevent_initial_call=True
     )
-    def display_dropdown_input(n_clicks, selected_files):
-        print(f"Paso 1 — Continuar: {n_clicks}, archivo: {selected_files}")
+    def display_dropdown_input(n_clicks, file_contents, selected_filename):
+        print(f"Paso 1 — Continuar: {n_clicks}, archivo: {selected_filename}")
+
+        _no = no_update
+        _empty = (_no,) * 8
 
         if not (n_clicks and n_clicks > 0):
-            return no_update, no_update, no_update, no_update, no_update, no_update, no_update
+            return _empty
 
-        if not selected_files:
+        if not file_contents or not selected_filename:
             err = Alert(
                 title="Selecciona un archivo",
                 c="yellow",
                 icon=DashIconify(icon="lucide:alert-triangle"),
-                children=[Text("Debes seleccionar un archivo JSON antes de continuar.")]
+                children=[Text("Debes arrastrar o seleccionar un archivo JSON antes de continuar.")]
             )
-            return err, no_update, no_update, no_update, no_update, no_update, no_update
+            return err, _no, _no, _no, _no, _no, _no, _no
 
-        # Leer y validar el JSON
-        file_path = os.path.join(data_path, selected_files)
+        if not selected_filename.lower().endswith('.json'):
+            err = Alert(
+                title="Formato no válido",
+                c="red",
+                icon=DashIconify(icon="lucide:alert-circle"),
+                children=[Text("El archivo debe tener extensión .json")]
+            )
+            return err, _no, _no, _no, _no, _no, _no, _no
+
+        # Decodificar contenido base64 del archivo subido
         try:
-            with open(file_path, 'r') as json_file:
-                tempo_tubo = json.load(json_file)
-        except json.JSONDecodeError:
+            content_type, content_string = file_contents.split(',')
+            decoded = base64.b64decode(content_string)
+            tempo_tubo = json.loads(decoded.decode('utf-8'))
+        except (json.JSONDecodeError, Exception):
             err = Alert(
                 title="Error de formato JSON",
                 c="red",
                 icon=DashIconify(icon="lucide:alert-circle"),
                 children=[Text("Error al leer el archivo JSON: formato incorrecto. Corrige el archivo antes de continuar.")]
             )
-            return err, no_update, no_update, no_update, no_update, no_update, no_update
+            return err, _no, _no, _no, _no, _no, _no, _no
 
         campaign_info = default_value(tempo_tubo)
         if not campaign_info:
@@ -283,7 +327,7 @@ def register_callbacks(app):
                 icon=DashIconify(icon="lucide:alert-circle"),
                 children=[Text("No se pudo obtener información de la campaña seleccionada.")]
             )
-            return err, no_update, no_update, no_update, no_update, no_update, no_update
+            return err, _no, _no, _no, _no, _no, _no, _no
 
         default_importador_value = campaign_info.get('importador', None)
         last_index_0 = campaign_info.get('index_0', None)
@@ -416,6 +460,7 @@ def register_callbacks(app):
             STEP_COMPLETED_STYLE,
             STEP_ENTERING_STYLE,
             campaign_rows,
+            selected_filename,
         )
 
     # ── Filtro de búsqueda en tabla de campañas ───────────────────────────────
@@ -821,14 +866,15 @@ def register_callbacks(app):
          State({'type': 'upload-dropdown', 'index': ALL}, 'value'),
          State({'type': 'alarm-input', 'index': ALL}, 'value'),
          State('camp_added', 'data'),
-         State('import-file-dropdown', 'value')],
+         State('selected-filename-store', 'data'),
+         State('tubo', 'data')],
         prevent_initial_call=True
     )
     def update_campaign_settings(
         n_clicks,
         dates, times, active_values, quarentine_values,
         upload_values, alarm_values,
-        camp_added, selected_filename
+        camp_added, selected_filename, tubo_data
     ):
         print(f"Paso 4 — Guardar campañas: {n_clicks}")
 
@@ -878,7 +924,22 @@ def register_callbacks(app):
             else:
                 print(f"Error: No se encontró 'campaign_info' para {fecha}.")
 
-        insertar_camp(camp_added_formateado, fechas_agg, selected_filename, data_path)
+        print(f"DEBUG — selected_filename: '{selected_filename}'")
+        print(f"DEBUG — data_path: '{data_path}'")
+        print(f"DEBUG — file_path would be: '{os.path.join(data_path, selected_filename)}'")
+        print(f"DEBUG — tubo_data keys: {list(tubo_data.keys()) if tubo_data else 'None'}")
+
+        result = insertar_camp(camp_added_formateado, fechas_agg, selected_filename, data_path,
+                               fallback_data=tubo_data)
+
+        if result == "Error":
+            err = Alert(
+                title="Error al guardar",
+                c="red",
+                icon=DashIconify(icon="lucide:alert-circle"),
+                children=[Text("Error al guardar las campañas. Revisa la consola para más detalles.")]
+            )
+            return err, no_update, no_update, no_update, no_update
 
         success_content = html.Div([
             Group([
