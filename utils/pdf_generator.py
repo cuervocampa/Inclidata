@@ -721,7 +721,40 @@ def draw_graph(pdf, graph_data, page_height, data_source, biblioteca_graficos_pa
         pdf.drawCentredString(x + ancho / 2, y + alto / 2, "Error al generar gráfico")
 
 
-def draw_table_from_grid(pdf, table_data, page_height, data_source, biblioteca_tablas_path=None):
+def _redraw_page_elements(pdf, page_data, page_height, data_source,
+                          biblioteca_graficos_path, biblioteca_tablas_path,
+                          plantilla_dir, biblioteca_path, skip_element_name=None):
+    """Re-dibuja todos los elementos de la página excepto el elemento indicado.
+
+    Se usa para repetir logos, textos, líneas, rectángulos e imágenes
+    en las páginas de continuación de una tabla dinámica.
+    """
+    elementos = page_data.get('elementos', {})
+    elementos_ordenados = sorted(
+        elementos.items(),
+        key=lambda x: x[1].get('metadata', {}).get('zIndex', 0)
+    )
+    for nombre, elemento in elementos_ordenados:
+        if nombre == skip_element_name:
+            continue
+        if not elemento.get('metadata', {}).get('visible', True):
+            continue
+        tipo = elemento.get('tipo')
+        if tipo == 'linea':
+            draw_line(pdf, elemento, page_height)
+        elif tipo == 'rectangulo':
+            draw_rectangle(pdf, elemento, page_height)
+        elif tipo == 'texto':
+            draw_text(pdf, elemento, page_height, data_source)
+        elif tipo == 'imagen':
+            draw_image(pdf, elemento, page_height, plantilla_dir, biblioteca_path)
+        elif tipo == 'grafico':
+            draw_graph(pdf, elemento, page_height, data_source, biblioteca_graficos_path)
+        # Nota: no se redibujan otras tablas para evitar recursión
+
+
+def draw_table_from_grid(pdf, table_data, page_height, data_source, biblioteca_tablas_path=None,
+                         page_context=None):
     """
     Dibuja una tabla basada en la estructura de cuadrícula (niveles/columnas).
     
@@ -811,7 +844,11 @@ def draw_table_from_grid(pdf, table_data, page_height, data_source, biblioteca_t
         
         # Verificar límite vertical
         if (page_height - y_actual) > alto_maximo:
-            break
+            # Si hay contexto de página y es autorrelleno, paginar
+            if page_context and tipo == "autorrelleno":
+                pass  # Se gestiona dentro del bucle de filas
+            else:
+                break
             
         filas_a_dibujar = []
         
@@ -909,9 +946,87 @@ def draw_table_from_grid(pdf, table_data, page_height, data_source, biblioteca_t
         for fila_cols in filas_a_dibujar:
             y_actual -= alto_fila
             
-            # Verificar límite vertical
+            # Verificar límite vertical — paginar si desborda
             if (page_height - y_actual) > alto_maximo:
-                break
+                if page_context and tipo == "autorrelleno":
+                    # --- PAGINACIÓN ---
+                    pdf.showPage()
+                    page_config = page_context.get('page_config', {'orientacion': 'portrait'})
+                    new_page_size = configure_page(pdf, page_config)
+                    page_height = new_page_size[1]
+
+                    # Redibujar todos los elementos de la página (logos, textos, etc.)
+                    _redraw_page_elements(
+                        pdf, page_context.get('page_data', {}), page_height, data_source,
+                        page_context.get('biblioteca_graficos_path'),
+                        biblioteca_tablas_path,
+                        page_context.get('plantilla_dir'),
+                        page_context.get('biblioteca_path'),
+                        skip_element_name=page_context.get('table_element_name')
+                    )
+
+                    # Redibujar encabezados estáticos de la tabla
+                    y_actual = page_height - y
+                    for nivel_hdr in niveles:
+                        if nivel_hdr.get('tipo', 'estatico') != 'estatico':
+                            continue
+                        cols_hdr = nivel_hdr.get('columnas', [])
+                        alto_hdr = nivel_hdr.get('alto_fila', 0.5) * CM_TO_POINTS
+                        y_actual -= alto_hdr
+                        x_celda_hdr = x_inicial
+                        fila_hdr = []
+                        for col in cols_hdr:
+                            col_r = {
+                                'ancho': _col_ancho_cm(col),
+                                'formato': col.get('formato', {}).copy(),
+                                'bordes': col.get('bordes', {}),
+                                'contenido': col.get('contenido', '')
+                            }
+                            # Sustituir fechas
+                            if col_r['contenido'] in mapeo_fechas:
+                                col_r['contenido'] = mapeo_fechas[col_r['contenido']]
+                            fila_hdr.append(col_r)
+                        # Dibujar la fila de encabezado
+                        for col in fila_hdr:
+                            ancho_col = col.get('ancho', 3.0) * CM_TO_POINTS
+                            formato_col = col.get('formato', {})
+                            estilo_fondo = formato_col.get('color_fondo', '#ffffff')
+                            estilo_texto = formato_col.get('color_texto', '#333333')
+                            negrita_col = formato_col.get('negrita', False)
+                            alineacion_col = formato_col.get('alineacion', 'center')
+                            familia_hdr = nivel_hdr.get('estilo', {}).get('fuente', 'Helvetica')
+                            tamano_hdr = nivel_hdr.get('estilo', {}).get('tamano', 10)
+                            bordes_col = col.get('bordes', {})
+                            if estilo_fondo and estilo_fondo != 'transparent':
+                                pdf.setFillColor(estilo_fondo)
+                                pdf.rect(x_celda_hdr, y_actual, ancho_col, alto_hdr, fill=True, stroke=False)
+                            def _dibujar_borde(x1, y1, x2, y2, bp):
+                                if bp.get('activo', True):
+                                    pdf.setStrokeColor(bp.get('color', '#000000'))
+                                    pdf.setLineWidth(bp.get('grosor', 1))
+                                    pdf.line(x1, y1, x2, y2)
+                            _dibujar_borde(x_celda_hdr, y_actual + alto_hdr, x_celda_hdr + ancho_col, y_actual + alto_hdr, bordes_col.get('superior', {}))
+                            _dibujar_borde(x_celda_hdr, y_actual, x_celda_hdr + ancho_col, y_actual, bordes_col.get('inferior', {}))
+                            _dibujar_borde(x_celda_hdr, y_actual, x_celda_hdr, y_actual + alto_hdr, bordes_col.get('izquierdo', {}))
+                            _dibujar_borde(x_celda_hdr + ancho_col, y_actual, x_celda_hdr + ancho_col, y_actual + alto_hdr, bordes_col.get('derecho', {}))
+                            font_hdr = get_safe_font_name(familia_hdr, negrita_col, False)
+                            pdf.setFont(font_hdr, tamano_hdr)
+                            pdf.setFillColor(estilo_texto)
+                            text_y_hdr = y_actual + (alto_hdr - tamano_hdr) / 2 + 2
+                            texto_hdr = str(col.get('contenido', ''))
+                            if '$CURRENT' in texto_hdr and data_source:
+                                nom = data_source.get('info', {}).get('nom_sensor', '')
+                                texto_hdr = texto_hdr.replace('$CURRENT', str(nom))
+                            if alineacion_col == 'left':
+                                pdf.drawString(x_celda_hdr + 2, text_y_hdr, texto_hdr)
+                            elif alineacion_col == 'right':
+                                pdf.drawRightString(x_celda_hdr + ancho_col - 2, text_y_hdr, texto_hdr)
+                            else:
+                                pdf.drawCentredString(x_celda_hdr + ancho_col / 2, text_y_hdr, texto_hdr)
+                            x_celda_hdr += ancho_col
+                    # Continuar dibujando filas de datos desde esta posición
+                else:
+                    break
             
             x_celda = x_inicial
             
@@ -974,13 +1089,15 @@ def draw_table_from_grid(pdf, table_data, page_height, data_source, biblioteca_t
                 x_celda += ancho
 
 
-def draw_table(pdf, table_data, page_height, data_source, biblioteca_tablas_path=None):
+def draw_table(pdf, table_data, page_height, data_source, biblioteca_tablas_path=None,
+               page_context=None):
     """
     Dibuja una tabla en el PDF
     """
     # Detectar si es una tabla basada en cuadrícula (nuevo formato)
     if "cuadricula" in table_data and "niveles" in table_data["cuadricula"] and table_data["cuadricula"]["niveles"]:
-        draw_table_from_grid(pdf, table_data, page_height, data_source, biblioteca_tablas_path)
+        draw_table_from_grid(pdf, table_data, page_height, data_source, biblioteca_tablas_path,
+                             page_context=page_context)
         return
 
     # Extraer geometría
@@ -1521,11 +1638,20 @@ def generate_pdf_from_template(template_data, data_source, output_buffer=None,
             elif elemento["tipo"] == "tabla":
                 # Verificar si es tabla multinivel
                 tipo_tabla = elemento.get("configuracion", {}).get("tipo_tabla", "simple")
+                # Contexto de página para paginación de tablas dinámicas
+                page_ctx = {
+                    'page_data': page_data,
+                    'page_config': page_data.get('configuracion', {'orientacion': 'portrait'}),
+                    'table_element_name': nombre,
+                    'biblioteca_graficos_path': biblioteca_graficos_path,
+                    'biblioteca_path': biblioteca_path,
+                    'plantilla_dir': plantilla_dir,
+                }
                 if tipo_tabla == "multinivel":
                     draw_multilevel_table(pdf, elemento, page_height, data_source, biblioteca_tablas_path)
                 else:
-                    # Para tablas simples, usamos biblioteca_tablas_path
-                    draw_table(pdf, elemento, page_height, data_source, biblioteca_tablas_path)
+                    draw_table(pdf, elemento, page_height, data_source, biblioteca_tablas_path,
+                               page_context=page_ctx)
 
     # Guardar el PDF
     pdf.save()

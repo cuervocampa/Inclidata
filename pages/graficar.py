@@ -540,10 +540,14 @@ def layout():
                     style={'width': '40%', 'height': '600px', 'flexShrink': '0'}
                 ),
                 # Gráfico polar
-                html.Div(
-                    dcc.Graph(id='grafico_polar', config={'responsive': True}, style={'height': '100%'}),
+                html.Div([
+                    dcc.Graph(id='grafico_polar', config={'responsive': True, 'scrollZoom': True}, style={'height': '100%'}),
+                    dmc.Button("🔍 Debug Polar", id="btn-debug-polar", variant="subtle", size="xs",
+                              style={"position": "absolute", "top": "5px", "right": "5px", "zIndex": 10,
+                                     "opacity": 0.7}),
+                    ],
                     className='id-graph-card',
-                    style={'width': '40%', 'height': '600px', 'flexShrink': '0'}
+                    style={'width': '40%', 'height': '600px', 'flexShrink': '0', 'position': 'relative'}
                 ),
                 # Controles
                 html.Div([
@@ -643,6 +647,7 @@ def layout():
             # componente de descarga provisional
             dcc.Download(id="descargar-debug-html"),
             dcc.Download(id="descargar-vista-previa-html"),
+            dcc.Download(id="descargar-debug-polar"),
             # Script para abrir automáticamente la descarga de debug en una nueva pestaña
             html.Script("""
                window.dash_clientside = Object.assign({}, window.dash_clientside, {
@@ -1578,74 +1583,94 @@ def register_callbacks(app):
         return fig_temporal
 
     # Callback para actualizar el gráfico polar (desplazamiento resultante A/B)
+    # CORREGIDO: Grafica todas las profundidades de la fecha seleccionada en el slider
     @app.callback(
         Output("grafico_polar", "figure"),
-        [Input("profundidades_multiselect", "value"),
-         Input("graficar-tubo", "data"),
+        [Input("graficar-tubo", "data"),
+         Input("slider_fechas", "value"),
          Input("fechas_multiselect", "value"),
-         Input("color_scheme_selector", "value"),
          Input("unidades_eje", "value")]
     )
-    def actualizar_grafico_polar(profundidades_seleccionadas, data, fechas_seleccionadas, color_scheme, eje):
-        if not profundidades_seleccionadas or not data or not fechas_seleccionadas:
+    def actualizar_grafico_polar(data, slider_value, fechas_seleccionadas, eje):
+        if not data or not fechas_seleccionadas or slider_value is None:
+            fig_vacia = go.Figure()
+            fig_vacia.update_layout(autosize=False, uirevision='constant')
+            return fig_vacia
+
+        # Determinar la fecha seleccionada en el slider (misma lógica que actualizar_graficos)
+        fecha_slider = None
+        try:
+            fechas_dt = sorted([datetime.fromisoformat(f) for f in fechas_seleccionadas])
+            fecha_inicial = fechas_dt[0]
+            fecha_calculada = fecha_inicial + timedelta(days=slider_value)
+            fecha_cercana = min(fechas_dt, key=lambda x: abs((x - fecha_calculada).days))
+            fecha_slider = fecha_cercana.strftime('%Y-%m-%dT%H:%M:%S')
+            # Buscar formato exacto en fechas_seleccionadas
+            for f in fechas_seleccionadas:
+                if f.startswith(fecha_slider[:10]):
+                    fecha_slider = f
+                    break
+        except Exception as e:
+            print(f"Error calculando fecha_slider para polar: {e}")
+            fecha_slider = fechas_seleccionadas[-1] if fechas_seleccionadas else None
+
+        if not fecha_slider or fecha_slider not in data or "calc" not in data[fecha_slider]:
             fig_vacia = go.Figure()
             fig_vacia.update_layout(autosize=False, uirevision='constant')
             return fig_vacia
 
         fig_polar = go.Figure()
 
-        # Ordenar fechas cronológicamente
-        fechas_ordenadas = sorted(fechas_seleccionadas, key=lambda x: datetime.fromisoformat(x))
+        # Recorrer TODOS los puntos (profundidades) de la fecha seleccionada
+        calc_data = data[fecha_slider]["calc"]
+        r_values = []
+        theta_values = []
+        hover_texts = []
+        profundidades_labels = []
 
-        for profundidad in profundidades_seleccionadas:
-            r_values = []
-            theta_values = []
-            hover_texts = []
-            fechas_traza = []
+        for punto in calc_data:
+            desp_a = punto.get("desp_a", 0) or 0
+            desp_b = punto.get("desp_b", 0) or 0
+            r = math.sqrt(desp_a ** 2 + desp_b ** 2)
+            theta = math.degrees(math.atan2(desp_b, desp_a))
+            prof_label = punto.get(eje, punto.get("cota_abs", "?"))
 
-            for fecha in fechas_ordenadas:
-                if fecha not in data or "calc" not in data[fecha]:
-                    continue
-                for punto in data[fecha]["calc"]:
-                    if str(punto.get(eje)) == str(profundidad):
-                        desp_a = punto.get("desp_a", 0) or 0
-                        desp_b = punto.get("desp_b", 0) or 0
-                        r = math.sqrt(desp_a ** 2 + desp_b ** 2)
-                        theta = math.degrees(math.atan2(desp_b, desp_a))
-                        r_values.append(r)
-                        theta_values.append(theta)
-                        fechas_traza.append(fecha)
-                        hover_texts.append(
-                            f"{fecha[:10]}<br>"
-                            f"A: {desp_a:.2f}  B: {desp_b:.2f}<br>"
-                            f"R: {r:.2f}  θ: {theta:.1f}°"
-                        )
-                        break
+            r_values.append(r)
+            theta_values.append(theta)
+            profundidades_labels.append(str(prof_label))
+            hover_texts.append(
+                f"{eje}: {prof_label}<br>"
+                f"A: {desp_a:.2f}  B: {desp_b:.2f}<br>"
+                f"R: {r:.2f}  θ: {theta:.1f}°"
+            )
 
-            if r_values:
-                fig_polar.add_trace(go.Scatterpolar(
-                    r=r_values,
-                    theta=theta_values,
-                    mode="markers+lines",
-                    name=f"Prof {profundidad}",
-                    text=hover_texts,
-                    hoverinfo="text+name",
-                    marker=dict(size=5),
-                    line=dict(width=1.5),
-                ))
+        if r_values:
+            fig_polar.add_trace(go.Scatterpolar(
+                r=r_values,
+                theta=theta_values,
+                mode="markers+lines+text",
+                name=f"{fecha_slider[:10]}",
+                text=profundidades_labels,
+                textposition="top right",
+                textfont=dict(size=8, color='#aaaaaa'),
+                hovertext=hover_texts,
+                hoverinfo="text+name",
+                marker=dict(size=6),
+                line=dict(width=1.5),
+            ))
 
         fig_polar.update_layout(
             title=dict(
-                text="<b>Gráfico Polar (A vs B)</b>",
+                text=f"<b>Polar (A vs B) — {fecha_slider[:10]}</b>",
                 font=dict(family="Arial", size=16, color="#c1c2c5"),
                 x=0, xanchor="left", yanchor="top"
             ),
             polar=dict(
                 bgcolor='rgba(0,0,0,0)',
-                domain=dict(x=[0, 1], y=[0, 0.92]),  # maximizar área del polar
+                domain=dict(x=[0, 1], y=[0, 0.92]),
                 angularaxis=dict(
                     direction="counterclockwise",
-                    rotation=0,  # 0° = eje A+ (derecha)
+                    rotation=0,
                     gridcolor='#555555',
                     linecolor='#666666',
                     tickfont=dict(color='#888888', size=10),
@@ -1657,6 +1682,7 @@ def register_callbacks(app):
                     linecolor='#666666',
                     tickfont=dict(color='#888888', size=9),
                     angle=45,
+                    autorange=True,  # Asegurar que la escala radial incluya todos los puntos
                 ),
             ),
             margin=dict(l=30, r=30, t=50, b=30),
@@ -1669,6 +1695,101 @@ def register_callbacks(app):
         )
 
         return fig_polar
+
+    # Callback TEMPORAL de depuración: exportar cálculos del gráfico polar a Markdown
+    @app.callback(
+        Output("descargar-debug-polar", "data"),
+        Input("btn-debug-polar", "n_clicks"),
+        [State("graficar-tubo", "data"),
+         State("slider_fechas", "value"),
+         State("fechas_multiselect", "value"),
+         State("unidades_eje", "value")],
+        prevent_initial_call=True
+    )
+    def exportar_debug_polar(n_clicks, data, slider_value, fechas_seleccionadas, eje):
+        if not n_clicks or not data or not fechas_seleccionadas or slider_value is None:
+            return None
+
+        import math as _math
+        from datetime import datetime as _dt
+        from datetime import timedelta as _td
+
+        # Determinar la fecha seleccionada por el slider
+        fecha_slider = None
+        try:
+            fechas_dt = sorted([_dt.fromisoformat(f) for f in fechas_seleccionadas])
+            fecha_inicial = fechas_dt[0]
+            fecha_calculada = fecha_inicial + _td(days=slider_value)
+            fecha_cercana = min(fechas_dt, key=lambda x: abs((x - fecha_calculada).days))
+            fecha_slider = fecha_cercana.strftime('%Y-%m-%dT%H:%M:%S')
+            for f in fechas_seleccionadas:
+                if f.startswith(fecha_slider[:10]):
+                    fecha_slider = f
+                    break
+        except Exception:
+            fecha_slider = fechas_seleccionadas[-1]
+
+        if not fecha_slider or fecha_slider not in data or "calc" not in data[fecha_slider]:
+            return None
+
+        calc_data = data[fecha_slider]["calc"]
+
+        lines = []
+        lines.append("# Depuración: Cálculo del Gráfico Polar\n")
+        lines.append(f"**Fecha seleccionada (slider)**: `{fecha_slider}`\n")
+        lines.append(f"**Eje utilizado**: `{eje}`\n")
+        lines.append(f"**Nº de puntos (profundidades)**: {len(calc_data)}\n")
+
+        lines.append("---\n")
+        lines.append("## Fórmulas aplicadas\n")
+        lines.append("```")
+        lines.append("R = √(desp_a² + desp_b²)")
+        lines.append("θ = atan2(desp_b, desp_a)  [en grados]")
+        lines.append("")
+        lines.append("Donde:")
+        lines.append("  desp_a = Σ(incr_dev_a[j], j=i..N) + desp_a(referencia)")
+        lines.append("  desp_b = Σ(incr_dev_b[j], j=i..N) + desp_b(referencia)")
+        lines.append("  incr_dev_a = dev_a(campaña) − dev_a(referencia)")
+        lines.append("  dev_a = (a0c − a180c) / 2")
+        lines.append("```\n")
+        lines.append("## Ejes del gráfico polar\n")
+        lines.append("| Ángulo | Dirección |")
+        lines.append("|--------|-----------|")
+        lines.append("| 0°     | A+        |")
+        lines.append("| 90°    | B+        |")
+        lines.append("| 180°   | A−        |")
+        lines.append("| 270°   | B−        |\n")
+
+        lines.append("---\n")
+        lines.append(f"## Todos los puntos de {fecha_slider[:10]}\n")
+        lines.append(f"| {eje} | desp_a | desp_b | R (magnitud) | θ (grados) |")
+        lines.append("|-------|--------|--------|--------------|------------|")
+
+        for punto in calc_data:
+            prof = punto.get(eje, punto.get("cota_abs", "?"))
+            desp_a = punto.get("desp_a", 0) or 0
+            desp_b = punto.get("desp_b", 0) or 0
+            r = _math.sqrt(desp_a ** 2 + desp_b ** 2)
+            theta = _math.degrees(_math.atan2(desp_b, desp_a))
+            lines.append(f"| {prof} | {desp_a:.4f} | {desp_b:.4f} | {r:.4f} | {theta:.1f}° |")
+
+        # Detalle completo del primer y último punto
+        lines.append(f"\n---\n")
+        lines.append(f"### Detalle del primer punto (todos los campos calc)\n")
+        lines.append("| Campo | Valor |")
+        lines.append("|-------|-------|")
+        for k, v in calc_data[0].items():
+            lines.append(f"| {k} | {v} |")
+
+        if len(calc_data) > 1:
+            lines.append(f"\n### Detalle del último punto\n")
+            lines.append("| Campo | Valor |")
+            lines.append("|-------|-------|")
+            for k, v in calc_data[-1].items():
+                lines.append(f"| {k} | {v} |")
+
+        md_content = "\n".join(lines)
+        return dict(content=md_content, filename="debug_polar.md")
 
     # Callback to update the slider properties based on fechas_multiselect data
     from datetime import datetime

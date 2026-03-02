@@ -119,6 +119,9 @@ def _convertir_elemento(elem_id, elem):
         aid = img.get('asset_id')
         if aid:
             src = get_asset_data_uri(aid)
+            # React (getImageSrc) busca imagen.datos_temp antes que contenido.src,
+            # así que inyectamos el data URI ahí para que lo encuentre.
+            nuevo.setdefault('imagen', {})['datos_temp'] = src
         else:
             src = img.get('datos_temp', '') or img.get('ruta_nueva', '')
         nuevo['contenido'] = {'src': src, 'texto': None}
