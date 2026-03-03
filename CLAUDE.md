@@ -13,3 +13,9 @@
 ## Notas de Arquitectura
 - El servidor de Dash está en la variable `app.server` (para despliegues).
 - Los archivos estáticos están en `/assets`.
+
+## Preferencias de Claude Code
+- **Concisión**: No expliques conceptos básicos de Python o Dash a menos que se solicite.
+- **Diffs**: Prefiere mostrar solo los fragmentos de código modificados en lugar de archivos completos.
+- **Validación**: Antes de proponer un cambio en un callback, verifica los `id` en el layout para evitar errores de `ComponentID`.
+- **Estilo**: Si el código es para un componente nuevo, usa el formato `html.Div([...])` de forma compacta.

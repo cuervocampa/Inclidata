@@ -593,16 +593,6 @@ def layout():
                     # Contenedor dinámico para los campos editables
                     html.Div(id="contenedor-campos-editables", children=[]),
 
-                    # Botón de depuración (AÑADIR ESTA PARTE)
-                    dmc.Button(
-                        "Depurar parámetros (consola)",
-                        id="btn-debug-parametros",
-                        variant="outline",
-                        color="teal",
-                        leftSection=DashIconify(icon="tabler:bug"),
-                        style={"marginTop": "10px", "marginBottom": "20px"}
-                    ),
-
                     # Parámetros de configuración del gráfico
                     dmc.Space(h=20),
                     dmc.Divider(label="Configuración del gráfico"),
@@ -633,8 +623,16 @@ def layout():
                         justify="flex-end",
                         children=[
                             dmc.Button("Cancelar", color="gray", id="btn-cancelar-informe"),
-                            dmc.Button("Generar PDF", id="btn-generar-informe-pdf",
-                                       leftSection=DashIconify(icon="mdi:file-pdf-box"))
+                            dcc.Loading(
+                                id="loading-generar-pdf",
+                                type="circle",
+                                color="var(--id-primary)",
+                                children=[
+                                    dmc.Button("Generar PDF", id="btn-generar-informe-pdf",
+                                               leftSection=DashIconify(icon="mdi:file-pdf-box")),
+                                    dcc.Download(id="descargar-informe-pdf")
+                                ]
+                            )
                         ],
                         mt=20
                     )
@@ -642,27 +640,8 @@ def layout():
             ),
 
             # Componente de descarga
-            dcc.Download(id="descargar-informe-pdf"),
-            # borrar
-            # componente de descarga provisional
-            dcc.Download(id="descargar-debug-html"),
             dcc.Download(id="descargar-vista-previa-html"),
             dcc.Download(id="descargar-debug-polar"),
-            # Script para abrir automáticamente la descarga de debug en una nueva pestaña
-            html.Script("""
-               window.dash_clientside = Object.assign({}, window.dash_clientside, {
-                   clientside: {
-                       open_debug_in_new_tab: function(data) {
-                           if (data && data.filename === 'debug_parametros.html') {
-                               var blob = new Blob([data.content], {type: 'text/html'});
-                               var url = URL.createObjectURL(blob);
-                               window.open(url, '_blank');
-                           }
-                           return window.dash_clientside.no_update;
-                       }
-                   }
-               });
-               """),
             # componente dummy para abrir en otra pestaña los resultados
             html.Div(id="dummy-output", style={"display": "none"}),
             # Añade este componente al layout
@@ -2058,19 +2037,16 @@ def register_callbacks(app):
 
             campos_editables = []
 
-            # SECCIÓN DE TEXTOS EDITABLES
-            campos_editables.append(
-                dmc.Divider(label="TEXTOS EDITABLES", labelPosition="center", size="md",
-                            style={"marginTop": "20px", "marginBottom": "20px"})
-            )
-
+            # ----------------------------------------------------
+            # 1. GENERAR CONTENIDO DE TEXTOS EDITABLES
+            # ----------------------------------------------------
+            textos_content = []
+            
             # Obtener nombre del sensor desde info-hovercard
             nombre_sensor_actual = "Sin nombre"
             if info_hovercard:
-                # El info-hovercard contiene "\t{filename}", extraer solo el filename
                 if isinstance(info_hovercard, str) and info_hovercard.startswith("\t"):
                     nombre_sensor_actual = info_hovercard.replace("\t", "").strip()
-                    # Opcional: quitar la extensión .json si existe
                     if nombre_sensor_actual.endswith(".json"):
                         nombre_sensor_actual = nombre_sensor_actual[:-5]
                 else:
@@ -2079,6 +2055,8 @@ def register_callbacks(app):
             print(f"Nombre del sensor obtenido de hovercard: '{nombre_sensor_actual}'")
 
             textos_encontrados = 0
+            grid_text_inputs = []
+            
             for num_pagina, pagina in data_json.get("paginas", {}).items():
                 elementos = pagina.get("elementos", {})
                 for nombre_elemento, elemento in elementos.items():
@@ -2087,51 +2065,52 @@ def register_callbacks(app):
                             elemento["contenido"].get("editable", True)):
                         textos_encontrados += 1
 
-                        # Verificar si es el campo nombre_sensor
                         if nombre_elemento == "nombre_sensor":
-                            # Usar el nombre del sensor desde hovercard
                             texto_actual = nombre_sensor_actual
-                            print(f"Sustituyendo nombre_sensor con: '{texto_actual}'")
                         else:
-                            # Para otros campos, usar el valor del JSON
                             texto_actual = elemento.get("contenido", {}).get("texto", "")
 
-                        campos_editables.append(
-                            dmc.Group([
-                                dmc.Text(f"[paginas][{num_pagina}][elementos][{nombre_elemento}][contenido][texto]",
-                                         fw="bold", style={"width": "50%"}),
-                                dmc.TextInput(
-                                    id={"type": "campo-editable", "pagina": num_pagina, "elemento": nombre_elemento},
-                                    value=texto_actual, style={"width": "50%"}
-                                )
-                            ], style={"marginBottom": "10px"})
+                        clean_label = nombre_elemento.replace("_", " ").title()
+
+                        grid_text_inputs.append(
+                            dmc.TextInput(
+                                label=clean_label,
+                                id={"type": "campo-editable", "pagina": num_pagina, "elemento": nombre_elemento},
+                                value=texto_actual,
+                                size="sm"
+                            )
                         )
 
-            # Actualizar automáticamente el campo nombre_sensor en el JSON cargado
+            if grid_text_inputs:
+                textos_content.append(
+                    dmc.SimpleGrid(
+                        cols=2,
+                        spacing="md",
+                        verticalSpacing="sm",
+                        children=grid_text_inputs,
+                        style={"marginBottom": "15px"}
+                    )
+                )
+
             for num_pagina, pagina in data_json.get("paginas", {}).items():
                 elementos = pagina.get("elementos", {})
                 for nombre_elemento, elemento in elementos.items():
                     if (nombre_elemento == "nombre_sensor" and
                             elemento.get("tipo") == "texto" and
                             "contenido" in elemento):
-                        # Actualizar el valor en el JSON
-                        data_json["paginas"][num_pagina]["elementos"][nombre_elemento]["contenido"][
-                            "texto"] = nombre_sensor_actual
-                        print(f"JSON actualizado: nombre_sensor = '{nombre_sensor_actual}'")
+                        data_json["paginas"][num_pagina]["elementos"][nombre_elemento]["contenido"]["texto"] = nombre_sensor_actual
                         break
 
             if textos_encontrados == 0:
-                campos_editables.append(
+                textos_content.append(
                     dmc.Alert("No se encontraron campos de texto editables en esta plantilla", c="yellow")
                 )
 
-            # SECCIÓN DE GRÁFICOS CON ACORDEÓN
-            campos_editables.append(
-                dmc.Divider(label="GRÁFICOS CONFIGURABLES", labelPosition="center", size="md",
-                            style={"marginTop": "20px", "marginBottom": "20px"})
-            )
-
-            # Obtener scripts disponibles
+            # ----------------------------------------------------
+            # 2. GENERAR CONTENIDO DE GRÁFICOS CONFIGURABLES
+            # ----------------------------------------------------
+            graficos_content = []
+            
             directorio_graficos = "biblioteca_graficos"
             scripts_disponibles = []
 
@@ -2146,7 +2125,6 @@ def register_callbacks(app):
             if not scripts_disponibles:
                 scripts_disponibles = [{"label": "No hay scripts disponibles", "value": ""}]
 
-            # Generar acordeón para gráficos
             graficos_encontrados = 0
             accordion_items = []
 
@@ -2157,16 +2135,13 @@ def register_callbacks(app):
                     if tipo_elem in ["grafico", "tabla"]:
                         graficos_encontrados += 1
                         
-                        # Definir icono y color según tipo
                         icono = "mdi:chart-line" if tipo_elem == "grafico" else "mdi:table"
                         color_badge = "blue" if tipo_elem == "grafico" else "green"
 
-                        # Generar contenido del accordion para este gráfico (compatible con tabla)
                         contenido = generar_seccion_grafico(
                             num_pagina, nombre_elemento, elemento, scripts_disponibles, current_values
                         )
 
-                        # Crear item del accordion
                         accordion_items.append(
                             dmc.AccordionItem(
                                 [
@@ -2184,18 +2159,59 @@ def register_callbacks(app):
                         )
 
             if graficos_encontrados > 0:
-                campos_editables.append(
+                graficos_content.append(
                     dmc.Accordion(
                         children=accordion_items,
-                        multiple=True,  # Permite múltiples secciones abiertas
+                        multiple=True,
                         variant="separated",
                         radius="md"
                     )
                 )
             else:
-                campos_editables.append(
+                graficos_content.append(
                     dmc.Alert("No se encontraron gráficos configurables en esta plantilla", c="yellow")
                 )
+
+            # ----------------------------------------------------
+            # 3. ENVOLVER EN ACORDEÓN PRINCIPAL COLAPSADO
+            # ----------------------------------------------------
+            main_accordion_items = [
+                dmc.AccordionItem(
+                    [
+                        dmc.AccordionControl(
+                            dmc.Group([
+                                DashIconify(icon="lucide:type", width=20, color="var(--id-primary)"),
+                                dmc.Text("Textos Editables", fw=600),
+                            ])
+                        ),
+                        dmc.AccordionPanel(textos_content)
+                    ],
+                    value="seccion-textos"
+                ),
+                dmc.AccordionItem(
+                    [
+                        dmc.AccordionControl(
+                            dmc.Group([
+                                DashIconify(icon="lucide:settings-2", width=20, color="var(--id-primary)"),
+                                dmc.Text("Gráficos y Tablas Configurables", fw=600),
+                            ])
+                        ),
+                        dmc.AccordionPanel(graficos_content)
+                    ],
+                    value="seccion-graficos"
+                )
+            ]
+
+            campos_editables.append(
+                dmc.Accordion(
+                    children=main_accordion_items,
+                    multiple=True,
+                    variant="filled", # Para diferenciarlo del anidado
+                    radius="md",
+                    value=None, # IMPORTANTE: value vacío para que empiecen colapsados
+                    style={"marginTop": "20px", "marginBottom": "20px"}
+                )
+            )
 
             # Tooltip explicativo
             if graficos_encontrados > 0:
@@ -2879,216 +2895,6 @@ def register_callbacks(app):
 
         return plantilla_modificada
 
-    # function to display the debug information in a new browser tab
-    @app.callback(
-        Output("descargar-debug-html", "data"),  # Componente de descarga específico para depuración
-        Input("btn-debug-parametros", "n_clicks"),
-        [
-            State("select-plantilla-informe", "value"),
-            State({"type": "campo-editable", "pagina": ALL, "elemento": ALL}, "value"),
-            State({"type": "campo-editable", "pagina": ALL, "elemento": ALL}, "id"),
-            State({"type": "script-grafico", "pagina": ALL, "elemento": ALL}, "value"),
-            State({"type": "script-grafico", "pagina": ALL, "elemento": ALL}, "id"),
-            State({"type": "param-grafico", "pagina": ALL, "elemento": ALL, "param": ALL}, "value"),
-            State({"type": "param-grafico", "pagina": ALL, "elemento": ALL, "param": ALL}, "id"),
-            State("plantilla-json-data", "data")
-        ],
-        prevent_initial_call=True
-    )
-    def debug_parametros_modal(n_clicks, plantilla, textos_valores, textos_ids,
-                               scripts_valores, scripts_ids,
-                               params_valores, params_ids, plantilla_json):
-        if not n_clicks:
-            return dash.no_update
-
-        # Creamos una copia de la plantilla para actualizarla con los valores actuales
-        plantilla_actualizada = copy.deepcopy(plantilla_json)
-
-        # Construimos el contenido HTML para mostrar en la nueva pestaña
-        html_content = f"""<!DOCTYPE html>
-        <html>
-        <head>
-            <title>Depuración de Parámetros - {plantilla}</title>
-            <meta charset="UTF-8">
-            <style>
-                body {{ font-family: Arial, sans-serif; margin: 20px; }}
-                h1, h2, h3 {{ color: #2c3e50; }}
-                .section {{ margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }}
-                .header {{ background-color: #f8f9fa; padding: 10px; margin-bottom: 15px; border-radius: 5px; }}
-                .item {{ margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #eee; }}
-                .error {{ color: #e74c3c; }}
-                pre {{ background-color: #f8f9fa; padding: 10px; border: 1px solid #ddd; border-radius: 5px; overflow-x: auto; }}
-                .success {{ color: #27ae60; }}
-            </style>
-            <script>
-                // Este script abre esta página automáticamente en una nueva pestaña
-                window.onload = function() {{
-                    // Informa al padre que la página está cargada (en caso de estar en un iframe)
-                    if (window.opener) {{
-                        window.opener.postMessage('debug-loaded', '*');
-                    }}
-                }};
-            </script>
-        </head>
-        <body>
-            <div class="header">
-                <h1>Depuración de Parámetros del Modal</h1>
-                <p>Plantilla seleccionada: <strong>{plantilla}</strong></p>
-                <p>Fecha y hora: <strong>{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</strong></p>
-            </div>
-        """
-
-        # Sección de campos de texto
-        html_content += """
-            <div class="section">
-                <h2>Campos de Texto</h2>
-        """
-
-        for i, id_campo in enumerate(textos_ids):
-            pagina = id_campo["pagina"]
-            elemento = id_campo["elemento"]
-            valor = textos_valores[i]
-
-            html_content += f"""
-                <div class="item">
-                    <p>Página <strong>{pagina}</strong>, Elemento <strong>{elemento}</strong>: <code>{valor}</code></p>
-            """
-
-            # Actualizar el valor en la plantilla e informar del resultado
-            try:
-                plantilla_actualizada["paginas"][pagina]["elementos"][elemento]["contenido"]["texto"] = valor
-                html_content += f'<p class="success">✓ Actualizado correctamente</p>'
-            except KeyError:
-                html_content += f'<p class="error">⚠️ No se pudo actualizar: ruta no válida</p>'
-
-            html_content += "</div>"
-
-        html_content += """
-            </div>
-        """
-
-        # Sección de scripts de gráficos
-        html_content += """
-            <div class="section">
-                <h2>Scripts de Gráficos</h2>
-        """
-
-        for i, id_script in enumerate(scripts_ids):
-            pagina = id_script["pagina"]
-            elemento = id_script["elemento"]
-            valor = scripts_valores[i]
-
-            html_content += f"""
-                <div class="item">
-                    <p>Página <strong>{pagina}</strong>, Elemento <strong>{elemento}</strong>: <code>{valor}</code></p>
-            """
-
-            # Actualizar el script en la plantilla
-            try:
-                # Añadir extensión .py si no la tiene
-                if valor and not valor.endswith('.py'):
-                    valor = f"{valor}.py"
-                plantilla_actualizada["paginas"][pagina]["elementos"][elemento]["configuracion"]["script"] = valor
-                html_content += f'<p class="success">✓ Actualizado correctamente</p>'
-            except KeyError:
-                html_content += f'<p class="error">⚠️ No se pudo actualizar: ruta no válida</p>'
-
-            html_content += "</div>"
-
-        html_content += """
-            </div>
-        """
-
-        # Sección de parámetros de gráficos
-        html_content += """
-            <div class="section">
-                <h2>Parámetros de Gráficos</h2>
-        """
-
-        for i, id_param in enumerate(params_ids):
-            pagina = id_param["pagina"]
-            elemento = id_param["elemento"]
-            param = id_param["param"]
-            valor = params_valores[i]
-
-            html_content += f"""
-                <div class="item">
-                    <p>Página <strong>{pagina}</strong>, Elemento <strong>{elemento}</strong>, Parámetro <strong>{param}</strong>: <code>{valor}</code></p>
-            """
-
-            # Convertir el valor al tipo apropiado
-            valor_convertido = valor
-            try:
-                if valor.lower() == "true":
-                    valor_convertido = True
-                    html_content += f'<p>Valor convertido a: <code>boolean (True)</code></p>'
-                elif valor.lower() == "false":
-                    valor_convertido = False
-                    html_content += f'<p>Valor convertido a: <code>boolean (False)</code></p>'
-                elif valor.replace('.', '', 1).isdigit() or (
-                        valor[0] == '-' and valor[1:].replace('.', '', 1).isdigit()):
-                    valor_convertido = float(valor)
-                    if valor_convertido.is_integer():
-                        valor_convertido = int(valor_convertido)
-                        html_content += f'<p>Valor convertido a: <code>integer ({valor_convertido})</code></p>'
-                    else:
-                        html_content += f'<p>Valor convertido a: <code>float ({valor_convertido})</code></p>'
-            except (AttributeError, ValueError):
-                html_content += f'<p>Valor mantenido como: <code>string</code></p>'
-
-            # Actualizar el parámetro en la plantilla
-            try:
-                plantilla_actualizada["paginas"][pagina]["elementos"][elemento]["configuracion"]["parametros"][
-                    param] = valor_convertido
-                html_content += f'<p class="success">✓ Actualizado correctamente</p>'
-            except KeyError:
-                html_content += f'<p class="error">⚠️ No se pudo actualizar: ruta no válida</p>'
-
-            html_content += "</div>"
-
-        html_content += """
-            </div>
-        """
-
-        # Sección de la plantilla actualizada (JSON completo)
-        html_content += """
-            <div class="section">
-                <h2>Plantilla Actualizada (JSON completo)</h2>
-                <pre>
-        """
-        html_content += json.dumps(plantilla_actualizada, indent=4, ensure_ascii=False)
-
-        html_content += """
-                </pre>
-            </div>
-        </body>
-        </html>
-        """
-
-        # Creamos el objeto de datos para la descarga con un atributo adicional para ayudar a reconocerlo
-        return {
-            'content': html_content,
-            'filename': 'debug_parametros.html',
-            'type': 'text/html',
-            'base64': False
-        }
-
-    # Añade este callback clientside
-    app.clientside_callback(
-        """
-        function(data) {
-            if (data && data.filename === 'debug_parametros.html') {
-                var blob = new Blob([data.content], {type: 'text/html'});
-                var url = URL.createObjectURL(blob);
-                window.open(url, '_blank');
-            }
-            return '';
-        }
-        """,
-        Output("debug-output-dummy", "children"),
-        Input("descargar-debug-html", "data"),
-        prevent_initial_call=True
-    )
 
     # pruebas para previsualizar los gráficos en html
     @app.callback(

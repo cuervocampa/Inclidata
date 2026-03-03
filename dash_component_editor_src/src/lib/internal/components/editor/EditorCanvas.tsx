@@ -1,5 +1,5 @@
 import { useDroppable } from '@dnd-kit/core';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTemplateStore } from '@/store/templateStore';
 import { CanvasElement } from './CanvasElement';
 import { motion } from 'framer-motion';
@@ -56,12 +56,21 @@ export const EditorCanvas = () => {
   const currentPage = paginas[pagina_actual];
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // ── Pan state ──────────────────────────────────────────────────────────────
+  const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
+  const panOffsetRef = useRef({ x: 0, y: 0 });
+  const isPanningRef = useRef(false);
+  const [isPanning, setIsPanning] = useState(false);
+  const isSpacePressedRef = useRef(false);
+  const [isSpaceActive, setIsSpaceActive] = useState(false);
+  const panStartRef = useRef<{ mouseX: number; mouseY: number; startX: number; startY: number } | null>(null);
+
   const { setNodeRef, isOver } = useDroppable({
     id: 'canvas-drop-area',
     data: { pageId: pagina_actual }
   });
 
-  // Ctrl+wheel zoom
+  // ── Ctrl+wheel zoom ────────────────────────────────────────────────────────
   const handleWheel = useCallback((e: WheelEvent) => {
     if (!e.ctrlKey && !e.metaKey) return;
     e.preventDefault();
@@ -75,6 +84,78 @@ export const EditorCanvas = () => {
     el.addEventListener('wheel', handleWheel, { passive: false });
     return () => el.removeEventListener('wheel', handleWheel);
   }, [handleWheel]);
+
+  // ── Space key for pan mode ─────────────────────────────────────────────────
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code !== 'Space') return;
+      const tag = (document.activeElement as HTMLElement)?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+      e.preventDefault();
+      isSpacePressedRef.current = true;
+      setIsSpaceActive(true);
+    };
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.code !== 'Space') return;
+      isSpacePressedRef.current = false;
+      setIsSpaceActive(false);
+      if (isPanningRef.current) {
+        isPanningRef.current = false;
+        setIsPanning(false);
+        panStartRef.current = null;
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
+
+  // ── Global mouse move / up (so pan continues outside the container) ────────
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isPanningRef.current || !panStartRef.current) return;
+      const dx = e.clientX - panStartRef.current.mouseX;
+      const dy = e.clientY - panStartRef.current.mouseY;
+      const newOffset = {
+        x: panStartRef.current.startX + dx,
+        y: panStartRef.current.startY + dy,
+      };
+      panOffsetRef.current = newOffset;
+      setPanOffset(newOffset);
+    };
+    const handleMouseUp = () => {
+      if (!isPanningRef.current) return;
+      isPanningRef.current = false;
+      setIsPanning(false);
+      panStartRef.current = null;
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
+
+  // ── Start pan on container mousedown ──────────────────────────────────────
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    const isMiddle = e.button === 1;
+    const isSpaceDrag = e.button === 0 && isSpacePressedRef.current;
+    if (!isMiddle && !isSpaceDrag) return;
+
+    e.preventDefault(); // Prevents text selection and (for space+drag) click event
+    isPanningRef.current = true;
+    setIsPanning(true);
+    panStartRef.current = {
+      mouseX: e.clientX,
+      mouseY: e.clientY,
+      startX: panOffsetRef.current.x,
+      startY: panOffsetRef.current.y,
+    };
+  }, []);
 
   if (!currentPage) return null;
 
@@ -91,14 +172,44 @@ export const EditorCanvas = () => {
   );
 
   const handleCanvasClick = (e: React.MouseEvent) => {
+    // Ignore click if a pan drag just happened (e.preventDefault on mousedown prevents this anyway,
+    // but guard here for safety)
     if (e.target === e.currentTarget) {
       clearSelection();
     }
   };
 
+  // Double-click on the background resets pan to center
+  const handleContainerDoubleClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      panOffsetRef.current = { x: 0, y: 0 };
+      setPanOffset({ x: 0, y: 0 });
+    }
+  };
+
+  const cursor = isPanning ? 'grabbing' : isSpaceActive ? 'grab' : undefined;
+
   return (
-    <div ref={containerRef} className="canvas-container flex items-center justify-center p-8">
-      <div className="flex flex-col items-start">
+    <div
+      ref={containerRef}
+      className="canvas-container flex items-center justify-center p-8 overflow-hidden select-none"
+      style={{ cursor }}
+      onMouseDown={handleMouseDown}
+      onDoubleClick={handleContainerDoubleClick}
+      title="Doble clic para centrar • Rueda+Ctrl para zoom • Espacio+arrastre o botón central para desplazar"
+    >
+      {/* Pan hint tooltip */}
+      {isSpaceActive && !isPanning && (
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-50 pointer-events-none
+          bg-foreground/80 text-background text-xs px-2.5 py-1 rounded-full shadow">
+          Arrastra para desplazar
+        </div>
+      )}
+
+      <div
+        className="flex flex-col items-start"
+        style={{ transform: `translate(${panOffset.x}px, ${panOffset.y}px)` }}
+      >
         {/* Horizontal ruler */}
         <div className="flex" style={{ marginLeft: RULER_SIZE }}>
           <svg

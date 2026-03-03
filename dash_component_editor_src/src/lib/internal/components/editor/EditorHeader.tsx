@@ -91,7 +91,7 @@ export const EditorHeader = ({ jsonInspectorOpen, onToggleJsonInspector }: Edito
           </button>
         )}
 
-        <span className="text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-md">
+        <span className="text-xs text-foreground/55 border border-border/60 px-2 py-0.5 rounded-md">
           v{configuracion.version || '1.0'}
         </span>
       </div>

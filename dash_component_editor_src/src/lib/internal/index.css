@@ -107,9 +107,9 @@
     --ring: 239 84% 67%;
     
     --canvas-bg: 222 47% 4%;
-    --canvas-grid: 222 47% 12%;
-    --canvas-paper: 222 47% 8%;
-    --canvas-shadow: 0 0% 0%;
+    --canvas-grid: 220 13% 85%;   /* grid sobre lienzo blanco */
+    --canvas-paper: 0 0% 99%;     /* lienzo siempre blanco */
+    --canvas-shadow: 222 47% 3%;
     
     --sidebar-background: 222 47% 6%;
     --sidebar-foreground: 220 14% 96%;

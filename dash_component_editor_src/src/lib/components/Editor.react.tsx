@@ -66,8 +66,24 @@ type Props = {
 };
 
 const Editor = (props: Props) => {
+    const [isDark, setIsDark] = React.useState(false);
+
+    useEffect(() => {
+        const checkDark = () => {
+            const scheme = document.documentElement.getAttribute('data-mantine-color-scheme');
+            setIsDark(scheme === 'dark');
+        };
+        checkDark();
+        const observer = new MutationObserver(checkDark);
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['data-mantine-color-scheme'],
+        });
+        return () => observer.disconnect();
+    }, []);
+
     return (
-        <div id={props.id}>
+        <div id={props.id} className={isDark ? 'dark' : ''}>
             <QueryClientProvider client={queryClient}>
                 <TooltipProvider>
                     <Suspense fallback={<div>Loading Editor...</div>}>
