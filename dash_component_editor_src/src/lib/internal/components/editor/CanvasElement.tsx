@@ -29,7 +29,7 @@ function getOpacity(estilo: any): number {
   return raw > 1 ? raw / 100 : raw;
 }
 function getFontFamily(estilo: any): string {
-  return estilo.familia_fuente || estilo.fontFamily || 'sans-serif';
+  return estilo.familia_fuente || estilo.fontFamily || 'Arial';
 }
 function getFontWeight(estilo: any): string {
   return estilo.negrita || estilo.fontWeight || 'normal';

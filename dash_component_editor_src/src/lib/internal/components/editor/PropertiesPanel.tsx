@@ -1313,6 +1313,28 @@ export const PropertiesPanel = () => {
         {selectedElement.tipo === 'texto' && (
           <>
             <div className="mb-3">
+              <Label className="text-xs text-muted-foreground mb-1.5 block">Fuente</Label>
+              <Select
+                value={estilo.fontFamily || estilo.familia_fuente || ''}
+                onValueChange={(v) => handleStyleChange('fontFamily', v)}
+              >
+                <SelectTrigger className="h-8">
+                  <SelectValue placeholder="Arial (por defecto)" />
+                </SelectTrigger>
+                <SelectContent>
+                  {FONT_OPTIONS.map(f => (
+                    <SelectItem key={f} value={f}>{f}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {!(estilo.fontFamily || estilo.familia_fuente) && (
+                <p className="text-[10px] text-amber-500 mt-1 flex items-center gap-1">
+                  ⚠ fuente por defecto
+                </p>
+              )}
+            </div>
+
+            <div className="mb-3">
               <Label className="text-xs text-muted-foreground mb-1.5 block">Tamaño</Label>
               <Input
                 type="number"

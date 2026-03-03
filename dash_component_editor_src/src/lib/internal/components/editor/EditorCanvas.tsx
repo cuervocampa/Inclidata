@@ -52,7 +52,7 @@ const RulerTicks = ({ length, cmToPx, direction }: { length: number; cmToPx: num
 };
 
 export const EditorCanvas = () => {
-  const { paginas, pagina_actual, zoom, setZoom, clearSelection } = useTemplateStore();
+  const { paginas, pagina_actual, zoom, setZoom, clearSelection, showGrid } = useTemplateStore();
   const currentPage = paginas[pagina_actual];
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -253,18 +253,20 @@ export const EditorCanvas = () => {
             transition={{ duration: 0.3 }}
           >
             {/* Grid overlay – 1cm major + 0.5cm minor */}
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                backgroundImage: `
-                  linear-gradient(to right, hsl(var(--canvas-grid) / 0.35) 1px, transparent 1px),
-                  linear-gradient(to bottom, hsl(var(--canvas-grid) / 0.35) 1px, transparent 1px),
-                  linear-gradient(to right, hsl(var(--canvas-grid) / 0.15) 1px, transparent 1px),
-                  linear-gradient(to bottom, hsl(var(--canvas-grid) / 0.15) 1px, transparent 1px)
-                `,
-                backgroundSize: `${effectiveCmToPx}px ${effectiveCmToPx}px, ${effectiveCmToPx}px ${effectiveCmToPx}px, ${effectiveCmToPx / 2}px ${effectiveCmToPx / 2}px, ${effectiveCmToPx / 2}px ${effectiveCmToPx / 2}px`,
-              }}
-            />
+            {showGrid && (
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  backgroundImage: `
+                    linear-gradient(to right, hsl(var(--canvas-grid) / 0.35) 1px, transparent 1px),
+                    linear-gradient(to bottom, hsl(var(--canvas-grid) / 0.35) 1px, transparent 1px),
+                    linear-gradient(to right, hsl(var(--canvas-grid) / 0.15) 1px, transparent 1px),
+                    linear-gradient(to bottom, hsl(var(--canvas-grid) / 0.15) 1px, transparent 1px)
+                  `,
+                  backgroundSize: `${effectiveCmToPx}px ${effectiveCmToPx}px, ${effectiveCmToPx}px ${effectiveCmToPx}px, ${effectiveCmToPx / 2}px ${effectiveCmToPx / 2}px, ${effectiveCmToPx / 2}px ${effectiveCmToPx / 2}px`,
+                }}
+              />
+            )}
 
             {/* Render elements */}
             {elements.map((element) => (

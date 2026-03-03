@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FileText, Braces, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { FileText, Braces, ZoomIn, ZoomOut, RotateCcw, Grid3x3 } from 'lucide-react';
 import { useTemplateStore } from '@/store/templateStore';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -52,6 +52,21 @@ const ZoomControls = () => {
   );
 };
 
+const GridToggle = () => {
+  const { showGrid, setShowGrid } = useTemplateStore();
+  return (
+    <Button
+      variant={showGrid ? 'secondary' : 'ghost'}
+      size="sm"
+      onClick={() => setShowGrid(!showGrid)}
+      className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+      title={showGrid ? 'Ocultar rejilla' : 'Mostrar rejilla'}
+    >
+      <Grid3x3 className="w-3.5 h-3.5" />
+    </Button>
+  );
+};
+
 interface EditorHeaderProps {
   jsonInspectorOpen?: boolean;
   onToggleJsonInspector?: () => void;
@@ -100,6 +115,9 @@ export const EditorHeader = ({ jsonInspectorOpen, onToggleJsonInspector }: Edito
       <div className="flex items-center gap-2">
         {/* Zoom controls */}
         <ZoomControls />
+
+        {/* Grid toggle */}
+        <GridToggle />
 
         {onToggleJsonInspector && (
           <Button

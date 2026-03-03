@@ -143,6 +143,7 @@ export interface TemplateState {
   chartScripts: string[];
   tableScripts: string[];
   zoom: number;
+  showGrid: boolean;
 }
 
 interface TemplateActions {
@@ -169,6 +170,7 @@ interface TemplateActions {
   setChartScripts: (scripts: string[]) => void;
   setTableScripts: (scripts: string[]) => void;
   setZoom: (zoom: number) => void;
+  setShowGrid: (show: boolean) => void;
 
   // Helpers
   getSelectedElement: () => TemplateElement | null;
@@ -195,7 +197,8 @@ const initialState: TemplateState = {
   pendingAction: null,
   chartScripts: [],
   tableScripts: [],
-  zoom: 1
+  zoom: 1,
+  showGrid: true
 };
 
 export const useTemplateStore = create<TemplateState & TemplateActions>((set, get) => ({
@@ -419,6 +422,10 @@ export const useTemplateStore = create<TemplateState & TemplateActions>((set, ge
 
   setZoom: (zoom: number) => {
     set({ zoom: Math.min(3, Math.max(0.25, Math.round(zoom * 100) / 100)) });
+  },
+
+  setShowGrid: (show: boolean) => {
+    set({ showGrid: show });
   },
 
   // Helpers
