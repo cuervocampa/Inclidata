@@ -5,321 +5,83 @@ from dash_iconify import DashIconify
 import dash_component_editor as dce
 import base64
 import io
-import json
-import shutil
-import uuid
 import zipfile
 from pathlib import Path
 
 from utils.funciones_grupos import listar_grupos_disponibles, leer_datos_grupo, guardar_nuevo_grupo
-from utils.asset_manager import (
-    register_asset, get_asset_data_uri, get_asset_path, track_usage,
-    resolve_image_element,
+from utils.asset_manager import ASSETS_DIR
+from utils.template_service import (
+    listar_plantillas_disponibles, listar_scripts_graficos, listar_scripts_tablas,
+    cargar_plantilla_para_editor, guardar_plantilla,
+    fusionar_grupo_en_plantilla, importar_grupo_desde_bytes,
+    PlantillaNoEncontrada, PlantillaInvalida,
 )
 
-# Rutas base
-BASE_DIR = Path(__file__).resolve().parent.parent
-PLANTILLAS_DIR = BASE_DIR / "biblioteca_plantillas"
-GRAFICOS_DIR = BASE_DIR / "biblioteca_graficos"
-TABLAS_DIR = BASE_DIR / "biblioteca_tablas"
+
+# ---------------------------------------------------------------------------
+# Helpers: detección de tokens $CURRENT en la plantilla activa
+# ---------------------------------------------------------------------------
+
+_TOKEN_LABELS = {
+    "$CURRENT_fecha_seleccionada": "Fecha Seleccionada",
+    "$CURRENT_ultimas_camp":       "Nº Últimas Campañas",
+    "$CURRENT_fecha_inicial":      "Fecha Inicial",
+    "$CURRENT_fecha_final":        "Fecha Final",
+    "$CURRENT":                    "Nombre del Sensor (ID)",
+}
 
 
-def listar_plantillas_disponibles():
-    """Lista plantillas disponibles en biblioteca_plantillas/."""
-    if not PLANTILLAS_DIR.exists():
-        return []
-    plantillas = []
-    for item in PLANTILLAS_DIR.iterdir():
-        if item.is_dir():
-            json_file = item / f"{item.name}.json"
-            if json_file.exists():
-                plantillas.append({"label": item.name, "value": item.name})
-    return plantillas
+def _detectar_tokens_usados(editor_state: dict) -> set:
+    """Escanea los parametros de todos los scripts en el editor_state buscando tokens $CURRENT*."""
+    tokens = set()
+    known = list(_TOKEN_LABELS.keys())
+
+    def scan(v):
+        if isinstance(v, str):
+            for t in known:
+                if t in v:
+                    tokens.add(t)
+        elif isinstance(v, dict):
+            for x in v.values():
+                scan(x)
+        elif isinstance(v, list):
+            for x in v:
+                scan(x)
+
+    if not isinstance(editor_state, dict):
+        return tokens
+    for pagina in editor_state.get("paginas", {}).values():
+        for elem in pagina.get("elementos", {}).values():
+            cfg = elem.get("configuracion") or {}
+            scan(cfg.get("parametros") or {})
+    return tokens
 
 
-def listar_scripts_graficos():
-    """Lista scripts de gráficos disponibles en biblioteca_graficos/."""
-    scripts = []
-    if GRAFICOS_DIR.exists():
-        for item in GRAFICOS_DIR.iterdir():
-            if item.is_dir() and (item / f"{item.name}.py").exists():
-                scripts.append(f"{item.name}.py")
-    return sorted(scripts)
-
-
-def listar_scripts_tablas():
-    """Lista scripts de tablas disponibles en biblioteca_tablas/."""
-    scripts = []
-    if TABLAS_DIR.exists():
-        for item in TABLAS_DIR.iterdir():
-            if item.is_dir() and (item / f"{item.name}.py").exists():
-                scripts.append(f"{item.name}.py")
-    return sorted(scripts)
-
-
-def _convertir_elemento(elem_id, elem):
-    """
-    Convierte un elemento del formato viejo (editor_plantilla) al formato
-    que espera el componente React del editor visual.
-
-    Mapping principal:
-      estilo: color_relleno→backgroundColor, color_borde→borderColor,
-              grosor_borde→borderWidth, opacidad(0-100)→opacity(0-1),
-              familia_fuente→fontFamily, negrita→fontWeight, cursiva→fontStyle,
-              alineacion_h→textAlign
-      contenido: se crea si no existe; imagen.datos_temp/ruta_nueva→contenido.src
-      geometria: ancho_maximo→ancho, alto_maximo→alto (tablas)
-      metadata.grupo: grupo.nombre (top-level) → metadata.grupo
-      id: se añade desde la clave del dict
-    """
-    nuevo = json.loads(json.dumps(elem))  # deep copy
-    nuevo['id'] = elem_id
-    tipo = elem.get('tipo', '')
-
-    # --- estilo ---
-    old_s = elem.get('estilo', {})
-    # Detectar si ya está en formato nuevo (tiene backgroundColor)
-    if 'backgroundColor' not in old_s and 'color_relleno' not in old_s and tipo == 'rectangulo':
-        # No tiene ninguno, proveer defaults
-        pass
-
-    opacidad_raw = old_s.get('opacidad', old_s.get('opacity'))
-    if opacidad_raw is not None and opacidad_raw > 1:
-        opacity = opacidad_raw / 100.0
-    elif opacidad_raw is not None:
-        opacity = opacidad_raw
-    else:
-        opacity = 1
-
-    nuevo['estilo'] = {
-        'backgroundColor': old_s.get('color_relleno', old_s.get('backgroundColor',
-                           '#e2e8f0' if tipo == 'rectangulo' else 'transparent')),
-        'borderColor': old_s.get('color_borde', old_s.get('borderColor', '#cbd5e1')),
-        'borderWidth': old_s.get('grosor_borde', old_s.get('borderWidth',
-                       1 if tipo == 'rectangulo' else 0)),
-        'opacity': opacity,
-        'color': old_s.get('color', '#000000'),
-        'tamano': old_s.get('tamano', 14),
-        'fontFamily': old_s.get('familia_fuente', old_s.get('fontFamily', 'sans-serif')),
-        'fontWeight': old_s.get('negrita', old_s.get('fontWeight', 'normal')),
-        'fontStyle': old_s.get('cursiva', old_s.get('fontStyle', 'normal')),
-        'textAlign': old_s.get('alineacion_h', old_s.get('textAlign', 'left')),
-    }
-
-    # --- contenido ---
-    if tipo == 'texto':
-        old_c = elem.get('contenido', {})
-        if isinstance(old_c, dict):
-            nuevo['contenido'] = {'texto': old_c.get('texto', ''), 'src': None}
-        else:
-            nuevo['contenido'] = {'texto': '', 'src': None}
-    elif tipo == 'imagen':
-        img = elem.get('imagen', {})
-        # Prioridad: asset_id → datos_temp → ruta_nueva
-        aid = img.get('asset_id')
-        if aid:
-            src = get_asset_data_uri(aid)
-            # React (getImageSrc) busca imagen.datos_temp antes que contenido.src,
-            # así que inyectamos el data URI ahí para que lo encuentre.
-            nuevo.setdefault('imagen', {})['datos_temp'] = src
-        else:
-            src = img.get('datos_temp', '') or img.get('ruta_nueva', '')
-        nuevo['contenido'] = {'src': src, 'texto': None}
-    else:
-        # rectangulo, linea, grafico, tabla — ensure contenido exists
-        nuevo['contenido'] = {'texto': None, 'src': None}
-
-    # --- geometria (normalizar tabla: ancho_maximo/alto_maximo) ---
-    geo = elem.get('geometria', {})
-    nuevo['geometria'] = {
-        'x': geo.get('x', 0),
-        'y': geo.get('y', 0),
-        'ancho': geo.get('ancho', geo.get('ancho_maximo', 10)),
-        'alto': geo.get('alto', geo.get('alto_maximo', 5)),
-    }
-
-    # --- metadata ---
-    old_m = elem.get('metadata', {})
-    grupo_obj = elem.get('grupo')
-    grupo_str = grupo_obj.get('nombre') if isinstance(grupo_obj, dict) else old_m.get('grupo')
-    nuevo['metadata'] = {
-        'zIndex': old_m.get('zIndex', 0),
-        'visible': old_m.get('visible', True),
-        'grupo': grupo_str,
-    }
-
-    # --- configuracion (gráficos, tablas) ---
-    if 'configuracion' in elem and tipo in ('grafico', 'tabla'):
-        nuevo['configuracion'] = elem['configuracion']
-
-    # --- cuadricula: convertir anchos de columna de cm a % ---
-    # Los JSON en disco siempre almacenan anchos en cm.
-    # Convertir siempre a porcentaje para el editor visual.
-    if tipo == 'tabla' and 'cuadricula' in nuevo:
-        ancho_total_cm = nuevo['geometria'].get('ancho', 10)
-        for nivel in nuevo['cuadricula'].get('niveles', []):
-            columnas = nivel.get('columnas', [])
-            if not columnas:
-                continue
-            for col in columnas:
-                ancho_cm = col.get('ancho', 0)
-                if ancho_total_cm > 0:
-                    col['ancho'] = round((ancho_cm / ancho_total_cm) * 100, 2)
-                else:
-                    col['ancho'] = round(100 / len(columnas), 2)
-
-    return nuevo
-
-
-def _convertir_anchos_pct_a_cm(data):
-    """Convierte anchos de columna de porcentaje (0-100) a cm antes de guardar.
-
-    El editor visual siempre trabaja con porcentajes.
-    Al guardar se convierten a cm para compatibilidad con el PDF generator
-    y el editor antiguo.
-    """
-    for page_id, page in data.get('paginas', {}).items():
-        for elem_id, elem in page.get('elementos', {}).items():
-            if elem.get('tipo') != 'tabla':
-                continue
-            cuadricula = elem.get('cuadricula')
-            if not cuadricula:
-                continue
-            ancho_total_cm = elem.get('geometria', {}).get('ancho', 10)
-            for nivel in cuadricula.get('niveles', []):
-                columnas = nivel.get('columnas', [])
-                if not columnas:
-                    continue
-                for col in columnas:
-                    pct = col.get('ancho', 0)
-                    col['ancho'] = round((pct / 100.0) * ancho_total_cm, 2)
-
-
-def _convertir_plantilla(data_json):
-    """Convierte todos los elementos de una plantilla al formato del editor visual."""
-    for page_id, page in data_json.get('paginas', {}).items():
-        old_elems = page.get('elementos', {})
-        new_elems = {}
-        for elem_id, elem in old_elems.items():
-            new_elems[elem_id] = _convertir_elemento(elem_id, elem)
-        page['elementos'] = new_elems
-    return data_json
-
-
-def _extraer_assets_a_carpeta(data, carpeta_destino):
-    """Extrae las imágenes de los elementos a {carpeta_destino}/assets/.
-
-    Para cada elemento de tipo 'imagen':
-      1. Si tiene contenido.src con data URI → decodifica y guarda archivo.
-      2. Si tiene imagen.asset_id → copia desde almacén centralizado.
-      3. Si tiene imagen.datos_temp con data URI → decodifica y guarda archivo.
-      4. Actualiza imagen.ruta_nueva = 'assets/{nombre_archivo}'.
-
-    Funciona tanto con estructura de plantilla (paginas.*.elementos)
-    como de grupo (elementos).
-    """
-    assets_dir = Path(carpeta_destino) / "assets"
-    assets_dir.mkdir(parents=True, exist_ok=True)
-
-    # Recopilar todos los elementos de imagen
-    imagen_elems = []
-    if 'paginas' in data:
-        for page in data.get('paginas', {}).values():
-            for elem in page.get('elementos', {}).values():
-                if elem.get('tipo') == 'imagen':
-                    imagen_elems.append(elem)
-    else:
-        for elem in data.get('elementos', {}).values():
-            if elem.get('tipo') == 'imagen':
-                imagen_elems.append(elem)
-
-    for elem in imagen_elems:
-        img = elem.get('imagen', {})
-        contenido = elem.get('contenido', {})
-        src = contenido.get('src', '') or ''
-        nombre_archivo = img.get('nombre_archivo', f"{elem.get('id', 'img')}.png")
-
-        guardado = False
-
-        # 1. contenido.src con data URI
-        if src.startswith('data:'):
-            try:
-                header, encoded = src.split(',', 1)
-                img_bytes = base64.b64decode(encoded)
-                dest = assets_dir / nombre_archivo
-                dest.write_bytes(img_bytes)
-                guardado = True
-            except Exception as e:
-                print(f"[assets] Error guardando desde contenido.src: {e}")
-
-        # 2. asset_id → copiar desde almacén centralizado
-        if not guardado and img.get('asset_id'):
-            asset_path = get_asset_path(img['asset_id'])
-            if asset_path and asset_path.exists():
-                dest = assets_dir / nombre_archivo
-                shutil.copy2(asset_path, dest)
-                guardado = True
-
-        # 3. datos_temp con data URI
-        if not guardado and img.get('datos_temp', ''):
-            datos_temp = img['datos_temp']
-            if datos_temp.startswith('data:'):
-                try:
-                    header, encoded = datos_temp.split(',', 1)
-                    img_bytes = base64.b64decode(encoded)
-                    dest = assets_dir / nombre_archivo
-                    dest.write_bytes(img_bytes)
-                    guardado = True
-                except Exception as e:
-                    print(f"[assets] Error guardando desde datos_temp: {e}")
-
-        # Actualizar ruta relativa
-        if guardado:
-            img['ruta_nueva'] = f"assets/{nombre_archivo}"
-            img['nombre_archivo'] = nombre_archivo
-            elem['imagen'] = img
-
-
-def _fusionar_grupo_en_estado(datos_grupo, editor_state):
-    """Fusiona los elementos de un grupo en la página actual del editor_state.
-    Retorna (editor_state_actualizado, count_elementos)."""
-    if not editor_state:
-        editor_state = {
-            "paginas": {
-                "1": {
-                    "elementos": {},
-                    "configuracion": {"orientacion": "portrait"}
-                }
-            },
-            "pagina_actual": "1",
-            "configuracion": {
-                "nombre_plantilla": "Nueva Plantilla Visual",
-                "num_paginas": 1
-            }
-        }
-
-    pagina_actual = editor_state.get('pagina_actual', "1")
-
-    if pagina_actual not in editor_state.get('paginas', {}):
-        editor_state.setdefault('paginas', {})[pagina_actual] = {
-            'elementos': {}, 'configuracion': {'orientacion': 'portrait'}
-        }
-
-    if 'elementos' not in editor_state['paginas'][pagina_actual]:
-        editor_state['paginas'][pagina_actual]['elementos'] = {}
-
-    elems_actuales = editor_state['paginas'][pagina_actual]['elementos']
-    sufijo = str(uuid.uuid4())[:4]
-
-    count = 0
-    for id_elem, props in datos_grupo['elementos'].items():
-        nuevo_id = f"{id_elem}_{sufijo}"
-        elem_convertido = _convertir_elemento(nuevo_id, props)
-        elems_actuales[nuevo_id] = elem_convertido
-        count += 1
-
-    editor_state['paginas'][pagina_actual]['elementos'] = elems_actuales
-    return editor_state, count
+def _render_tokens_info(tokens: set):
+    """Devuelve un componente DMC mostrando los tokens detectados."""
+    if not tokens:
+        return dmc.Alert(
+            "No se detectaron parámetros dinámicos ($CURRENT) en la plantilla. "
+            "Puedes rellenar los campos igualmente.",
+            color="gray",
+            variant="light",
+            icon=DashIconify(icon="mdi:information-outline", width=18),
+            style={"marginBottom": "12px"},
+        )
+    labels = [_TOKEN_LABELS.get(t, t) for t in sorted(tokens)]
+    return dmc.Alert(
+        dmc.Stack([
+            dmc.Text("Parámetros detectados en la plantilla:", size="sm", fw=600),
+            dmc.Group(
+                [dmc.Badge(lbl, color="blue", variant="light") for lbl in labels],
+                gap="xs",
+            ),
+        ], gap="xs"),
+        color="blue",
+        variant="light",
+        icon=DashIconify(icon="mdi:auto-fix", width=18),
+        style={"marginBottom": "12px"},
+    )
 
 
 def layout():
@@ -381,7 +143,6 @@ def layout():
                             id="btn-generate-pdf-visual",
                             leftSection=DashIconify(icon="mdi:file-pdf-box"),
                             color="red",
-                            disabled=True,
                         ),
                     ]),
                 ], justify="space-between")
@@ -496,6 +257,89 @@ def layout():
                 ],
             ),
 
+            # Modal: Generar PDF
+            dmc.Modal(
+                id="modal-generar-pdf",
+                title=dmc.Group([
+                    DashIconify(icon="mdi:file-pdf-box", width=22, color="#e03131"),
+                    dmc.Text("Generar Informe PDF", fw=600),
+                ], gap="xs"),
+                size="lg",
+                children=[
+                    # Zona de deteción de tokens (se rellena en callback)
+                    html.Div(id="div-ctx-tokens-info"),
+
+                    # Inputs de contexto
+                    dmc.SimpleGrid(
+                        cols=2,
+                        spacing="md",
+                        children=[
+                            dmc.TextInput(
+                                id="input-ctx-sensor",
+                                label="Sensor / ID",
+                                placeholder="Ej: INCL-A1",
+                                leftSection=DashIconify(icon="mdi:antenna", width=16),
+                            ),
+                            dmc.TextInput(
+                                id="input-ctx-fecha-sel",
+                                label="Fecha seleccionada",
+                                placeholder="YYYY-MM-DD",
+                                leftSection=DashIconify(icon="mdi:calendar-check", width=16),
+                            ),
+                            dmc.TextInput(
+                                id="input-ctx-fecha-ini",
+                                label="Fecha inicial",
+                                placeholder="YYYY-MM-DD",
+                                leftSection=DashIconify(icon="mdi:calendar-start", width=16),
+                            ),
+                            dmc.TextInput(
+                                id="input-ctx-fecha-fin",
+                                label="Fecha final",
+                                placeholder="YYYY-MM-DD",
+                                leftSection=DashIconify(icon="mdi:calendar-end", width=16),
+                            ),
+                        ],
+                    ),
+                    dmc.NumberInput(
+                        id="input-ctx-ultimas-camp",
+                        label="Nº últimas campañas",
+                        value=3,
+                        min=1,
+                        max=100,
+                        step=1,
+                        style={"marginTop": "10px", "width": "200px"},
+                    ),
+                    # dcc.Loading envuelve los botones + dcc.Download:
+                    # detecta automáticamente cuándo el callback está corriendo
+                    # y muestra un overlay mientras se genera el PDF.
+                    dcc.Loading(
+                        type="circle",
+                        delay_show=100,
+                        overlay_style={
+                            "borderRadius": "8px",
+                            "background": "rgba(255,255,255,0.80)",
+                        },
+                        children=[
+                            dmc.Group(
+                                [
+                                    dmc.Button(
+                                        "Generar maquetación PDF",
+                                        id="btn-maquetacion-pdf",
+                                        leftSection=DashIconify(icon="mdi:file-pdf-box"),
+                                        color="red",
+                                    ),
+                                ],
+                                justify="flex-end",
+                                gap="sm",
+                                style={"marginTop": "20px"},
+                            ),
+                            # dcc.Download DENTRO del Loading para activar el spinner
+                            dcc.Download(id="dcc-download-pdf"),
+                        ],
+                    ),
+                ],
+            ),
+
             # Modal: Crear Grupo
             dmc.Modal(
                 id="modal-crear-grupo",
@@ -564,53 +408,24 @@ def register_callbacks(app):
         if not n_clicks or not nombre_plantilla:
             return dash.no_update, dash.no_update, dash.no_update
 
-        ruta_json = PLANTILLAS_DIR / nombre_plantilla / f"{nombre_plantilla}.json"
-        if not ruta_json.exists():
-            print(f"[editor_visual] Plantilla no encontrada: {ruta_json}")
+        try:
+            payload = cargar_plantilla_para_editor(nombre_plantilla)
+            print(f"[editor_visual] Plantilla '{nombre_plantilla}' cargada OK — "
+                  f"{len(payload.get('paginas', {}))} páginas")
+            return payload, False, dmc.Notification(
+                title="Plantilla cargada",
+                message=f"'{nombre_plantilla}' cargada correctamente.",
+                color="green", action="show"
+            )
+        except PlantillaNoEncontrada:
             return dash.no_update, False, dmc.Notification(
                 title="Error",
                 message=f"Plantilla '{nombre_plantilla}' no encontrada.",
                 color="red", action="show"
             )
-
-        try:
-            with open(ruta_json, 'r', encoding='utf-8') as f:
-                data_json = json.load(f)
-
-            # Normalizar estructura plana (sin 'paginas') a estructura con páginas
-            if "paginas" not in data_json and "elementos" in data_json:
-                elems = data_json.pop("elementos", {})
-                page_config = {"orientacion": data_json.get("configuracion", {}).get("orientacion", "portrait")}
-                data_json["paginas"] = {
-                    "1": {
-                        "elementos": elems,
-                        "configuracion": page_config
-                    }
-                }
-                if "pagina_actual" not in data_json:
-                    data_json["pagina_actual"] = "1"
-
-            # Asegurar configuracion de plantilla a nivel raíz
-            if "configuracion" not in data_json or "nombre_plantilla" not in data_json.get("configuracion", {}):
-                data_json.setdefault("configuracion", {})
-                data_json["configuracion"].setdefault("nombre_plantilla", nombre_plantilla)
-                data_json["configuracion"].setdefault("num_paginas", len(data_json.get("paginas", {})))
-
-            _convertir_plantilla(data_json)
-            data_json["chartScripts"] = listar_scripts_graficos()
-            data_json["tableScripts"] = listar_scripts_tablas()
-
-            print(f"[editor_visual] Plantilla '{nombre_plantilla}' cargada OK — "
-                  f"{len(data_json.get('paginas', {}))} páginas")
-            return data_json, False, dmc.Notification(
-                title="Plantilla cargada",
-                message=f"'{nombre_plantilla}' cargada correctamente.",
-                color="green", action="show"
-            )
         except Exception as e:
             import traceback
             traceback.print_exc()
-            print(f"[editor_visual] Error cargando plantilla '{nombre_plantilla}': {e}")
             return dash.no_update, False, dmc.Notification(
                 title="Error",
                 message=f"Error cargando plantilla: {e}",
@@ -631,64 +446,33 @@ def register_callbacks(app):
             return dash.no_update, dash.no_update
 
         try:
-            content_type, content_string = contents.split(',', 1)
-            decoded = base64.b64decode(content_string)
-
-            if filename and filename.lower().endswith('.zip'):
-                # Extraer JSON + assets del ZIP
-                datos_grupo = None
-                with zipfile.ZipFile(io.BytesIO(decoded), 'r') as zf:
-                    # Buscar el .json dentro del ZIP
-                    json_files = [n for n in zf.namelist() if n.endswith('.json')]
-                    if not json_files:
-                        raise ValueError("El ZIP no contiene ningún archivo .json")
-                    datos_grupo = json.loads(zf.read(json_files[0]).decode('utf-8'))
-
-                    # Extraer assets al almacén centralizado
-                    asset_files = [n for n in zf.namelist()
-                                   if '/assets/' in n and not n.endswith('/')]
-                    for asset_name in asset_files:
-                        asset_basename = Path(asset_name).name
-                        asset_data = zf.read(asset_name)
-                        # Registrar en almacén centralizado
-                        data_uri = (
-                            "data:application/octet-stream;base64,"
-                            + base64.b64encode(asset_data).decode()
-                        )
-                        asset_id = register_asset(data_uri, asset_basename)
-                        # Actualizar asset_id en elementos que referencien este archivo
-                        for elem in datos_grupo.get('elementos', {}).values():
-                            img = elem.get('imagen', {})
-                            if img.get('nombre_archivo') == asset_basename:
-                                img['asset_id'] = asset_id
-                                img['datos_temp'] = data_uri
-            else:
-                datos_grupo = json.loads(decoded.decode('utf-8'))
+            _, content_string = contents.split(',', 1)
+            raw_bytes = base64.b64decode(content_string)
+            datos_grupo = importar_grupo_desde_bytes(raw_bytes, filename)
+            editor_state, count = fusionar_grupo_en_plantilla(datos_grupo, editor_state)
+            editor_state["chartScripts"] = listar_scripts_graficos()
+            editor_state["tableScripts"] = listar_scripts_tablas()
+            pagina_actual = editor_state.get('pagina_actual', '1')
+            print(f"[editor_visual] Grupo '{filename}' importado — {count} elementos en página {pagina_actual}")
+            return editor_state, dmc.Notification(
+                title="Grupo importado",
+                message=f"{count} elementos importados desde '{filename}'.",
+                color="green", action="show"
+            )
+        except PlantillaInvalida as e:
+            return dash.no_update, dmc.Notification(
+                title="Error",
+                message=str(e),
+                color="red", action="show"
+            )
         except Exception as e:
-            print(f"[editor_visual] Error decodificando archivo '{filename}': {e}")
+            import traceback
+            traceback.print_exc()
             return dash.no_update, dmc.Notification(
                 title="Error",
-                message=f"No se pudo leer el archivo: {e}",
+                message=f"No se pudo procesar el archivo: {e}",
                 color="red", action="show"
             )
-
-        if 'elementos' not in datos_grupo:
-            return dash.no_update, dmc.Notification(
-                title="Error",
-                message=f"El archivo '{filename}' no contiene la clave 'elementos'.",
-                color="red", action="show"
-            )
-
-        editor_state, count = _fusionar_grupo_en_estado(datos_grupo, editor_state)
-        editor_state["chartScripts"] = listar_scripts_graficos()
-        editor_state["tableScripts"] = listar_scripts_tablas()
-        pagina_actual = editor_state.get('pagina_actual', '1')
-        print(f"[editor_visual] Grupo importado desde '{filename}' — {count} elementos en página {pagina_actual}")
-        return editor_state, dmc.Notification(
-            title="Grupo importado",
-            message=f"{count} elementos importados desde '{filename}'.",
-            color="green", action="show"
-        )
 
     # ── Exportar grupo (desde modal) — ZIP con JSON + assets ────────
     @app.callback(
@@ -757,50 +541,12 @@ def register_callbacks(app):
             return dash.no_update, dash.no_update, dash.no_update
 
         try:
-            import copy
-            data = copy.deepcopy(editor_state)
-            data.setdefault("configuracion", {})["nombre_plantilla"] = nombre
-
-            dest_dir = PLANTILLAS_DIR / nombre
-            dest_dir.mkdir(parents=True, exist_ok=True)
-
-            # Extraer imágenes a {plantilla}/assets/
-            _extraer_assets_a_carpeta(data, dest_dir)
-
-            # Convertir anchos de columna de % a cm para el JSON guardado
-            _convertir_anchos_pct_a_cm(data)
-
-            # Registrar en almacén centralizado y limpiar base64
-            for page_id, page in data.get("paginas", {}).items():
-                for elem_id, elem in page.get("elementos", {}).items():
-                    if elem.get("tipo") != "imagen":
-                        continue
-                    contenido = elem.get("contenido", {})
-                    img = elem.get("imagen", {})
-                    src = contenido.get("src", "") or ""
-
-                    if src.startswith("data:"):
-                        nombre_archivo = img.get("nombre_archivo", f"{elem_id}.png")
-                        asset_id = register_asset(src, nombre_archivo)
-                        track_usage(asset_id, nombre)
-                        img["asset_id"] = asset_id
-                        contenido["src"] = None
-                        img.pop("datos_temp", None)
-                    elif img.get("asset_id"):
-                        track_usage(img["asset_id"], nombre)
-
-                    elem["imagen"] = img
-                    elem["contenido"] = contenido
-
-            json_path = dest_dir / f"{nombre}.json"
-            with open(json_path, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2, ensure_ascii=False)
-
-            print(f"[editor_visual] Plantilla '{nombre}' guardada en {json_path}")
+            guardar_plantilla(editor_state, nombre=nombre)
+            print(f"[editor_visual] Plantilla '{nombre}' guardada OK")
             nuevas_plantillas = listar_plantillas_disponibles()
             return False, dmc.Notification(
                 title="Plantilla guardada",
-                message=f"'{nombre}' guardada con assets correctamente.",
+                message=f"'{nombre}' guardada correctamente.",
                 color="green", action="show"
             ), nuevas_plantillas
         except Exception as e:
@@ -871,7 +617,7 @@ def register_callbacks(app):
             nombre,
             descripcion or "",
             elementos_seleccionados,
-            PLANTILLAS_DIR / "_assets"
+            ASSETS_DIR
         )
 
         if exito:
@@ -887,6 +633,71 @@ def register_callbacks(app):
                 message=mensaje,
                 color="red", action="show"
             ), dash.no_update
+
+    # ── Generar PDF — abrir modal + detectar tokens ─────────────────────────
+    @app.callback(
+        Output("modal-generar-pdf", "opened"),
+        Output("div-ctx-tokens-info", "children"),
+        Input("btn-generate-pdf-visual", "n_clicks"),
+        State("visual-editor", "value"),
+        prevent_initial_call=True,
+    )
+    def abrir_modal_generar_pdf(n, editor_state):
+        if not n:
+            return dash.no_update, dash.no_update
+        tokens = _detectar_tokens_usados(editor_state or {})
+        return True, _render_tokens_info(tokens)
+
+    # ── Generar PDF — confirmar (con datos o maquetación) ──────────────────────
+    @app.callback(
+        Output("dcc-download-pdf", "data"),
+        Output("modal-generar-pdf", "opened", allow_duplicate=True),
+        Output("save-feedback-visual", "children", allow_duplicate=True),
+        Input("btn-maquetacion-pdf", "n_clicks"),
+        State("visual-editor", "value"),
+        State("visual-editor", "data"),
+        prevent_initial_call=True,
+    )
+    def confirmar_generar_pdf(n_maq, editor_value, editor_data):
+        editor_state = editor_value or editor_data
+        if not n_maq or not editor_state:
+            return dash.no_update, dash.no_update, dash.no_update
+
+        nombre = (editor_state.get("configuracion") or {}).get("nombre_plantilla") or "maquetacion"
+        context = {"is_maquetacion": True}
+
+        try:
+            import tempfile
+            from pathlib import Path as _Path
+            from utils.report_engine import generate_report_pdf_from_state
+
+            with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+                tmp_path = _Path(tmp.name)
+
+            print(f"[editor_visual] Generando maquetación PDF: '{nombre}'...")
+            generate_report_pdf_from_state(editor_state, context, tmp_path)
+            pdf_bytes = tmp_path.read_bytes()
+            tmp_path.unlink(missing_ok=True)
+
+            filename = f"{nombre}_maquetacion.pdf"
+            print(f"[editor_visual] Maquetación generada: '{filename}' ({len(pdf_bytes):,} bytes)")
+            return (
+                dcc.send_bytes(pdf_bytes, filename=filename),
+                False,
+                dmc.Notification(
+                    title="Maquetación generada",
+                    message=f"'{filename}' listo para descargar.",
+                    color="green", action="show",
+                ),
+            )
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return dash.no_update, False, dmc.Notification(
+                title="Error al generar PDF",
+                message=str(e)[:300],
+                color="red", action="show",
+            )
 
     # ── Guardar Cambios (a biblioteca) ───────────────────────────────
     @app.callback(
@@ -914,59 +725,20 @@ def register_callbacks(app):
             )
 
         try:
-            import copy
-            data = copy.deepcopy(editor_state)
-            nombre = data.get("configuracion", {}).get("nombre_plantilla", "")
-            if not nombre:
-                return dmc.Notification(
-                    title="Error",
-                    message="La plantilla no tiene nombre.",
-                    color="red",
-                    action="show"
-                )
-
-            dest_dir = PLANTILLAS_DIR / nombre
-            dest_dir.mkdir(parents=True, exist_ok=True)
-
-            # Extraer imágenes a {plantilla}/assets/ y registrar en almacén
-            _extraer_assets_a_carpeta(data, dest_dir)
-
-            # Convertir anchos de columna de % a cm para el JSON guardado
-            _convertir_anchos_pct_a_cm(data)
-
-            # Registrar en almacén centralizado y limpiar base64 del JSON
-            for page_id, page in data.get("paginas", {}).items():
-                for elem_id, elem in page.get("elementos", {}).items():
-                    if elem.get("tipo") != "imagen":
-                        continue
-                    contenido = elem.get("contenido", {})
-                    img = elem.get("imagen", {})
-                    src = contenido.get("src", "") or ""
-
-                    if src.startswith("data:"):
-                        nombre_archivo = img.get("nombre_archivo", f"{elem_id}.png")
-                        asset_id = register_asset(src, nombre_archivo)
-                        track_usage(asset_id, nombre)
-                        img["asset_id"] = asset_id
-                        contenido["src"] = None
-                        img.pop("datos_temp", None)
-                    elif img.get("asset_id"):
-                        track_usage(img["asset_id"], nombre)
-
-                    elem["imagen"] = img
-                    elem["contenido"] = contenido
-
-            # Guardar JSON
-            json_path = dest_dir / f"{nombre}.json"
-
-            with open(json_path, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2, ensure_ascii=False)
-
-            print(f"[editor_visual] Plantilla '{nombre}' guardada en {json_path}")
+            guardar_plantilla(editor_state)
+            nombre = editor_state.get("configuracion", {}).get("nombre_plantilla", "")
+            print(f"[editor_visual] Plantilla '{nombre}' guardada OK")
             return dmc.Notification(
                 title="Guardado",
                 message=f"Plantilla '{nombre}' guardada correctamente.",
                 color="green",
+                action="show"
+            )
+        except PlantillaInvalida as e:
+            return dmc.Notification(
+                title="Error",
+                message=str(e),
+                color="red",
                 action="show"
             )
         except Exception as e:
@@ -978,3 +750,5 @@ def register_callbacks(app):
                 color="red",
                 action="show"
             )
+
+

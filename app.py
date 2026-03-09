@@ -122,6 +122,7 @@ app.layout = html.Div(
                 "fontFamily": "Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
             },
             children=[
+                dmc.NotificationProvider(position="top-right", zIndex=9999),
                 dcc.Location(id="url"),
                 sidebar,
                 content,

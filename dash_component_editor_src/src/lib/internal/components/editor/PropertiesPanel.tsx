@@ -363,6 +363,62 @@ const ImageSection = ({
   );
 };
 
+/** JSON textarea for graph parametros — local state, commits on blur */
+const ParamsTextarea = ({
+  params,
+  elementId,
+  onChange,
+}: {
+  params: Record<string, unknown>;
+  elementId: string;
+  onChange: (params: Record<string, unknown>) => void;
+}) => {
+  const toText = (p: Record<string, unknown>) => {
+    if (!p || Object.keys(p).length === 0) return '';
+    try {
+      const s = JSON.stringify(p, null, 2);
+      return s.slice(1, -1).trim();
+    } catch {
+      return '';
+    }
+  };
+
+  const [text, setText] = useState(toText(params));
+  const [error, setError] = useState('');
+
+  // Reset when a different element is selected
+  useEffect(() => {
+    setText(toText(params));
+    setError('');
+  }, [elementId]);
+
+  const handleBlur = () => {
+    const raw = text.trim();
+    if (!raw) { onChange({}); setError(''); return; }
+    try {
+      const parsed = JSON.parse('{' + raw + '}');
+      onChange(parsed);
+      setError('');
+    } catch (e) {
+      setError('JSON inválido: ' + (e as Error).message);
+    }
+  };
+
+  return (
+    <div>
+      <textarea
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        onBlur={handleBlur}
+        rows={6}
+        placeholder={'"sensor": "$CURRENT",\n"mostrar_titulo": true,\n"dpi": 600'}
+        className="w-full font-mono text-[11px] p-2 border border-border rounded-md bg-background resize-y focus:outline-none focus:ring-1 focus:ring-primary"
+      />
+      {error && <p className="text-[10px] text-red-500 mt-1">{error}</p>}
+    </div>
+  );
+};
+
 /** Chart configuration panel */
 const ChartSection = ({
   element,
@@ -426,38 +482,27 @@ const ChartSection = ({
         </Select>
       </div>
 
-      {/* Parameter help */}
+      {/* Parameters textarea */}
+      <div className="mb-2">
+        <Label className="text-xs text-muted-foreground mb-1.5 block">Parámetros JSON</Label>
+        <ParamsTextarea
+          params={config.parametros || {}}
+          elementId={element.id}
+          onChange={(params) => handleConfigChange('parametros', params)}
+        />
+      </div>
+
+      {/* Token reference — collapsed by default */}
       <details className="group mb-1">
         <summary className="flex items-center gap-1.5 cursor-pointer text-xs text-muted-foreground hover:text-foreground select-none py-1">
           <Info className="w-3.5 h-3.5" />
-          <span>Ayuda: parámetros del script</span>
+          <span>Tokens disponibles</span>
         </summary>
-        <div className="mt-1.5 p-2.5 bg-muted/50 border border-border rounded-md text-[10px] text-muted-foreground leading-relaxed space-y-2">
-          <p>
-            Los parámetros se almacenan en el JSON del elemento
-            (<strong>Inspector JSON → Elemento</strong>).
-          </p>
-          <div>
-            <p className="font-semibold text-foreground/70 mb-0.5">Valores dinámicos (desde Graficar):</p>
-            <ul className="list-none space-y-0.5 ml-1">
-              <li><code className="bg-muted px-0.5 rounded">$CURRENT</code> → sensor activo</li>
-              <li><code className="bg-muted px-0.5 rounded">$CURRENT_fecha_seleccionada</code> → fecha de corte</li>
-              <li><code className="bg-muted px-0.5 rounded">$CURRENT_ultimas_camp</code> → n.º campañas</li>
-              <li><code className="bg-muted px-0.5 rounded">$CURRENT_fecha_inicial</code> / <code className="bg-muted px-0.5 rounded">$CURRENT_fecha_final</code></li>
-            </ul>
-          </div>
-          <div>
-            <p className="font-semibold text-foreground/70 mb-0.5">Valores fijos (se usan tal cual):</p>
-            <ul className="list-none space-y-0.5 ml-1">
-              <li><code className="bg-muted px-0.5 rounded">"sensor": "INC-01"</code> → sensor específico</li>
-              <li><code className="bg-muted px-0.5 rounded">"dpi": 600</code> → resolución fija</li>
-            </ul>
-          </div>
-          <div className="font-mono bg-background/80 rounded p-1.5 border border-border/50 text-[9px] whitespace-pre">{`{
-  "sensor": "$CURRENT",
-  "mostrar_titulo": true,
-  "dpi": 600
-}`}</div>
+        <div className="mt-1 p-2 bg-muted/50 border border-border rounded-md text-[10px] text-muted-foreground space-y-0.5">
+          <p><code className="bg-muted px-0.5 rounded">$CURRENT</code> → sensor activo</p>
+          <p><code className="bg-muted px-0.5 rounded">$CURRENT_fecha_seleccionada</code> → fecha de corte</p>
+          <p><code className="bg-muted px-0.5 rounded">$CURRENT_fecha_inicial</code> / <code className="bg-muted px-0.5 rounded">$CURRENT_fecha_final</code></p>
+          <p><code className="bg-muted px-0.5 rounded">$CURRENT_ultimas_camp</code> → n.º campañas</p>
         </div>
       </details>
     </div>
