@@ -1,0 +1,477 @@
+{
+  "paginas": {
+    "1": {
+      "elementos": {
+        "Rectángulo 1_36da": {
+          "id": "Rectángulo 1_36da",
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 0.6,
+            "y": 0.5,
+            "ancho": 4.4,
+            "alto": 1
+          },
+          "estilo": {
+            "backgroundColor": "#e2e8f0",
+            "borderColor": "#000000",
+            "borderWidth": 1,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "left",
+            "color_relleno": "transparent"
+          },
+          "contenido": {
+            "texto": null,
+            "src": null,
+            "editable": false
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "grupo": "grupo_encab_hor_L9"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "imagen": null,
+          "configuracion": null,
+          "cuadricula": null
+        },
+        "Rectángulo 2_36da": {
+          "id": "Rectángulo 2_36da",
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 0.6,
+            "y": 1.5,
+            "ancho": 4.4,
+            "alto": 0.5
+          },
+          "estilo": {
+            "backgroundColor": "#e2e8f0",
+            "borderColor": "#000000",
+            "borderWidth": 1,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "left",
+            "color_relleno": "transparent"
+          },
+          "contenido": {
+            "texto": null,
+            "src": null,
+            "editable": false
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "grupo": "grupo_encab_hor_L9"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "imagen": null,
+          "configuracion": null,
+          "cuadricula": null
+        },
+        "Rectángulo 3_36da": {
+          "id": "Rectángulo 3_36da",
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 0.6,
+            "y": 2,
+            "ancho": 4.4,
+            "alto": 0.5
+          },
+          "estilo": {
+            "backgroundColor": "#e2e8f0",
+            "borderColor": "#000000",
+            "borderWidth": 1,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "left",
+            "color_relleno": "transparent"
+          },
+          "contenido": {
+            "texto": null,
+            "src": null,
+            "editable": false
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "grupo": "grupo_encab_hor_L9"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "imagen": null,
+          "configuracion": null,
+          "cuadricula": null
+        },
+        "Rectángulo 4_36da": {
+          "id": "Rectángulo 4_36da",
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 5,
+            "y": 0.5,
+            "ancho": 8.7,
+            "alto": 2
+          },
+          "estilo": {
+            "backgroundColor": "#e2e8f0",
+            "borderColor": "#000000",
+            "borderWidth": 1,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "left",
+            "color_relleno": "transparent"
+          },
+          "contenido": {
+            "texto": null,
+            "src": null,
+            "editable": false
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "grupo": "grupo_encab_hor_L9"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "imagen": null,
+          "configuracion": null,
+          "cuadricula": null
+        },
+        "Rectángulo 5_36da": {
+          "id": "Rectángulo 5_36da",
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 13.7,
+            "y": 0.5,
+            "ancho": 8.8,
+            "alto": 2
+          },
+          "estilo": {
+            "backgroundColor": "#e2e8f0",
+            "borderColor": "#000000",
+            "borderWidth": 1,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "left",
+            "color_borde": "#000000",
+            "color_relleno": "transparent"
+          },
+          "contenido": {
+            "texto": null,
+            "src": null,
+            "editable": false
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "grupo": "grupo_encab_hor_L9"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "imagen": null,
+          "configuracion": null,
+          "cuadricula": null
+        },
+        "Rectángulo 6_36da": {
+          "id": "Rectángulo 6_36da",
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 22.497637944066515,
+            "y": 0.4920053491482063,
+            "ancho": 6.5,
+            "alto": 2
+          },
+          "estilo": {
+            "backgroundColor": "#e2e8f0",
+            "borderColor": "#000000",
+            "borderWidth": 1,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 14,
+            "fontFamily": "sans-serif",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "left",
+            "color_relleno": "transparent"
+          },
+          "contenido": {
+            "texto": null,
+            "src": null,
+            "editable": false
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "grupo": "grupo_encab_hor_L9"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "imagen": null,
+          "configuracion": null,
+          "cuadricula": null
+        },
+        "titulo_36da": {
+          "id": "titulo_36da",
+          "tipo": "texto",
+          "geometria": {
+            "x": 5.37,
+            "y": 1.4,
+            "ancho": 8.2,
+            "alto": 1
+          },
+          "estilo": {
+            "backgroundColor": "transparent",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 0,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 7,
+            "fontFamily": "Helvetica",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "center"
+          },
+          "contenido": {
+            "texto": "ROZMARIN INCLINOMETERS",
+            "src": null,
+            "editable": false
+          },
+          "metadata": {
+            "zIndex": 20,
+            "visible": true,
+            "grupo": "grupo_encab_hor_L9"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "imagen": null,
+          "configuracion": null,
+          "cuadricula": null
+        },
+        "proyecto_36da": {
+          "id": "proyecto_36da",
+          "tipo": "texto",
+          "geometria": {
+            "x": 5.37,
+            "y": 0.65,
+            "ancho": 2,
+            "alto": 0.5
+          },
+          "estilo": {
+            "backgroundColor": "transparent",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 0,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 7,
+            "fontFamily": "Helvetica",
+            "fontWeight": "bold",
+            "fontStyle": "normal",
+            "textAlign": "left"
+          },
+          "contenido": {
+            "texto": "PROJECT",
+            "src": null,
+            "editable": false
+          },
+          "metadata": {
+            "zIndex": 20,
+            "visible": true,
+            "grupo": "grupo_encab_hor_L9"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "imagen": null,
+          "configuracion": null,
+          "cuadricula": null
+        },
+        "texto_1_36da": {
+          "id": "texto_1_36da",
+          "tipo": "texto",
+          "geometria": {
+            "x": 0.65,
+            "y": 0.5,
+            "ancho": 4.30551776266062,
+            "alto": 0.9
+          },
+          "estilo": {
+            "backgroundColor": "transparent",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 0,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 9,
+            "fontFamily": "Helvetica",
+            "fontWeight": "bold",
+            "fontStyle": "normal",
+            "textAlign": "center"
+          },
+          "contenido": {
+            "texto": "ROZMARIN",
+            "src": null,
+            "editable": false
+          },
+          "metadata": {
+            "zIndex": 20,
+            "visible": true,
+            "grupo": "grupo_encab_hor_L9"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "imagen": null,
+          "configuracion": null,
+          "cuadricula": null
+        },
+        "texto_2_36da": {
+          "id": "texto_2_36da",
+          "tipo": "texto",
+          "geometria": {
+            "x": 0.65,
+            "y": 1.5,
+            "ancho": 4.286621315192744,
+            "alto": 0.5
+          },
+          "estilo": {
+            "backgroundColor": "transparent",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 0,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 9,
+            "fontFamily": "Helvetica",
+            "fontWeight": "bold",
+            "fontStyle": "normal",
+            "textAlign": "center"
+          },
+          "contenido": {
+            "texto": "INCLINOMETERS",
+            "src": null,
+            "editable": false
+          },
+          "metadata": {
+            "zIndex": 20,
+            "visible": true,
+            "grupo": "grupo_encab_hor_L9"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "imagen": null,
+          "configuracion": null,
+          "cuadricula": null
+        },
+        "nombre_sensor_36da": {
+          "id": "nombre_sensor_36da",
+          "tipo": "texto",
+          "geometria": {
+            "x": 0.65,
+            "y": 2,
+            "ancho": 4.324414210128496,
+            "alto": 0.5
+          },
+          "estilo": {
+            "backgroundColor": "transparent",
+            "borderColor": "#cbd5e1",
+            "borderWidth": 0,
+            "opacity": 1,
+            "color": "#000000",
+            "tamano": 9,
+            "fontFamily": "Helvetica",
+            "fontWeight": "normal",
+            "fontStyle": "normal",
+            "textAlign": "center"
+          },
+          "contenido": {
+            "texto": "NOMBRE_SENSOR",
+            "src": null,
+            "editable": false
+          },
+          "metadata": {
+            "zIndex": 20,
+            "visible": true,
+            "grupo": "grupo_encab_hor_L9"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "imagen": null,
+          "configuracion": null,
+          "cuadricula": null
+        },
+        "el_1773430704843_n3b9njjp4": {
+          "tipo": "imagen",
+          "geometria": {
+            "x": 22.641093474426814,
+            "y": 0.5823784614576444,
+            "ancho": 6.058201058201059,
+            "alto": 1.8395061728395057
+          },
+          "estilo": {},
+          "contenido": {
+            "src": null
+          },
+          "metadata": {
+            "zIndex": 21,
+            "visible": true
+          },
+          "id": "el_1773430704843_n3b9njjp4",
+          "imagen": {
+            "formato": "png",
+            "nombre_archivo": "imagen 1.png",
+            "ruta_nueva": "assets/imagen 1.png",
+            "estado": "nueva",
+            "asset_id": "b80fb2c6"
+          }
+        }
+      },
+      "configuracion": {
+        "orientacion": "landscape"
+      }
+    }
+  },
+  "pagina_actual": "1",
+  "configuracion": {
+    "nombre_plantilla": "Rozmarin_test",
+    "num_paginas": 1
+  }
+}
