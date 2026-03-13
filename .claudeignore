@@ -1,10 +1,21 @@
-__pycache__/
-*.pyc
+# Infraestructura y Entornos
+venv/
 .venv/
-env/
+__pycache__/
 .pytest_cache/
-.vscode/
 .git/
-assets/*.png
-assets/*.jpg
-assets/*.svg
+.vscode/
+
+# Datos y Referencias (Demasiado pesados para el contexto)
+data/
+biblioteca_plantillas/**/assets/
+temp_inclinometer_reference/
+temp_lovable_reference/
+dash_component_editor_src/node_modules/
+
+# Binarios y Documentos no editables
+*.pdf
+*.docx
+*.zip
+*.png
+*.jpg

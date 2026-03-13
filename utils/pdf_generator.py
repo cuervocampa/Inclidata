@@ -541,6 +541,33 @@ def resolve_placeholders(params, data_source):
     return resolved_params
 
 
+def _draw_precomputed_image(pdf, src: str, x: float, y: float, ancho: float, alto: float, page_height: float) -> None:
+    """
+    Dibuja una imagen pre-computada (data URI) en el PDF.
+    Escribe la imagen en un archivo temporal, llama a pdf.drawImage y limpia.
+    """
+    try:
+        _, encoded = src.split(",", 1)
+        img_bytes = base64.b64decode(encoded)
+        suffix = ".png" if "image/png" in src else ".jpg"
+        with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
+            tmp.write(img_bytes)
+            tmp_path = tmp.name
+        try:
+            pdf.drawImage(
+                tmp_path, x, y,
+                width=ancho, height=alto,
+                preserveAspectRatio=False, mask="auto",
+            )
+        finally:
+            try:
+                os.unlink(tmp_path)
+            except Exception:
+                pass
+    except Exception as e:
+        print(f"[PDF] Error dibujando imagen pre-computada: {e}")
+
+
 def draw_graph(pdf, graph_data, page_height, data_source, biblioteca_graficos_path):
     """
     Dibuja un gráfico generado por un script en el PDF
@@ -567,6 +594,12 @@ def draw_graph(pdf, graph_data, page_height, data_source, biblioteca_graficos_pa
 
     # Ajustar coordenada Y
     y = page_height - y - alto
+
+    # Pre-computed data URI from report_engine
+    src = graph_data.get("contenido", {}).get("src", "") or ""
+    if src.startswith("data:"):
+        _draw_precomputed_image(pdf, src, x, y, ancho, alto, page_height)
+        return
 
     # Obtener opacidad (compatibilidad: viejo=0-100, nuevo=0-1)
     estilo = graph_data.get("estilo", {})
@@ -1137,9 +1170,14 @@ def draw_table(pdf, table_data, page_height, data_source, biblioteca_tablas_path
     raw_params = table_data.get("configuracion", {}).get("parametros", {})
     params = resolve_placeholders(raw_params, data_source)
     
+    # Pre-computed table data from report_engine
+    if "_datos_precalculados" in table_data:
+        tabla_datos = table_data["_datos_precalculados"]
+    else:
+        tabla_datos = None
+
     # Intentar obtener datos del script
-    tabla_datos = None
-    if script_name and biblioteca_tablas_path:
+    if tabla_datos is None and script_name and biblioteca_tablas_path:
         try:
             # Buscar el script
             if not script_name.endswith('.py'):

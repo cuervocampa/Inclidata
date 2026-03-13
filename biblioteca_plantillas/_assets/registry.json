@@ -5,7 +5,8 @@
     "md5": "2b8fd1abcbee8ffe845124307a009552",
     "usages": [
       "Nueva Plantilla Visual",
-      "kk"
+      "kk",
+      "kk_1"
     ]
   },
   "eee3b4c3": {
@@ -14,7 +15,8 @@
     "md5": "eee3b4c3178188212d328f45e85ba8a9",
     "usages": [
       "Nueva Plantilla Visual",
-      "kk"
+      "kk",
+      "kk_1"
     ]
   },
   "b80fb2c6": {
@@ -24,7 +26,12 @@
     "usages": [
       "INCL_AR_prueba_kk_01",
       "INCL_AR_kk_2",
-      "INCL_AR"
+      "INCL_AR",
+      "_test_template_service_tmp",
+      "_test_srv_tmp",
+      "_test_srv_rt_tmp",
+      "_audit_tmp",
+      "kk"
     ]
   }
 }
