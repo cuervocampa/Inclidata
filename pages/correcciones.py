@@ -14,6 +14,12 @@ import json
 import os
 from pathlib import Path
 import math
+import logging as _logging, traceback as _tb
+_cb_logger = _logging.getLogger('cb_debug')
+_cb_logger.setLevel(_logging.ERROR)
+_cb_fh = _logging.FileHandler('error_callbacks.log', encoding='utf-8')
+_cb_fh.setFormatter(_logging.Formatter('%(asctime)s %(message)s'))
+_cb_logger.addHandler(_cb_fh)
 from dash_iconify import DashIconify
 
 
@@ -1025,8 +1031,11 @@ def register_callbacks(app):
             entrada["dev_b"] = round((entrada["b0"] - entrada["b180"]) / 2, 2)
             entrada["checksum_a"] = round(entrada["a0"] + entrada["a180"], 4)
             entrada["checksum_b"] = round(entrada["b0"] + entrada["b180"], 4)
-        # busco referencia
+        # busco referencia (fallback: primera fecha activa si no hay referencia marcada)
         fecha_referencia = buscar_referencia(data, camp_graficar)
+        if fecha_referencia is None:
+            fechas_activas_sorted = sorted([f for f in data if isinstance(data[f], dict) and 'campaign_info' in data[f] and data[f]['campaign_info'].get('active')])
+            fecha_referencia = fechas_activas_sorted[0] if fechas_activas_sorted else camp_graficar
         data_new = {
             fecha_referencia: {"calc": data[fecha_referencia]['calc']},
             camp_graficar: {"calc": correccion[camp_graficar]['calc'], "spike": correccion[camp_graficar]['spike']}
@@ -1442,8 +1451,11 @@ def register_callbacks(app):
         if not fecha_seleccionada or not data:
             return [go.Figure() for _ in range(3)]
 
-        # busco la campaña referencia
+        # busco la campaña referencia (fallback: primera fecha activa si no hay referencia marcada)
         fecha_referencia = buscar_referencia(data, fecha_seleccionada)
+        if fecha_referencia is None:
+            fechas_activas_sorted = sorted([f for f in data if isinstance(data[f], dict) and 'campaign_info' in data[f] and data[f]['campaign_info'].get('active')])
+            fecha_referencia = fechas_activas_sorted[0] if fechas_activas_sorted else fecha_seleccionada
 
         # filtro las fechas desde la referencia (incluida) a la fecha_seleccionada, excluyendo las active = False
         conjunto_fechas =  [fecha['value'] for fecha in fechas if fecha_referencia <= fecha['value'] <= fecha_seleccionada
@@ -1562,8 +1574,11 @@ def register_callbacks(app):
         if not fecha_seleccionada or not data:
             return [], []
 
-        # Buscar la campaña referencia
+        # Buscar la campaña referencia (fallback: primera fecha activa si no hay referencia marcada)
         fecha_referencia = buscar_referencia(data, fecha_seleccionada)
+        if fecha_referencia is None:
+            fechas_activas_sorted = sorted([f for f in data if isinstance(data[f], dict) and 'campaign_info' in data[f] and data[f]['campaign_info'].get('active')])
+            fecha_referencia = fechas_activas_sorted[0] if fechas_activas_sorted else fecha_seleccionada
 
         # Filtrar las fechas desde la referencia (incluida) hasta la fecha seleccionada
         conjunto_fechas = [
@@ -1835,6 +1850,7 @@ def register_callbacks(app):
          State('corregir-tubo', 'data')],  # datos originales
     )
     def cambios_bias_table(corr_spikes,  empotramiento, sugerir, camp_a_graficar, bias_table, corregir_tubo):
+      try:
         # Se desencadena en caso de que haya: corrección de spikes, cambio de empotramiento, botón de sugerir bias,
         # o cambio de campaña (o carga se supone)
         # faltaría meter un control de errores en caso de que empotramiento sea = 0 o mayor que la profundidad
@@ -1852,8 +1868,11 @@ def register_callbacks(app):
                 # a. Extraer la fecha seleccionada (primera clave del diccionario corr_spikes)
                 fecha_selec = list(corr_spikes.keys())[0]
 
-                # b. Buscar la fecha de referencia usando buscar_referencia
+                # b. Buscar la fecha de referencia usando buscar_referencia (fallback: primera fecha activa)
                 fecha_referencia = buscar_referencia(corregir_tubo, fecha_selec)
+                if fecha_referencia is None:
+                    fechas_activas_sorted = sorted([f for f in corregir_tubo if isinstance(corregir_tubo[f], dict) and 'campaign_info' in corregir_tubo[f] and corregir_tubo[f]['campaign_info'].get('active')])
+                    fecha_referencia = fechas_activas_sorted[0] if fechas_activas_sorted else fecha_selec
 
                 # c. extrae los diccionarios con valores de referencia y corrección
                 calc_ref = corregir_tubo[fecha_referencia]['calc']  # datos de la campaña de referencia
@@ -1946,6 +1965,9 @@ def register_callbacks(app):
                 return rowData_actualizado, True
 
         return dash.no_update, False
+      except Exception:
+        _cb_logger.error('[cambios_bias_table]\n' + _tb.format_exc())
+        raise
 
     # actualización del archivo json-bias. Depende exclusivamente de que haya cambios en la tabla
     # hay que tener en cuenta que el bias siempre va después de spikes. Si se cambia un spike, se vuelve a cero en bias
@@ -1960,6 +1982,7 @@ def register_callbacks(app):
          State('corregir-tubo', 'data')], # datos originales
     )
     def cambios_json_bias(cellValueChanged, change_flag, corr_spikes, camp_a_graficar, bias_table, corregir_tubo ):
+      try:
         # paso los valores actuales de la tabla a un df, por comodidad
         df_bias_table = pd.DataFrame(bias_table)
 
@@ -1998,8 +2021,11 @@ def register_callbacks(app):
         # a. Extraer la fecha seleccionada (primera clave del diccionario corr_spikes)
         fecha_selec = list(corr_spikes.keys())[0]
 
-        # b. Buscar la fecha de referencia usando buscar_referencia
+        # b. Buscar la fecha de referencia usando buscar_referencia (fallback: primera fecha activa)
         fecha_referencia = buscar_referencia(corregir_tubo, fecha_selec)
+        if fecha_referencia is None:
+            fechas_activas_sorted = sorted([f for f in corregir_tubo if isinstance(corregir_tubo[f], dict) and 'campaign_info' in corregir_tubo[f] and corregir_tubo[f]['campaign_info'].get('active')])
+            fecha_referencia = fechas_activas_sorted[0] if fechas_activas_sorted else fecha_selec
 
         # c. extrae los diccionarios con valores de referencia y corrección
         calc_ref = corregir_tubo[fecha_referencia]['calc']  # datos de la campaña de referencia
@@ -2043,6 +2069,9 @@ def register_callbacks(app):
         # debug_funcion('cambios_json_bias')
 
         return dict_df_bias_final, dash.no_update
+      except Exception:
+        _cb_logger.error('[cambios_json_bias]\n' + _tb.format_exc())
+        raise
 
     # añadir descripción
     @app.callback(
@@ -2058,6 +2087,7 @@ def register_callbacks(app):
     )
 
     def graficos_bias(json_bias, escala_desplazamiento, valor_positivo_desplazamiento, valor_negativo_desplazamiento, orden_eje):
+      try:
         # ojo, en los gráficos se muestran los valores de desplazamiento desde la última referenica, no A ORIGEN DEL TUBO
 
         # control primeras cargas
@@ -2254,6 +2284,9 @@ def register_callbacks(app):
 
 
         return fig_a,fig_a_estad, fig_b, fig_b_estad
+      except Exception:
+        _cb_logger.error('[graficos_bias]\n' + _tb.format_exc())
+        raise
 
     # ventana emergente para evolución del checksum por intervalos
     @app.callback(
@@ -2278,10 +2311,13 @@ def register_callbacks(app):
             return True, go.Figure()
 
         # Paso 1. Pasamos los diccionarios a df
-        # Paso 1a. Búsqueda de la campaña referencia para fecha_selec
+        # Paso 1a. Búsqueda de la campaña referencia para fecha_selec (fallback: primera fecha activa)
         fecha_ref = buscar_referencia(data_json, fecha_selec)
+        if fecha_ref is None:
+            fechas_activas_sorted = sorted([f for f in data_json if isinstance(data_json[f], dict) and 'campaign_info' in data_json[f] and data_json[f]['campaign_info'].get('active')])
+            fecha_ref = fechas_activas_sorted[0] if fechas_activas_sorted else fecha_selec
         # Paso 1b. creo un diccionario con los df a considerar, de forma dinámica
-        # Filtrar las fechas desde la rferencia hasta la fecha seleccionada
+        # Filtrar las fechas desde la referencia hasta la fecha seleccionada
         conjunto_fechas = [fecha['value'] for fecha in lista_fechas if
                            'value' in fecha and fecha['value'] <= fecha_selec
                            and 'value' in fecha and fecha['value'] >= fecha_ref
@@ -2395,6 +2431,9 @@ def register_callbacks(app):
         # Paso 1. Pasamos los diccionarios a df
         # Paso 1a. Búsqueda de la campaña referencia para fecha_selec
         fecha_ref = buscar_referencia(corregir_tubo, fecha_selec)
+        if fecha_ref is None:
+            fechas_activas_sorted = sorted([f for f in corregir_tubo if isinstance(corregir_tubo[f], dict) and 'campaign_info' in corregir_tubo[f] and corregir_tubo[f]['campaign_info'].get('active')])
+            fecha_ref = fechas_activas_sorted[0] if fechas_activas_sorted else fecha_selec
         # Paso 1b. creo un diccionario con los df a considerar, de forma dinámica
         # Filtrar las fechas desde la rferencia hasta la fecha seleccionada
         fechas_activas = [fecha for fecha in corregir_tubo.keys()
@@ -2525,8 +2564,11 @@ def register_callbacks(app):
                     ]
                 }
             }
-            # busco referencia
+            # busco referencia (fallback: primera fecha activa si no hay referencia marcada)
             fecha_referencia = buscar_referencia(corregir_tubo, fecha_seleccionada)
+            if fecha_referencia is None:
+                fechas_activas_sorted = sorted([f for f in corregir_tubo if isinstance(corregir_tubo[f], dict) and 'campaign_info' in corregir_tubo[f] and corregir_tubo[f]['campaign_info'].get('active')])
+                fecha_referencia = fechas_activas_sorted[0] if fechas_activas_sorted else fecha_seleccionada
             data_new = {
                 fecha_referencia: {
                    "calc": corregir_tubo[fecha_referencia]['calc'],

@@ -27,12 +27,27 @@ from pages import (
 from utils import funciones_comunes as utils
 
 
+
 # Inicializa la aplicación
 app = dash.Dash(
     __name__,
     external_stylesheets=[dbc.themes.BOOTSTRAP],
     suppress_callback_exceptions=True,
 )
+
+# ── Capturador temporal de errores en callbacks ──
+import logging as _logging, traceback as _tb
+_cb_log = _logging.getLogger("callback_errors")
+_cb_log.setLevel(_logging.ERROR)
+_fh = _logging.FileHandler("error_callbacks.log", encoding="utf-8")
+_fh.setFormatter(_logging.Formatter("%(asctime)s %(message)s"))
+_cb_log.addHandler(_fh)
+
+@app.server.errorhandler(Exception)
+def _handle_exc(e):
+    _cb_log.error(_tb.format_exc())
+    return "Internal Server Error", 500
+# ─────────────────────────────────────────────────
 
 # --- Sidebar con iconos y estilo premium ---
 NAV_ITEMS = [
@@ -238,7 +253,35 @@ def render_page_content(pathname: str):
 
 
 if __name__ == "__main__":
+    # ── Monkey-patch temporal: envuelve TODOS los callbacks con logging ──
+    import functools
+    import json
+    import plotly.utils
+
+    for cb_id, cb_list in app.callback_map.items():
+        original = cb_list.get("callback")
+        if original and callable(original):
+            @functools.wraps(original)
+            def _wrapper(*args, _orig=original, _name=cb_id, **kwargs):
+                try:
+                    res = _orig(*args, **kwargs)
+                except Exception:
+                    _cb_log.error(f"[{_name}] PYTHON EXCEPTION:\n" + _tb.format_exc())
+                    raise
+                
+                # Use PlotlyJSONEncoder to safely convert Dash outputs (which include DataFrames, Numpy arrays, Mallocs)
+                try:
+                    j_str = json.dumps(res, cls=plotly.utils.PlotlyJSONEncoder)
+                    if 'NaN' in j_str or 'Infinity' in j_str:
+                        _cb_log.error(f"[{_name}] DEVUELVE NaN/Infinity QUE ROMPE DASH!")
+                except Exception as e:
+                    # Ignore serialization errors here, Dash will handle them
+                    pass
+                
+                return res
+            cb_list["callback"] = _wrapper
+    # ─────────────────────────────────────────────────────────────────────
     if hasattr(app, "run"):
-        app.run(debug=True)
+        app.run(debug=True, dev_tools_hot_reload=False)
     else:
         app.run_server(debug=True)
