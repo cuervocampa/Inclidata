@@ -13,7 +13,15 @@
       "Bash(grep -oE '\\\\.[^./]+$')",
       "Bash(git -C \"C:/_/03_PYTHON/GitHub/IncliData\" status --short)",
       "Bash(dir \"C:\\\\_\\\\03_PYTHON\\\\GitHub\\\\IncliData\")",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git tag *)",
+      "Bash(git branch *)",
+      "Bash(git push *)",
+      "Bash(rm \"C:\\\\_\\\\03_PYTHON\\\\GitHub\\\\IncliData\\\\pages\\\\editor_plantilla.py\" \"C:\\\\_\\\\03_PYTHON\\\\GitHub\\\\IncliData\\\\pages\\\\editor_plantilla_layout.py\" \"C:\\\\_\\\\03_PYTHON\\\\GitHub\\\\IncliData\\\\pages\\\\editor_visual.py\")",
+      "Bash(rm -rf \"C:\\\\_\\\\03_PYTHON\\\\GitHub\\\\IncliData\\\\dash_component_editor_src\")",
+      "Bash(venv/Scripts/python.exe -c \"import app; print\\('import OK'\\)\")",
+      "Bash(venv/Scripts/python.exe -c \"from utils.report_engine import generate_report_pdf; from utils.template_service import cargar_plantilla; print\\('OK motor intacto'\\)\")"
     ]
   }
 }

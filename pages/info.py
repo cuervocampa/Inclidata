@@ -63,13 +63,6 @@ def layout():
                     "/importar_umbrales",
                     "#fa5252"
                 ),
-                _crear_tarjeta_modulo(
-                    "Editor Plantillas",
-                    "Diseña plantillas PDF personalizadas",
-                    "mdi:file-document-edit",
-                    "/editor_plantilla",
-                    "#7950f2"
-                ),
             ],
         ),
 

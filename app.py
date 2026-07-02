@@ -17,8 +17,6 @@ from dash_iconify import DashIconify
 from pages import (
     configuraciones,
     correcciones,
-    editor_plantilla,
-    editor_visual,
     graficar,
     importar,
     importar_umbrales,
@@ -89,8 +87,6 @@ NAV_ITEMS = [
     {"label": "Graficar",          "href": "/graficar",          "icon": "lucide:bar-chart-3"},
     {"label": "Correcciones",      "href": "/correcciones",      "icon": "lucide:wrench"},
     {"label": "Importar umbrales", "href": "/importar_umbrales", "icon": "lucide:alert-triangle"},
-    {"label": "Editor plantillas", "href": "/editor_plantilla",  "icon": "lucide:file-text"},
-    {"label": "Editor Visual",     "href": "/editor-visual",     "icon": "lucide:layout-dashboard"},
 ]
 
 sidebar = html.Div(
@@ -177,8 +173,6 @@ def render_page_content(pathname: str):
         "/graficar":         graficar.layout,
         "/correcciones":     correcciones.layout,
         "/importar_umbrales": importar_umbrales.layout,
-        "/editor_plantilla": editor_plantilla.layout,
-        "/editor-visual":    editor_visual.layout,
     }
     if pathname in routes:
         return routes[pathname]()
@@ -193,8 +187,6 @@ importar.register_callbacks(app)
 graficar.register_callbacks(app)
 correcciones.register_callbacks(app)
 importar_umbrales.register_callbacks(app)
-editor_plantilla.register_callbacks(app)
-editor_visual.register_callbacks(app)
 
 
 if __name__ == "__main__":

@@ -30,3 +30,6 @@ Thumbs.db
 # Referencias temporales
 temp_inclinometer_reference/
 prompt_temp/
+
+# Claude Code (session config, no pertenece al repo)
+.claude/settings.local.json
