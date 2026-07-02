@@ -1493,17 +1493,19 @@ def register_callbacks(app):
             # ----------------------------------------------------
             graficos_content = []
             
-            directorio_graficos = "biblioteca_graficos"
+            # Enumera scripts con nombre canónico "namespace/script.py" (convención Maketator).
+            # La ruta se resuelve como Path("biblioteca_graficos") / nombre_canonico.
+            graficos_base = Path("biblioteca_graficos")
             scripts_disponibles = []
-
-            if os.path.exists(directorio_graficos):
-                for item in os.listdir(directorio_graficos):
-                    path_item = os.path.join(directorio_graficos, item)
-                    if os.path.isdir(path_item):
-                        py_path = os.path.join(path_item, f"{item}.py")
-                        if os.path.exists(py_path):
-                            scripts_disponibles.append({"label": item, "value": item})
-
+            if graficos_base.is_dir():
+                for ns_dir in sorted(graficos_base.iterdir()):
+                    if not ns_dir.is_dir():
+                        continue
+                    for script_file in sorted(ns_dir.glob("*.py")):
+                        if script_file.name.startswith("__"):
+                            continue
+                        canonical = f"{ns_dir.name}/{script_file.name}"
+                        scripts_disponibles.append({"label": script_file.stem, "value": canonical})
             if not scripts_disponibles:
                 scripts_disponibles = [{"label": "No hay scripts disponibles", "value": ""}]
 
@@ -1724,6 +1726,10 @@ def register_callbacks(app):
 
         _log = logging.getLogger(__name__)
 
+        # [PDF-TRACE] 1 — entrada al callback
+        _log.info("[PDF-TRACE] generar_informe_pdf invocado: n_clicks=%s, plantilla_json=%s",
+                  n_clicks, bool(plantilla_json))
+
         if not n_clicks or not plantilla_json:
             return None, True, []
 
@@ -1740,6 +1746,10 @@ def register_callbacks(app):
 
             # Guardas: sensor_id requerido por el motor HTML
             sensor_id = (datos_tubo or {}).get("info", {}).get("_sensor_id")
+            # [PDF-TRACE] 2 — sensor_id y resultado de guardas
+            _log.info("[PDF-TRACE] sensor_id=%s, json_incli_existe=%s",
+                      sensor_id,
+                      (Path("json_inclis") / f"{sensor_id}.json").is_file() if sensor_id else False)
             if sensor_id is None:
                 return None, True, [dmc.Alert(
                     "Vuelve a cargar el archivo del sensor: los datos en memoria son de una sesión anterior al nuevo motor.",
@@ -1791,6 +1801,8 @@ def register_callbacks(app):
                 "ultimas_camp": ultimas_camp,
                 "data": {},
             }
+            # [PDF-TRACE] 3 — contexto §2.2 completo antes de llamar al motor
+            _log.info("[PDF-TRACE] context=%s", context)
 
             nombre_plantilla = plantilla_modificada.get("configuracion", {}).get("nombre_plantilla", "informe") or "informe"
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -1802,7 +1814,9 @@ def register_callbacks(app):
             ruta_temporal = tmp.name
             try:
                 log_hitos = generate_report_pdf_from_state(plantilla_modificada, context, ruta_temporal)
-                _log.info("[PDF] Hitos del motor: %s", log_hitos)
+                # [PDF-TRACE] 4 — motor retornó; tamaño del archivo temporal
+                _log.info("[PDF-TRACE] generate_report_pdf_from_state retornó; tamaño_tmp=%d bytes; hitos=%s",
+                          Path(ruta_temporal).stat().st_size, log_hitos)
                 pdf_bytes = Path(ruta_temporal).read_bytes()
             finally:
                 try:
@@ -1810,7 +1824,8 @@ def register_callbacks(app):
                 except Exception:
                     pass
 
-            _log.info("[PDF] %s generado (%d bytes)", nombre_archivo, len(pdf_bytes))
+            # [PDF-TRACE] 5 — antes del return con dcc.send_bytes
+            _log.info("[PDF-TRACE] enviando %s (%d bytes)", nombre_archivo, len(pdf_bytes))
             return dcc.send_bytes(pdf_bytes, nombre_archivo), False, [
                 dmc.Alert(
                     f"PDF generado correctamente como {nombre_archivo}",
@@ -1983,9 +1998,8 @@ def register_callbacks(app):
                         # Combinar parámetros (default → json → específicos)
                         parametros_combinados = {**parametros_default, **parametros_json, **parametros_especificos}
 
-                        # Verificar si el script Python existe
-                        script_path = os.path.join("biblioteca_graficos", script_valor_sin_extension,
-                                                   f"{script_valor_sin_extension}.py")
+                        # El nombre canónico incluye namespace; no hay subcarpeta intermedia.
+                        script_path = str(Path("biblioteca_graficos") / f"{script_valor_sin_extension}.py")
                         script_existe = os.path.exists(script_path)
 
                         resultados.append(
@@ -2453,10 +2467,11 @@ def register_callbacks(app):
                         else:
                             script_valor_sin_extension = script_valor
 
-                        # Verificar si el script Python existe
-                        script_path = os.path.join("biblioteca_graficos", script_valor_sin_extension,
-                                                   f"{script_valor_sin_extension}.py")
+                        # El nombre canónico incluye namespace; ruta directa sin subcarpeta intermedia.
+                        script_path = str(Path("biblioteca_graficos") / f"{script_valor_sin_extension}.py")
                         script_existe = os.path.exists(script_path)
+                        # Stem del script (sin namespace) para buscar la función dentro del módulo.
+                        script_fn_name = Path(script_valor_sin_extension).name
 
                         # Agregar sección HTML para este gráfico
                         html_content += f"""
@@ -2475,7 +2490,7 @@ def register_callbacks(app):
                                 try:
                                     # Cargar dinámicamente el módulo
                                     module_spec = importlib.util.spec_from_file_location(
-                                        script_valor_sin_extension,
+                                        script_fn_name,
                                         script_path
                                     )
 
@@ -2483,9 +2498,9 @@ def register_callbacks(app):
                                         module = importlib.util.module_from_spec(module_spec)
                                         module_spec.loader.exec_module(module)
 
-                                        # Obtener la función principal (mismo nombre que el script)
-                                        if hasattr(module, script_valor_sin_extension):
-                                            funcion_grafico = getattr(module, script_valor_sin_extension)
+                                        # Obtener la función principal (mismo nombre que el stem del script)
+                                        if hasattr(module, script_fn_name):
+                                            funcion_grafico = getattr(module, script_fn_name)
 
                                             # Llamar a la función para generar el gráfico
                                             try:
@@ -2508,7 +2523,7 @@ def register_callbacks(app):
                                             except Exception as e:
                                                 import traceback
                                                 html_content += f"""
-                                                <p class="error">Error al ejecutar la función {script_valor_sin_extension}: {str(e)}</p>
+                                                <p class="error">Error al ejecutar la función {script_fn_name}: {str(e)}</p>
                                                 <div class="accordion">
                                                     <div class="accordion-header">Ver detalles del error</div>
                                                     <div class="accordion-content">
@@ -2518,11 +2533,11 @@ def register_callbacks(app):
                                                 """
                                         else:
                                             html_content += f"""
-                                            <p class="error">No se encontró la función {script_valor_sin_extension} en el módulo</p>
+                                            <p class="error">No se encontró la función {script_fn_name} en el módulo</p>
                                             """
                                     else:
                                         html_content += f"""
-                                        <p class="error">No se pudo crear el spec para el módulo {script_valor_sin_extension}</p>
+                                        <p class="error">No se pudo crear el spec para el módulo {script_fn_name}</p>
                                         """
                                 finally:
                                     # Restaurar el path original
@@ -2531,7 +2546,7 @@ def register_callbacks(app):
                             except Exception as e:
                                 import traceback
                                 html_content += f"""
-                                <p class="error">Error al cargar el módulo {script_valor_sin_extension}: {str(e)}</p>
+                                <p class="error">Error al cargar el módulo {script_fn_name}: {str(e)}</p>
                                 <div class="accordion">
                                     <div class="accordion-header">Ver detalles del error</div>
                                     <div class="accordion-content">

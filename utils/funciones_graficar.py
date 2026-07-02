@@ -9,6 +9,7 @@ import os
 import sys
 import importlib.util
 import traceback
+from pathlib import Path
 import dash_mantine_components as dmc
 from dash import html
 
@@ -251,8 +252,11 @@ def obtener_parametros_por_defecto(script_name, current_values):
         return {}
 
     try:
-        # Ruta al script
-        script_path = os.path.join("biblioteca_graficos", script_name, f"{script_name}.py")
+        # El nombre canónico incluye namespace ("html/grafico_inclinometro_v2.py").
+        # La ruta se resuelve directamente: Path("biblioteca_graficos") / canonical.
+        script_name_norm = script_name[:-3] if script_name.endswith(".py") else script_name
+        script_path = str(Path("biblioteca_graficos") / f"{script_name_norm}.py")
+        script_fn_name = Path(script_name_norm).name  # stem sin namespace
 
         if not os.path.exists(script_path):
             print(f"Script no encontrado: {script_path}")
@@ -266,7 +270,7 @@ def obtener_parametros_por_defecto(script_name, current_values):
         try:
             # Cargar el módulo dinámicamente
             import importlib.util
-            module_spec = importlib.util.spec_from_file_location(script_name, script_path)
+            module_spec = importlib.util.spec_from_file_location(script_fn_name, script_path)
 
             if module_spec:
                 module = importlib.util.module_from_spec(module_spec)
@@ -346,18 +350,20 @@ def generar_seccion_grafico(num_pagina, nombre_elemento, elemento, scripts_dispo
     else:
         script_valor_sin_extension = script_valor
 
-    # Verificar si el script existe y está en opciones
-    script_path = os.path.join("biblioteca_graficos", script_valor_sin_extension, f"{script_valor_sin_extension}.py")
+    # Verificar si el script existe y está en opciones.
+    # El valor canónico ("html/grafico_inclinometro_v2.py") se resuelve directamente.
+    script_path = str(Path("biblioteca_graficos") / f"{script_valor_sin_extension}.py")
     script_existe = os.path.exists(script_path)
-    script_en_opciones = any(d['value'] == script_valor_sin_extension for d in scripts_disponibles)
-    valor_selector = script_valor_sin_extension if script_en_opciones else None
+    script_en_opciones = any(d['value'] == script_valor for d in scripts_disponibles)
+    valor_selector = script_valor if script_en_opciones else None
 
     # Generar mensaje de estado
+    script_stem = Path(script_valor_sin_extension).name if script_valor_sin_extension else ""
     if script_existe:
-        script_status = f"✓ Script encontrado: {script_valor_sin_extension}.py"
+        script_status = f"✓ Script encontrado: {script_stem}.py"
         status_color = "green"
     else:
-        script_status = f"❌ Script no encontrado: {script_valor_sin_extension}.py"
+        script_status = f"❌ Script no encontrado: {script_stem}.py"
         status_color = "red"
 
     # Contenido del accordion
