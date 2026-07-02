@@ -190,7 +190,7 @@ def register_callbacks(app):
                             "bias": valor.get("bias", []),
                         }
 
-                nuevo_diccionario["_sensor_id"] = sensor_id
+                nuevo_diccionario["info"]["_sensor_id"] = sensor_id
 
                 # Persistir JSON completo en disco para el motor HTML (lee json_inclis/{sensor_id}.json)
                 try:
@@ -1739,7 +1739,7 @@ def register_callbacks(app):
                 fecha_seleccionada = fecha_final
 
             # Guardas: sensor_id requerido por el motor HTML
-            sensor_id = (datos_tubo or {}).get("_sensor_id")
+            sensor_id = (datos_tubo or {}).get("info", {}).get("_sensor_id")
             if sensor_id is None:
                 return None, True, [dmc.Alert(
                     "Vuelve a cargar el archivo del sensor: los datos en memoria son de una sesión anterior al nuevo motor.",

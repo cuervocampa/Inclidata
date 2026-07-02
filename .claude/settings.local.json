@@ -43,7 +43,11 @@
       "Bash(venv/Scripts/python.exe -c ' *)",
       "Bash(venv/Scripts/python.exe -c \"import app; print\\('F1 OK — import app sin traceback'\\)\")",
       "Bash(venv/Scripts/python.exe -c \"from utils.report_engine import generate_report_pdf; print\\('F2 OK — motor importado'\\)\")",
-      "Bash(python *)"
+      "Bash(python *)",
+      "Bash(ls .venv/)",
+      "Bash(ls venv/)",
+      "Bash(.venv/Scripts/python -c \"import app\")",
+      "Bash(venv/Scripts/python.exe -c \"import app\")"
     ]
   }
 }
