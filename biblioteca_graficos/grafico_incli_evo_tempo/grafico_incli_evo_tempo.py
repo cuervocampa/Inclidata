@@ -24,7 +24,7 @@ def load_local_funciones():
         current_dir = os.path.dirname(os.path.abspath(__file__))
         funciones_path = os.path.join(current_dir, 'funciones.py')
 
-        print(f"DEBUG: Intentando cargar funciones desde: {funciones_path}")
+        pass  # print(f"DEBUG: Intentando cargar funciones desde: {funciones_path}")
 
         if not os.path.exists(funciones_path):
             raise ImportError(f"No se encontró funciones.py en {current_dir}")
@@ -40,7 +40,7 @@ def load_local_funciones():
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
 
-        print(f"DEBUG: Módulo funciones cargado exitosamente desde {funciones_path}")
+        pass  # print(f"DEBUG: Módulo funciones cargado exitosamente desde {funciones_path}")
         return module
 
     except Exception as e:
@@ -53,14 +53,14 @@ def load_local_funciones():
                 sys.path.insert(0, current_dir)
 
             import funciones
-            print(f"DEBUG: Funciones importado usando fallback desde {funciones.__file__}")
+            pass  # print(f"DEBUG: Funciones importado usando fallback desde {funciones.__file__}")
             return funciones
         except ImportError:
             raise ImportError(f"No se pudo cargar el módulo funciones: {e}")
 
 
 # Cargar el módulo funciones local
-print("DEBUG: Iniciando carga del módulo funciones...")
+pass  # print("DEBUG: Iniciando carga del módulo funciones...")
 funciones_module = load_local_funciones()
 
 # ✅ IMPORTACIONES CORREGIDAS - Solo funciones que EXISTEN y se USAN
@@ -77,7 +77,7 @@ agregar_anotaciones_finales = funciones_module.agregar_anotaciones_finales
 
 # ❌ ELIMINADAS: agregar_umbrales y configurar_ejes (funciones stub que no se usaban)
 
-print("DEBUG: Todas las funciones importadas exitosamente")
+pass  # print("DEBUG: Todas las funciones importadas exitosamente")
 
 
 def configurar_ejes_temporal_compacto(ax, fechas_dt, eje, titulo, etiqueta_eje_y="Desplazamiento (mm)",
@@ -153,11 +153,11 @@ def configurar_ejes_temporal_compacto(ax, fechas_dt, eje, titulo, etiqueta_eje_y
                 extension_temporal = rango_datos * 0.25
                 fecha_fin_total = fecha_fin_datos + extension_temporal
 
-                print(f"DEBUG: === CONFIGURACIÓN DE ESPACIO ===")
-                print(f"DEBUG: Inicio: {fecha_inicio}")
-                print(f"DEBUG: Fin de datos: {fecha_fin_datos}")
-                print(f"DEBUG: Fin total (con espacio): {fecha_fin_total}")
-                print(f"DEBUG: Extensión agregada: {extension_temporal}")
+                pass  # print(f"DEBUG: === CONFIGURACIÓN DE ESPACIO ===")
+                pass  # print(f"DEBUG: Inicio: {fecha_inicio}")
+                pass  # print(f"DEBUG: Fin de datos: {fecha_fin_datos}")
+                pass  # print(f"DEBUG: Fin total (con espacio): {fecha_fin_total}")
+                pass  # print(f"DEBUG: Extensión agregada: {extension_temporal}")
 
                 # Establecer límites del gráfico
                 ax.set_xlim(fecha_inicio, fecha_fin_total)
@@ -207,7 +207,7 @@ def grafico_incli_evo_tempo(data, parametros):
         str: Imagen del gráfico en formato PNG codificada en base64 (data URL).
     """
     try:
-        print("DEBUG: Iniciando generación del gráfico temporal")
+        pass  # print("DEBUG: Iniciando generación del gráfico temporal")
 
         # PASO 1: Extraer parámetros con valores por defecto si no están presentes
         nombre_sensor = parametros.get('nombre_sensor', 'SENSOR')
@@ -228,7 +228,7 @@ def grafico_incli_evo_tempo(data, parametros):
         etiqueta_eje_y = parametros.get('etiqueta_eje_y', "Desplazamiento (mm)")
         formato = parametros.get('formato', 'png')
 
-        print(f"DEBUG: Parámetros extraídos - sensor: {sensor}, eje: {eje}, num_profundidades: {num_profundidades}")
+        pass  # print(f"DEBUG: Parámetros extraídos - sensor: {sensor}, eje: {eje}, num_profundidades: {num_profundidades}")
 
         # Validación de parámetros críticos
         if not data:
@@ -245,7 +245,7 @@ def grafico_incli_evo_tempo(data, parametros):
         alto_pulgadas = alto_cm / 2.54
 
         # PASO 3: Calcular las fechas seleccionadas en base a los parámetros
-        print("DEBUG: Calculando fechas seleccionadas...")
+        pass  # print("DEBUG: Calculando fechas seleccionadas...")
         fechas_seleccionadas = calcular_fechas_seleccionadas(
             data,
             fecha_inicial,
@@ -259,10 +259,10 @@ def grafico_incli_evo_tempo(data, parametros):
         if not fechas_seleccionadas:
             raise ValueError("No se encontraron fechas válidas para procesar")
 
-        print(f"DEBUG: {len(fechas_seleccionadas)} fechas seleccionadas")
+        pass  # print(f"DEBUG: {len(fechas_seleccionadas)} fechas seleccionadas")
 
         # PASO 4: Seleccionar profundidades distribuidas homogéneamente
-        print("DEBUG: Seleccionando profundidades distribuidas...")
+        pass  # print("DEBUG: Seleccionando profundidades distribuidas...")
         profundidades_seleccionadas = seleccionar_profundidades_distribuidas(
             data, eje, num_profundidades
         )
@@ -277,7 +277,7 @@ def grafico_incli_evo_tempo(data, parametros):
             f"DEBUG: {len(profundidades_seleccionadas)} profundidades seleccionadas (ordenadas mayor a menor): {profundidades_seleccionadas}")
 
         # PASO 5: Extraer datos temporales para las profundidades seleccionadas
-        print("DEBUG: Extrayendo datos temporales...")
+        pass  # print("DEBUG: Extrayendo datos temporales...")
         datos_temporales = extraer_datos_temporales_profundidades(
             data, fechas_seleccionadas, profundidades_seleccionadas, eje, sensor
         )
@@ -285,7 +285,7 @@ def grafico_incli_evo_tempo(data, parametros):
         if not datos_temporales:
             raise ValueError("No se pudieron extraer datos temporales")
 
-        print(f"DEBUG: Datos temporales extraídos para {len(datos_temporales)} profundidades")
+        pass  # print(f"DEBUG: Datos temporales extraídos para {len(datos_temporales)} profundidades")
 
         # PASO 6: Configurar el gráfico SIN padding extra
         fig, ax = plt.subplots(figsize=(ancho_pulgadas, alto_pulgadas))
@@ -308,15 +308,15 @@ def grafico_incli_evo_tempo(data, parametros):
             raise ValueError("No se pudieron convertir las fechas a formato datetime")
 
         fechas_dt_sorted = sorted(fechas_dt)
-        print(f"DEBUG: {len(fechas_dt_sorted)} fechas convertidas a datetime")
+        pass  # print(f"DEBUG: {len(fechas_dt_sorted)} fechas convertidas a datetime")
 
         # NUEVO PASO 8: Configurar ejes PRIMERO (antes de dibujar series)
-        print("DEBUG: Configurando ejes y reservando espacio...")
+        pass  # print("DEBUG: Configurando ejes y reservando espacio...")
         limite_area_datos = configurar_ejes_temporal_compacto(ax, fechas_dt_sorted, eje, titulo_personalizado,
                                                               etiqueta_eje_y,
                                                               reservar_espacio_anotaciones=True)
 
-        print(f"DEBUG: Límite del área de datos: {limite_area_datos}")
+        pass  # print(f"DEBUG: Límite del área de datos: {limite_area_datos}")
 
         # NUEVO PASO 9: Graficar series (DESPUÉS de configurar ejes)
         colores_serie = [
@@ -361,7 +361,7 @@ def grafico_incli_evo_tempo(data, parametros):
                 else:
                     print(f"Warning: Descartando profundidad {profundidad} - sin datos válidos")
 
-        print(f"DEBUG: {series_graficadas} series graficadas exitosamente")
+        pass  # print(f"DEBUG: {series_graficadas} series graficadas exitosamente")
 
         # NUEVO PASO 11: Agregar anotaciones finales
         agregar_anotaciones_finales(ax, datos_temporales, profundidades_seleccionadas,
@@ -392,7 +392,7 @@ def grafico_incli_evo_tempo(data, parametros):
         imagen_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
         plt.close(fig)
 
-        print("DEBUG: Gráfico generado exitosamente")
+        pass  # print("DEBUG: Gráfico generado exitosamente")
 
         # Devolver el data URL con el tipo MIME correcto
         if formato.lower() == 'svg':

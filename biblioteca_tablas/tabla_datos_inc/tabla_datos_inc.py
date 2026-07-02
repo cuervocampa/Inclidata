@@ -36,8 +36,8 @@ def tabla_datos_inc(data, parametros):
         # 1. Determinar la fecha de corte (la seleccionada en el slider o fecha final)
         fecha_corte_str = parametros.get("fecha_seleccionada") or parametros.get("fecha_final")
         
-        print(f"DEBUG tabla_datos_inc: fecha_corte_str = {fecha_corte_str}")
-        print(f"DEBUG tabla_datos_inc: ultimas_camp = {parametros.get('ultimas_camp')}")
+        pass  # print(f"DEBUG tabla_datos_inc: fecha_corte_str = {fecha_corte_str}")
+        pass  # print(f"DEBUG tabla_datos_inc: ultimas_camp = {parametros.get('ultimas_camp')}")
         
         # Filtrar solo claves que sean fechas válidas y tengan datos calculados ('calc')
         # Además deben estar marcadas como activas (active=true en campaign_info)
@@ -52,20 +52,20 @@ def tabla_datos_inc(data, parametros):
                         fechas_validas.append(k)
         
         if not fechas_validas:
-            print("DEBUG tabla_datos_inc: No se encontraron fechas válidas")
+            pass  # print("DEBUG tabla_datos_inc: No se encontraron fechas válidas")
             return {"encabezados_nivel_1": [], "filas": []}
         
         # Ordenar cronológicamente
         fechas_validas.sort(key=lambda x: datetime.fromisoformat(x))
-        print(f"DEBUG tabla_datos_inc: {len(fechas_validas)} fechas válidas encontradas")
-        print(f"DEBUG tabla_datos_inc: Primera fecha: {fechas_validas[0]}")
-        print(f"DEBUG tabla_datos_inc: Última fecha: {fechas_validas[-1]}")
+        pass  # print(f"DEBUG tabla_datos_inc: {len(fechas_validas)} fechas válidas encontradas")
+        pass  # print(f"DEBUG tabla_datos_inc: Primera fecha: {fechas_validas[0]}")
+        pass  # print(f"DEBUG tabla_datos_inc: Última fecha: {fechas_validas[-1]}")
         
         # 2. Seleccionar las campañas a mostrar
         # Buscar el índice de la fecha de corte. Si no existe o no se pasa, usar la última.
         idx_corte = len(fechas_validas) - 1
         if fecha_corte_str:
-            print(f"DEBUG tabla_datos_inc: Buscando fecha de corte: {fecha_corte_str}")
+            pass  # print(f"DEBUG tabla_datos_inc: Buscando fecha de corte: {fecha_corte_str}")
             try:
                 # Convertir la fecha de corte a datetime para comparación robusta
                 # Manejar formato con o sin 'T' separador
@@ -85,9 +85,9 @@ def tabla_datos_inc(data, parametros):
                     if i == len(fechas_validas) - 1:
                         idx_corte = i
                 
-                print(f"DEBUG tabla_datos_inc: idx_corte encontrado = {idx_corte} (fecha: {fechas_validas[idx_corte]})")
+                pass  # print(f"DEBUG tabla_datos_inc: idx_corte encontrado = {idx_corte} (fecha: {fechas_validas[idx_corte]})")
             except ValueError as e:
-                print(f"DEBUG tabla_datos_inc: Error al parsear fecha_corte_str: {e}")
+                pass  # print(f"DEBUG tabla_datos_inc: Error al parsear fecha_corte_str: {e}")
                 # Fallback: usar la última fecha
                 idx_corte = len(fechas_validas) - 1
         

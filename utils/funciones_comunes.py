@@ -182,10 +182,19 @@ def calcular_incrementos(data, fecha_calc, fecha_referencia):
                 referencia_info = next((item for item in calc_fecha_referencia if item['index'] == index), None)
 
                 if referencia_info:
-                    index_info['incr_checksum_a'] = round(index_info['checksum_a'] - referencia_info['checksum_a'],4)
-                    index_info['incr_checksum_b'] = round(index_info['checksum_b'] - referencia_info['checksum_b'], 4)
-                    index_info['incr_dev_a'] = round(index_info['dev_a'] - referencia_info['dev_a'], 2)
-                    index_info['incr_dev_b'] = round(index_info['dev_b'] - referencia_info['dev_b'], 2)
+                    dev_a = index_info.get('dev_a') or 0.0
+                    dev_b = index_info.get('dev_b') or 0.0
+                    ref_dev_a = referencia_info.get('dev_a') or 0.0
+                    ref_dev_b = referencia_info.get('dev_b') or 0.0
+                    chk_a = index_info.get('checksum_a') or 0.0
+                    chk_b = index_info.get('checksum_b') or 0.0
+                    ref_chk_a = referencia_info.get('checksum_a') or 0.0
+                    ref_chk_b = referencia_info.get('checksum_b') or 0.0
+                    
+                    index_info['incr_checksum_a'] = round(chk_a - ref_chk_a, 4)
+                    index_info['incr_checksum_b'] = round(chk_b - ref_chk_b, 4)
+                    index_info['incr_dev_a'] = round(dev_a - ref_dev_a, 2)
+                    index_info['incr_dev_b'] = round(dev_b - ref_dev_b, 2)
                     index_info['incr_dev_abs_a'] = round(
                         index_info['incr_dev_a'] + referencia_info.get('incr_dev_abs_a', 0), 2)
                     index_info['incr_dev_abs_b'] = round(
@@ -204,8 +213,8 @@ def calcular_incrementos(data, fecha_calc, fecha_referencia):
 
     # Calcular abs_dev_a y abs_dev_b (envolvente del tubo)
     for i, index_info in enumerate(calc_fecha_calc):
-        index_info['abs_dev_a'] = round(sum(item['dev_a'] for item in calc_fecha_calc[i:]), 2)
-        index_info['abs_dev_b'] = round(sum(item['dev_b'] for item in calc_fecha_calc[i:]), 2)
+        index_info['abs_dev_a'] = round(sum(item.get('dev_a') or 0.0 for item in calc_fecha_calc[i:]), 2)
+        index_info['abs_dev_b'] = round(sum(item.get('dev_b') or 0.0 for item in calc_fecha_calc[i:]), 2)
 
     # Calcular desp_a y desp_b (desplazamientos)
     for i, index_info in enumerate(calc_fecha_calc):

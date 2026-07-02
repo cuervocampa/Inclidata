@@ -179,7 +179,7 @@ def crear_leyenda_adaptiva(ax, elementos, leyenda_umbrales, mapeo_colores, ancho
     texto_x = gap_borde + ancho_icono + gap_icono_texto
     ancho_texto = ancho_cm - texto_x - gap_borde  # Espacio desde texto_x hasta el final
 
-    print(f"=== DEBUG ESPACIOS ===")
+    pass  # print(f"=== DEBUG ESPACIOS ===")
     print(f"Icono: {ancho_icono:.2f}cm en X={icono_x:.2f}cm")
     print(f"Texto: inicia en X={texto_x:.2f}cm, ancho disponible: {ancho_texto:.2f}cm")
     print(f"Por elemento: alto={altura_por_elemento:.2f}cm")

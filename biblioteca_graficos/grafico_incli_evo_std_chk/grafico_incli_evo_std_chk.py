@@ -25,7 +25,7 @@ def load_local_funciones():
         current_dir = os.path.dirname(os.path.abspath(__file__))
         funciones_path = os.path.join(current_dir, 'funciones.py')
 
-        print(f"DEBUG: Intentando cargar funciones desde: {funciones_path}")
+        pass  # print(f"DEBUG: Intentando cargar funciones desde: {funciones_path}")
 
         if not os.path.exists(funciones_path):
             raise ImportError(f"No se encontró funciones.py en {current_dir}")
@@ -41,7 +41,7 @@ def load_local_funciones():
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
 
-        print(f"DEBUG: Módulo funciones cargado exitosamente desde {funciones_path}")
+        pass  # print(f"DEBUG: Módulo funciones cargado exitosamente desde {funciones_path}")
         return module
 
     except Exception as e:
@@ -61,7 +61,7 @@ def load_local_funciones():
                 code = f.read()
             
             exec(code, funciones.__dict__)
-            print(f"DEBUG: Funciones cargado via exec desde {funciones_path}")
+            pass  # print(f"DEBUG: Funciones cargado via exec desde {funciones_path}")
             return funciones
         except Exception as e2:
              print(f"Error en fallback de carga: {e2}")
@@ -69,7 +69,7 @@ def load_local_funciones():
 
 
 # Cargar el módulo funciones local
-print("DEBUG: Iniciando carga del módulo funciones...")
+pass  # print("DEBUG: Iniciando carga del módulo funciones...")
 funciones_module = load_local_funciones()
 
 # Importaciones desde el módulo funciones
@@ -80,7 +80,7 @@ agregar_leyenda_estadisticos = funciones_module.agregar_leyenda_estadisticos
 safe_datetime_parse = funciones_module.safe_datetime_parse
 extraer_datos_fecha = funciones_module.extraer_datos_fecha
 
-print("DEBUG: Todas las funciones importadas exitosamente")
+pass  # print("DEBUG: Todas las funciones importadas exitosamente")
 
 
 def validar_tipo_sensor_disponible(data, tipo_sensor, fechas_seleccionadas):
@@ -98,7 +98,7 @@ def validar_tipo_sensor_disponible(data, tipo_sensor, fechas_seleccionadas):
     if not data or not fechas_seleccionadas:
         return False
 
-    print(f"DEBUG: Validando sensor '{tipo_sensor}'...")
+    pass  # print(f"DEBUG: Validando sensor '{tipo_sensor}'...")
 
     # Buscar el sensor directamente en los datos RAW (más confiable)
     for fecha in fechas_seleccionadas[:3]:  # Revisar las primeras 3 fechas
@@ -113,10 +113,10 @@ def validar_tipo_sensor_disponible(data, tipo_sensor, fechas_seleccionadas):
         primer_punto = calc_data[0]
         if isinstance(primer_punto, dict) and tipo_sensor in primer_punto:
             valor = primer_punto[tipo_sensor]
-            print(f"DEBUG: Sensor '{tipo_sensor}' encontrado en fecha {fecha} con valor: {valor}")
+            pass  # print(f"DEBUG: Sensor '{tipo_sensor}' encontrado en fecha {fecha} con valor: {valor}")
             return True
 
-    print(f"DEBUG: Sensor '{tipo_sensor}' NO encontrado en los datos RAW")
+    pass  # print(f"DEBUG: Sensor '{tipo_sensor}' NO encontrado en los datos RAW")
     return False
 
 
@@ -179,49 +179,49 @@ def obtener_sensores_disponibles(data, fechas_seleccionadas):
         return []
 
     # DIAGNÓSTICO DETALLADO: Buscar sensores directamente en los datos crudos
-    print("DEBUG: === DIAGNÓSTICO DE SENSORES DISPONIBLES ===")
+    pass  # print("DEBUG: === DIAGNÓSTICO DE SENSORES DISPONIBLES ===")
 
     for fecha in fechas_seleccionadas[:3]:  # Revisar las primeras 3 fechas
         if fecha not in data:
-            print(f"DEBUG: Fecha {fecha} no está en data")
+            pass  # print(f"DEBUG: Fecha {fecha} no está en data")
             continue
 
         if 'calc' not in data[fecha]:
-            print(f"DEBUG: Fecha {fecha} no tiene 'calc'")
+            pass  # print(f"DEBUG: Fecha {fecha} no tiene 'calc'")
             continue
 
         calc_data = data[fecha]['calc']
         if not calc_data or not isinstance(calc_data, list):
-            print(f"DEBUG: Fecha {fecha} - calc_data está vacío o no es lista")
+            pass  # print(f"DEBUG: Fecha {fecha} - calc_data está vacío o no es lista")
             continue
 
         if not calc_data:
-            print(f"DEBUG: Fecha {fecha} - calc_data es lista vacía")
+            pass  # print(f"DEBUG: Fecha {fecha} - calc_data es lista vacía")
             continue
 
         # Obtener campos del primer punto de datos
         primer_punto = calc_data[0]
         if isinstance(primer_punto, dict):
             campos_raw = list(primer_punto.keys())
-            print(f"DEBUG: Fecha {fecha} - Campos RAW del primer punto: {sorted(campos_raw)}")
+            pass  # print(f"DEBUG: Fecha {fecha} - Campos RAW del primer punto: {sorted(campos_raw)}")
 
             # Verificar específicamente los campos de checksum
             checksum_fields = [k for k in campos_raw if 'checksum' in k.lower()]
-            print(f"DEBUG: Fecha {fecha} - Campos de checksum encontrados: {checksum_fields}")
+            pass  # print(f"DEBUG: Fecha {fecha} - Campos de checksum encontrados: {checksum_fields}")
 
             # Agregar todos los campos encontrados
             sensores_disponibles.update(campos_raw)
         else:
-            print(f"DEBUG: Fecha {fecha} - primer punto no es diccionario: {type(primer_punto)}")
+            pass  # print(f"DEBUG: Fecha {fecha} - primer punto no es diccionario: {type(primer_punto)}")
 
     # Excluir campos que no son sensores (ejes de coordenadas)
     campos_eje = {'index', 'cota_abs', 'depth'}
     sensores_finales = [s for s in sensores_disponibles if s not in campos_eje]
 
-    print(f"DEBUG: === SENSORES FINALES DETECTADOS ===")
-    print(f"DEBUG: Total campos encontrados: {len(sensores_disponibles)}")
-    print(f"DEBUG: Sensores finales (sin ejes): {sorted(sensores_finales)}")
-    print(f"DEBUG: ========================================")
+    pass  # print(f"DEBUG: === SENSORES FINALES DETECTADOS ===")
+    pass  # print(f"DEBUG: Total campos encontrados: {len(sensores_disponibles)}")
+    pass  # print(f"DEBUG: Sensores finales (sin ejes): {sorted(sensores_finales)}")
+    pass  # print(f"DEBUG: ========================================")
 
     return sorted(sensores_finales)
 
@@ -238,7 +238,7 @@ def grafico_incli_evo_std_chk(data, parametros):
         str: Imagen del gráfico en formato PNG/SVG codificada en base64.
     """
     try:
-        print("DEBUG: Iniciando generación del gráfico de estadísticos del checksum")
+        pass  # print("DEBUG: Iniciando generación del gráfico de estadísticos del checksum")
 
         # ========================================
         # 1. EXTRAER Y VALIDAR PARÁMETROS
@@ -263,8 +263,8 @@ def grafico_incli_evo_std_chk(data, parametros):
         if not data:
             raise ValueError("Los datos no pueden estar vacíos")
 
-        print(f"DEBUG: Procesando estadísticos para sensor: {tipo_checksum}")
-        print(f"DEBUG: Rango de fechas: {fecha_inicial} - {fecha_final}")
+        pass  # print(f"DEBUG: Procesando estadísticos para sensor: {tipo_checksum}")
+        pass  # print(f"DEBUG: Rango de fechas: {fecha_inicial} - {fecha_final}")
 
         # ========================================
         # 2. INSPECCIONAR ESTRUCTURA DE DATOS
@@ -272,14 +272,14 @@ def grafico_incli_evo_std_chk(data, parametros):
 
         if data:
             fechas_muestra = [k for k in data.keys() if k not in ["info", "umbrales"]][:3]
-            print(f"DEBUG: Fechas de muestra disponibles: {fechas_muestra}")
+            pass  # print(f"DEBUG: Fechas de muestra disponibles: {fechas_muestra}")
             for fecha in fechas_muestra:
                 if isinstance(data[fecha], dict):
-                    print(f"DEBUG: Estructura de {fecha}: {list(data[fecha].keys())}")
+                    pass  # print(f"DEBUG: Estructura de {fecha}: {list(data[fecha].keys())}")
                     if 'campaign_info' in data[fecha]:
-                        print(f"DEBUG: campaign_info de {fecha}: {data[fecha]['campaign_info']}")
+                        pass  # print(f"DEBUG: campaign_info de {fecha}: {data[fecha]['campaign_info']}")
                     else:
-                        print(f"DEBUG: {fecha} NO tiene campaign_info")
+                        pass  # print(f"DEBUG: {fecha} NO tiene campaign_info")
 
         # ========================================
         # 3. CALCULAR FECHAS SELECCIONADAS
@@ -302,7 +302,7 @@ def grafico_incli_evo_std_chk(data, parametros):
             error_msg += f"Rango solicitado: {fecha_inicial} - {fecha_final}"
             raise ValueError(error_msg)
 
-        print(f"DEBUG: {len(fechas_seleccionadas)} fechas seleccionadas")
+        pass  # print(f"DEBUG: {len(fechas_seleccionadas)} fechas seleccionadas")
 
         # ========================================
         # 4. VALIDAR SENSOR DISPONIBLE
@@ -332,13 +332,13 @@ def grafico_incli_evo_std_chk(data, parametros):
                 error_msg += f"Sensores disponibles: {sensores_disponibles}"
                 raise ValueError(error_msg)
 
-        print(f"DEBUG: Sensor '{tipo_checksum}' validado exitosamente")
+        pass  # print(f"DEBUG: Sensor '{tipo_checksum}' validado exitosamente")
 
         # ========================================
         # 5. EXTRAER ESTADÍSTICOS TEMPORALES
         # ========================================
 
-        print(f"DEBUG: Extrayendo estadísticos para {tipo_checksum}")
+        pass  # print(f"DEBUG: Extrayendo estadísticos para {tipo_checksum}")
         estadisticos = extraer_estadisticos_temporales(data, fechas_seleccionadas, eje, tipo_checksum)
 
         if not estadisticos:
@@ -350,9 +350,9 @@ def grafico_incli_evo_std_chk(data, parametros):
             valores_no_none = [v for v in valores if v is not None]
             if valores_no_none:
                 datos_validos = True
-                print(f"DEBUG: {tipo_est} tiene {len(valores_no_none)} valores válidos de {len(valores)} total")
+                pass  # print(f"DEBUG: {tipo_est} tiene {len(valores_no_none)} valores válidos de {len(valores)} total")
             else:
-                print(f"DEBUG: {tipo_est} no tiene valores válidos")
+                pass  # print(f"DEBUG: {tipo_est} no tiene valores válidos")
 
         if not datos_validos:
             raise ValueError(f"No se encontraron datos válidos de {tipo_checksum} en las fechas seleccionadas")
@@ -375,7 +375,7 @@ def grafico_incli_evo_std_chk(data, parametros):
         if not fechas_dt:
             raise ValueError("No se pudieron convertir las fechas a formato datetime")
 
-        print(f"DEBUG: {len(fechas_dt)} fechas convertidas a datetime correctamente")
+        pass  # print(f"DEBUG: {len(fechas_dt)} fechas convertidas a datetime correctamente")
 
         # ========================================
         # 7. CONFIGURAR DIMENSIONES Y GRÁFICO
@@ -446,12 +446,12 @@ def grafico_incli_evo_std_chk(data, parametros):
                             label=tipo_est.upper())
 
                     series_graficadas += 1
-                    print(f"DEBUG: Graficado {tipo_est} con {len(valores_validos)} puntos")
+                    pass  # print(f"DEBUG: Graficado {tipo_est} con {len(valores_validos)} puntos")
 
         if series_graficadas == 0:
             raise ValueError("No se pudieron graficar estadísticos")
 
-        print(f"DEBUG: {series_graficadas} estadísticos graficados exitosamente")
+        pass  # print(f"DEBUG: {series_graficadas} estadísticos graficados exitosamente")
 
         # ========================================
         # 10. AJUSTAR LÍMITES Y REFERENCIAS
@@ -503,7 +503,7 @@ def grafico_incli_evo_std_chk(data, parametros):
         imagen_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
         plt.close(fig)
 
-        print("DEBUG: Gráfico de estadísticos generado exitosamente")
+        pass  # print("DEBUG: Gráfico de estadísticos generado exitosamente")
 
         # Devolver data URL
         if formato == 'svg':
@@ -518,11 +518,11 @@ def grafico_incli_evo_std_chk(data, parametros):
         # Proporcionar información adicional de debug
         if 'data' in locals() and data:
             fechas_disponibles = [f for f in data.keys() if f not in ["info", "umbrales"]]
-            print(f"DEBUG: Error ocurrió con {len(fechas_disponibles)} fechas disponibles")
+            pass  # print(f"DEBUG: Error ocurrió con {len(fechas_disponibles)} fechas disponibles")
             if fechas_disponibles:
-                print(f"DEBUG: Ejemplo de fecha: {fechas_disponibles[0]}")
+                pass  # print(f"DEBUG: Ejemplo de fecha: {fechas_disponibles[0]}")
                 if fechas_disponibles[0] in data:
-                    print(f"DEBUG: Estructura de ejemplo: {list(data[fechas_disponibles[0]].keys())}")
+                    pass  # print(f"DEBUG: Estructura de ejemplo: {list(data[fechas_disponibles[0]].keys())}")
 
         if 'fig' in locals():
             plt.close(fig)

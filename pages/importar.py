@@ -924,10 +924,10 @@ def register_callbacks(app):
             else:
                 print(f"Error: No se encontró 'campaign_info' para {fecha}.")
 
-        print(f"DEBUG — selected_filename: '{selected_filename}'")
-        print(f"DEBUG — data_path: '{data_path}'")
-        print(f"DEBUG — file_path would be: '{os.path.join(data_path, selected_filename)}'")
-        print(f"DEBUG — tubo_data keys: {list(tubo_data.keys()) if tubo_data else 'None'}")
+        pass  # print(f"DEBUG — selected_filename: '{selected_filename}'")
+        pass  # print(f"DEBUG — data_path: '{data_path}'")
+        pass  # print(f"DEBUG — file_path would be: '{os.path.join(data_path, selected_filename)}'")
+        pass  # print(f"DEBUG — tubo_data keys: {list(tubo_data.keys()) if tubo_data else 'None'}")
 
         result = insertar_camp(camp_added_formateado, fechas_agg, selected_filename, data_path,
                                fallback_data=tubo_data)

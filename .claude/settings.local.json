@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -v __pycache__ echo \"---\" grep -r \"analyze_dependencies\\\\|migrate_assets\" \"C:/_/03_PYTHON/GitHub/IncliData\" --include=\"*.py\" -l)",
+      "Bash(grep -v __pycache__ echo \"---\" grep -r \"monkey.patch\\\\|_wrapper\\\\|cb_list\\\\|callback_map\" \"C:/_/03_PYTHON/GitHub/IncliData\" --include=\"*.py\" -n)",
+      "Bash(git rm *)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(python3 *)",
+      "Bash(awk 'NR>=44 && NR<=651' \"C:/_/03_PYTHON/GitHub/IncliData/pages/graficar.py\")",
+      "Bash(awk 'NR>=33 && NR<=599' \"C:/_/03_PYTHON/GitHub/IncliData/pages/correcciones.py\")",
+      "Bash(awk 'NR>=38 && NR<=2318' \"C:/_/03_PYTHON/GitHub/IncliData/pages/editor_plantilla.py\")",
+      "Bash(grep -c \"uuid\\\\|base64\\\\|io\\\\.\\\\|Path\\\\|datetime\\\\|dmc\\\\.\\\\|dcc\\\\.\\\\|html\\\\.\" \"C:/_/03_PYTHON/GitHub/IncliData/pages/editor_plantilla_layout.py\" echo \"---\" grep -n \"uuid\\\\|base64\\\\|io\\\\.\\\\|Path\\\\b\\\\|datetime\" \"C:/_/03_PYTHON/GitHub/IncliData/pages/editor_plantilla_layout.py\")",
+      "Bash(grep -oE '\\\\.[^./]+$')",
+      "Bash(git -C \"C:/_/03_PYTHON/GitHub/IncliData\" status --short)",
+      "Bash(dir \"C:\\\\_\\\\03_PYTHON\\\\GitHub\\\\IncliData\")",
+      "Bash(git add *)"
+    ]
+  }
+}

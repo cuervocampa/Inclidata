@@ -30,7 +30,7 @@ def calcular_fechas_seleccionadas(data, fecha_inicial, fecha_final, total_camp=N
         list: Lista de fechas seleccionadas, ordenadas cronológicamente.
     """
     if not data:
-        print("DEBUG: calcular_fechas_seleccionadas - No hay datos disponibles")
+        pass  # print("DEBUG: calcular_fechas_seleccionadas - No hay datos disponibles")
         return []
 
     # Obtener todas las fechas disponibles (excluyendo claves especiales)
@@ -45,10 +45,10 @@ def calcular_fechas_seleccionadas(data, fecha_inicial, fecha_final, total_camp=N
     fechas_disponibles = [fecha for fecha in data.keys() if fecha not in claves_especiales]
 
     if not fechas_disponibles:
-        print("DEBUG: calcular_fechas_seleccionadas - No se encontraron fechas en los datos")
+        pass  # print("DEBUG: calcular_fechas_seleccionadas - No se encontraron fechas en los datos")
         return []
 
-    print(f"DEBUG: calcular_fechas_seleccionadas - {len(fechas_disponibles)} fechas disponibles en total")
+    pass  # print(f"DEBUG: calcular_fechas_seleccionadas - {len(fechas_disponibles)} fechas disponibles en total")
 
     try:
         # Intentar filtrar fechas activas primero, pero con fallback tolerante
@@ -77,12 +77,12 @@ def calcular_fechas_seleccionadas(data, fecha_inicial, fecha_final, total_camp=N
                             fechas_activas.append(fecha)
 
             except Exception as e:
-                print(f"DEBUG: Error procesando fecha {fecha}: {e}")
+                pass  # print(f"DEBUG: Error procesando fecha {fecha}: {e}")
                 continue
 
-        print(f"DEBUG: calcular_fechas_seleccionadas - {fechas_con_calc} fechas con 'calc'")
-        print(f"DEBUG: calcular_fechas_seleccionadas - {fechas_con_campaign_info} fechas con 'campaign_info'")
-        print(f"DEBUG: calcular_fechas_seleccionadas - {len(fechas_activas)} fechas consideradas válidas")
+        pass  # print(f"DEBUG: calcular_fechas_seleccionadas - {fechas_con_calc} fechas con 'calc'")
+        pass  # print(f"DEBUG: calcular_fechas_seleccionadas - {fechas_con_campaign_info} fechas con 'campaign_info'")
+        pass  # print(f"DEBUG: calcular_fechas_seleccionadas - {len(fechas_activas)} fechas consideradas válidas")
 
         # Si no hay fechas válidas, usar todas las que tengan 'calc' como último fallback
         if not fechas_activas:
@@ -92,7 +92,7 @@ def calcular_fechas_seleccionadas(data, fecha_inicial, fecha_final, total_camp=N
                               f in data and isinstance(data[f], dict) and 'calc' in data[f]]
 
         if not fechas_activas:
-            print("DEBUG: calcular_fechas_seleccionadas - CRÍTICO: No hay fechas con datos de cálculo")
+            pass  # print("DEBUG: calcular_fechas_seleccionadas - CRÍTICO: No hay fechas con datos de cálculo")
             return []
 
         # Convertir fechas a objetos datetime
@@ -124,7 +124,7 @@ def calcular_fechas_seleccionadas(data, fecha_inicial, fecha_final, total_camp=N
             print("ERROR: calcular_fechas_seleccionadas - No se pudieron convertir ninguna fecha")
             return []
 
-        print(f"DEBUG: calcular_fechas_seleccionadas - {len(fechas_dt_validas)} fechas convertidas correctamente")
+        pass  # print(f"DEBUG: calcular_fechas_seleccionadas - {len(fechas_dt_validas)} fechas convertidas correctamente")
 
         # Filtrar por rango de fechas si se especificaron
         fechas_filtradas = fechas_dt_validas
@@ -156,12 +156,12 @@ def calcular_fechas_seleccionadas(data, fecha_inicial, fecha_final, total_camp=N
 
             except ValueError as e:
                 print(f"Warning: Error al procesar rango de fechas: {e}")
-                print("DEBUG: calcular_fechas_seleccionadas - Usando todas las fechas válidas sin filtro de rango")
+                pass  # print("DEBUG: calcular_fechas_seleccionadas - Usando todas las fechas válidas sin filtro de rango")
                 fechas_filtradas = fechas_dt_validas
 
         # Si después del filtro no hay fechas, usar todas las fechas válidas
         if not fechas_filtradas:
-            print("DEBUG: calcular_fechas_seleccionadas - No hay fechas en el rango, usando todas las fechas válidas")
+            pass  # print("DEBUG: calcular_fechas_seleccionadas - No hay fechas en el rango, usando todas las fechas válidas")
             fechas_filtradas = fechas_dt_validas
 
         # Ordenar cronológicamente (más reciente primero para mantener compatibilidad)
@@ -170,11 +170,11 @@ def calcular_fechas_seleccionadas(data, fecha_inicial, fecha_final, total_camp=N
         # Extraer solo las fechas en formato string
         fechas_seleccionadas = [fecha_str for fecha_dt, fecha_str in fechas_filtradas]
 
-        print(f"DEBUG: calcular_fechas_seleccionadas - {len(fechas_seleccionadas)} fechas finalmente seleccionadas")
+        pass  # print(f"DEBUG: calcular_fechas_seleccionadas - {len(fechas_seleccionadas)} fechas finalmente seleccionadas")
 
         if fechas_seleccionadas:
-            print(f"DEBUG: calcular_fechas_seleccionadas - Primera fecha: {fechas_seleccionadas[0]}")
-            print(f"DEBUG: calcular_fechas_seleccionadas - Última fecha: {fechas_seleccionadas[-1]}")
+            pass  # print(f"DEBUG: calcular_fechas_seleccionadas - Primera fecha: {fechas_seleccionadas[0]}")
+            pass  # print(f"DEBUG: calcular_fechas_seleccionadas - Última fecha: {fechas_seleccionadas[-1]}")
 
         return fechas_seleccionadas
 
@@ -184,7 +184,7 @@ def calcular_fechas_seleccionadas(data, fecha_inicial, fecha_final, total_camp=N
         traceback.print_exc()
 
         # Fallback extremo: devolver las fechas que tengan 'calc'
-        print("DEBUG: calcular_fechas_seleccionadas - Usando fallback extremo")
+        pass  # print("DEBUG: calcular_fechas_seleccionadas - Usando fallback extremo")
         fechas_con_calc = [f for f in fechas_disponibles if
                            f in data and isinstance(data[f], dict) and 'calc' in data[f]]
         return fechas_con_calc[:10] if len(fechas_con_calc) > 10 else fechas_con_calc
@@ -204,16 +204,16 @@ def extraer_datos_fecha(fecha, data, eje):
         dict: Diccionario con los datos extraídos o None si no hay datos.
     """
     if not fecha or not data:
-        print(f"DEBUG: extraer_datos_fecha - fecha o data son None")
+        pass  # print(f"DEBUG: extraer_datos_fecha - fecha o data son None")
         return None
 
     if fecha not in data:
-        print(f"DEBUG: extraer_datos_fecha - fecha {fecha} no está en data")
+        pass  # print(f"DEBUG: extraer_datos_fecha - fecha {fecha} no está en data")
         return None
 
     fecha_data = data[fecha]
     if not isinstance(fecha_data, dict):
-        print(f"DEBUG: extraer_datos_fecha - data[{fecha}] no es un diccionario")
+        pass  # print(f"DEBUG: extraer_datos_fecha - data[{fecha}] no es un diccionario")
         return None
 
     if "calc" not in fecha_data:
@@ -224,10 +224,10 @@ def extraer_datos_fecha(fecha, data, eje):
     calc_data = fecha_data["calc"]
 
     if not calc_data or not isinstance(calc_data, list):
-        print(f"DEBUG: extraer_datos_fecha - 'calc' está vacío o no es una lista. Tipo: {type(calc_data)}")
+        pass  # print(f"DEBUG: extraer_datos_fecha - 'calc' está vacío o no es una lista. Tipo: {type(calc_data)}")
         return None
 
-    print(f"DEBUG: extraer_datos_fecha - {fecha} tiene {len(calc_data)} puntos de cálculo")
+    pass  # print(f"DEBUG: extraer_datos_fecha - {fecha} tiene {len(calc_data)} puntos de cálculo")
 
     try:
         # Si el eje es "depth", construimos la lista según la lógica especificada
@@ -252,10 +252,10 @@ def extraer_datos_fecha(fecha, data, eje):
 
         # Verificar que el eje está disponible
         if not eje_Y:
-            print(f"DEBUG: extraer_datos_fecha - No se encontraron valores para eje '{eje}' en {fecha}")
+            pass  # print(f"DEBUG: extraer_datos_fecha - No se encontraron valores para eje '{eje}' en {fecha}")
             # Mostrar claves disponibles en el primer punto para debug
             if calc_data:
-                print(f"DEBUG: extraer_datos_fecha - Claves disponibles en primer punto: {list(calc_data[0].keys())}")
+                pass  # print(f"DEBUG: extraer_datos_fecha - Claves disponibles en primer punto: {list(calc_data[0].keys())}")
             return None
 
         # ===== NUEVA LÓGICA: EXTRAER TODOS LOS CAMPOS DINÁMICAMENTE =====
@@ -271,7 +271,7 @@ def extraer_datos_fecha(fecha, data, eje):
         if eje == "depth":
             campos_disponibles.discard("cota_abs")
 
-        print(f"DEBUG: extraer_datos_fecha - Campos disponibles en {fecha}: {sorted(campos_disponibles)}")
+        pass  # print(f"DEBUG: extraer_datos_fecha - Campos disponibles en {fecha}: {sorted(campos_disponibles)}")
 
         # Crear diccionario resultado con eje_Y
         resultado = {'eje_Y': eje_Y}
@@ -283,13 +283,13 @@ def extraer_datos_fecha(fecha, data, eje):
 
             # Contar campos válidos para debug
             campos_validos = sum(1 for punto in calc_data if campo in punto)
-            print(f"DEBUG: extraer_datos_fecha - {fecha}: {campos_validos} valores de '{campo}'")
+            pass  # print(f"DEBUG: extraer_datos_fecha - {fecha}: {campos_validos} valores de '{campo}'")
 
         # También calcular desp_total si tenemos desp_a y desp_b
         if 'desp_a' in resultado and 'desp_b' in resultado:
             desp_total = [((a ** 2 + b ** 2) ** 0.5) for a, b in zip(resultado['desp_a'], resultado['desp_b'])]
             resultado['desp_total'] = desp_total
-            print(f"DEBUG: extraer_datos_fecha - {fecha}: Calculado desp_total")
+            pass  # print(f"DEBUG: extraer_datos_fecha - {fecha}: Calculado desp_total")
 
         print(
             f"DEBUG: extraer_datos_fecha - {fecha}: extracción exitosa con {len(eje_Y)} puntos y {len(resultado) - 1} campos de datos")
@@ -442,7 +442,7 @@ def extraer_estadisticos_temporales(data, fechas_seleccionadas, eje, tipo_sensor
         dict: Diccionario con series temporales de cada estadístico.
     """
     if not data or not fechas_seleccionadas:
-        print("DEBUG: extraer_estadisticos_temporales - Sin datos o fechas")
+        pass  # print("DEBUG: extraer_estadisticos_temporales - Sin datos o fechas")
         return {}
 
     try:
@@ -457,14 +457,14 @@ def extraer_estadisticos_temporales(data, fechas_seleccionadas, eje, tipo_sensor
         # Procesar cada fecha en orden cronológico
         fechas_ordenadas = sorted(fechas_seleccionadas, key=safe_datetime_parse)
 
-        print(f"DEBUG: extraer_estadisticos_temporales - Procesando {len(fechas_ordenadas)} fechas para estadísticos")
+        pass  # print(f"DEBUG: extraer_estadisticos_temporales - Procesando {len(fechas_ordenadas)} fechas para estadísticos")
 
         fechas_con_datos = 0
         fechas_con_sensor = 0
         sensor_encontrado_en_muestra = False
 
         for i, fecha in enumerate(fechas_ordenadas):
-            print(f"DEBUG: extraer_estadisticos_temporales - Procesando fecha {i + 1}/{len(fechas_ordenadas)}: {fecha}")
+            pass  # print(f"DEBUG: extraer_estadisticos_temporales - Procesando fecha {i + 1}/{len(fechas_ordenadas)}: {fecha}")
 
             # Extraer datos de la fecha
             datos_fecha = extraer_datos_fecha(fecha, data, eje)
@@ -507,12 +507,12 @@ def extraer_estadisticos_temporales(data, fechas_seleccionadas, eje, tipo_sensor
                     print(
                         f"DEBUG: extraer_estadisticos_temporales - Fecha {fecha} - Estadísticos: RMS={rms_val}, STD={std_val}, IQR={iqr_val}, DRIFT={drift_val}")
                 else:
-                    print(f"DEBUG: extraer_estadisticos_temporales - Fecha {fecha} - No contiene {tipo_sensor}")
+                    pass  # print(f"DEBUG: extraer_estadisticos_temporales - Fecha {fecha} - No contiene {tipo_sensor}")
                     # Si no hay datos del sensor, añadir None
                     for key in estadisticos:
                         estadisticos[key].append(None)
             else:
-                print(f"DEBUG: extraer_estadisticos_temporales - Fecha {fecha} - No se pudieron extraer datos")
+                pass  # print(f"DEBUG: extraer_estadisticos_temporales - Fecha {fecha} - No se pudieron extraer datos")
                 # Si no hay datos, añadir None
                 for key in estadisticos:
                     estadisticos[key].append(None)
@@ -525,13 +525,13 @@ def extraer_estadisticos_temporales(data, fechas_seleccionadas, eje, tipo_sensor
         for tipo_est, valores in estadisticos.items():
             valores_validos = [v for v in valores if v is not None]
             total_valores_validos += len(valores_validos)
-            print(f"DEBUG: extraer_estadisticos_temporales - {tipo_est}: {len(valores_validos)} valores válidos")
+            pass  # print(f"DEBUG: extraer_estadisticos_temporales - {tipo_est}: {len(valores_validos)} valores válidos")
 
         if total_valores_validos == 0:
             print(
                 f"ERROR: extraer_estadisticos_temporales - No se encontraron valores válidos para ningún estadístico de {tipo_sensor}")
 
-        print(f"DEBUG: extraer_estadisticos_temporales - Estadísticos calculados para {len(fechas_ordenadas)} fechas")
+        pass  # print(f"DEBUG: extraer_estadisticos_temporales - Estadísticos calculados para {len(fechas_ordenadas)} fechas")
         return estadisticos
 
     except Exception as e:

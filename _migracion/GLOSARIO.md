@@ -1,0 +1,15 @@
+# GLOSARIO CANÓNICO
+- Eje A / Eje B: direcciones ortogonales de medida del inclinómetro.
+- a0 / a180 / b0 / b180: lecturas cara 0 y 180 por eje (base del checksum).
+- depth: profundidad a lo largo del sondeo · cota_abs: cota absoluta.
+- Lectura de referencia (base): campaña base sobre la que se calculan desplazamientos.
+- Campaña: conjunto de lecturas de una fecha.
+- Desviación / desplazamiento incremental / desplazamiento acumulado: salidas de cálculo.
+- Checksum: control de calidad (a0 + a180 ≈ 0).
+- Parámetro: variable representable en maketador.
+- params_clasificacion: clasificación primario/secundario embebida en el JSON.
+- Token $CURRENT*: tokens de resolución dinámica de maketador.
+- ScriptRegistry: registro de scripts de generación.
+- Dispatch table: tabla de despacho para gestión masiva de informes.
+- Motor PDF: ReportLab/Matplotlib · Motor web: HTML/Playwright.
+- Lámina/plantilla: configuración guardada para regenerar una salida.

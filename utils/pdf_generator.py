@@ -20,6 +20,8 @@ import json
 import importlib.util
 import sys
 from PIL import Image
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 from utils.asset_manager import resolve_image_path
@@ -27,7 +29,7 @@ from reportlab.graphics import renderPDF
 try:
     from svglib.svglib import svg2rlg
 except ImportError:
-    print("ADVERTENCIA: No se pudo importar svglib. La generación de SVG no estará disponible.")
+    pass  # print("ADVERTENCIA: No se pudo importar svglib. La generación de SVG no estará disponible.")
     # Función de reserva en caso de falta de biblioteca
     def svg2rlg(path):
         raise ImportError("No se ha instalado svglib. Instale con 'pip install svglib'")

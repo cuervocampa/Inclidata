@@ -383,7 +383,7 @@ def seleccionar_profundidades_distribuidas(data, eje, num_profundidades=5):
                         profundidades_set.add(punto[eje])
 
         if not profundidades_set:
-            print("DEBUG: No se encontraron profundidades para el eje especificado")
+            pass  # print("DEBUG: No se encontraron profundidades para el eje especificado")
             return []
 
         # Convertir a lista y ordenar
@@ -421,7 +421,7 @@ def seleccionar_profundidades_distribuidas(data, eje, num_profundidades=5):
         # Seleccionar las profundidades correspondientes
         profundidades_seleccionadas = [profundidades[i] for i in indices_seleccionados]
 
-        print(f"DEBUG: Profundidades seleccionadas: {profundidades_seleccionadas}")
+        pass  # print(f"DEBUG: Profundidades seleccionadas: {profundidades_seleccionadas}")
 
         return profundidades_seleccionadas
 
@@ -486,7 +486,7 @@ def extraer_datos_temporales_profundidades(data, fechas_seleccionadas, profundid
                 print(
                     f"Warning: La profundidad {profundidad} tiene {len(valores)} valores en lugar de {longitud_esperada}")
 
-        print(f"DEBUG: Datos temporales extraídos para {len(profundidades)} profundidades y {longitud_esperada} fechas")
+        pass  # print(f"DEBUG: Datos temporales extraídos para {len(profundidades)} profundidades y {longitud_esperada} fechas")
 
         return datos_temporales
 
@@ -505,13 +505,13 @@ def agregar_anotaciones_finales(ax, datos_temporales, profundidades_seleccionada
         if not fechas_ordenadas or not datos_temporales:
             return
 
-        print("DEBUG: === INICIO agregar_anotaciones_finales ===")
+        pass  # print("DEBUG: === INICIO agregar_anotaciones_finales ===")
 
         # Recopilar puntos finales
         puntos_finales = []
         # CORRECCIÓN CRÍTICA: Usar limite_area_datos si está disponible
         fecha_final_datos = limite_area_datos if limite_area_datos else fechas_ordenadas[-1]
-        print(f"DEBUG: Fecha final de datos (corregida): {fecha_final_datos}")
+        pass  # print(f"DEBUG: Fecha final de datos (corregida): {fecha_final_datos}")
 
         for i, profundidad in enumerate(profundidades_seleccionadas):
             if profundidad in datos_temporales:
@@ -565,9 +565,9 @@ def agregar_anotaciones_finales(ax, datos_temporales, profundidades_seleccionada
         # Posición X: Alineadas con el borde derecho del gráfico (98% para evitar corte)
         x_anotacion = x_min + (x_max - x_min) * 0.98
 
-        print(f"DEBUG: Límites del gráfico: {x_min} a {x_max}")
-        print(f"DEBUG: Fecha final de datos: {fecha_final_datos}")
-        print(f"DEBUG: Posición X de anotaciones: {x_anotacion}")
+        pass  # print(f"DEBUG: Límites del gráfico: {x_min} a {x_max}")
+        pass  # print(f"DEBUG: Fecha final de datos: {fecha_final_datos}")
+        pass  # print(f"DEBUG: Posición X de anotaciones: {x_anotacion}")
 
         # Dibujar las anotaciones
         for punto in puntos_finales:
@@ -614,8 +614,8 @@ def agregar_anotaciones_finales(ax, datos_temporales, profundidades_seleccionada
                 zorder=100
             )
 
-        print(f"DEBUG: {len(puntos_finales)} anotaciones colocadas en área reservada")
-        print("DEBUG: === FIN agregar_anotaciones_finales ===")
+        pass  # print(f"DEBUG: {len(puntos_finales)} anotaciones colocadas en área reservada")
+        pass  # print("DEBUG: === FIN agregar_anotaciones_finales ===")
 
     except Exception as e:
         print(f"ERROR en anotaciones: {e}")

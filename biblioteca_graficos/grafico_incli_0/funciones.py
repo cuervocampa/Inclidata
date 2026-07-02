@@ -353,19 +353,19 @@ def agregar_umbrales(ax, data, leyenda_umbrales, eje, sensor, fecha_slider, incl
     """
     # Validar parámetros de entrada
     if not ax or not data or not fecha_slider or fecha_slider not in data:
-        print(f"DEBUG: Validación falló - ax: {ax is not None}, data: {data is not None}, fecha_slider: {fecha_slider}")
+        pass  # print(f"DEBUG: Validación falló - ax: {ax is not None}, data: {data is not None}, fecha_slider: {fecha_slider}")
         return
 
     # Solo agregar umbrales si hay datos en el json
     if 'umbrales' not in data or 'valores' not in data['umbrales']:
-        print("DEBUG: No hay datos de umbrales en el JSON")
+        pass  # print("DEBUG: No hay datos de umbrales en el JSON")
         return
 
     # DEBUG: Imprimir información de umbrales
-    print(f"DEBUG: leyenda_umbrales recibida: {leyenda_umbrales}")
-    print(f"DEBUG: sensor: {sensor}")
-    print(f"DEBUG: eje: {eje}")
-    print(f"DEBUG: fecha_slider: {fecha_slider}")
+    pass  # print(f"DEBUG: leyenda_umbrales recibida: {leyenda_umbrales}")
+    pass  # print(f"DEBUG: sensor: {sensor}")
+    pass  # print(f"DEBUG: eje: {eje}")
+    pass  # print(f"DEBUG: fecha_slider: {fecha_slider}")
 
     # Variable para rastrear qué deformadas ya se han mostrado
     deformadas_mostradas = set()
@@ -379,7 +379,7 @@ def agregar_umbrales(ax, data, leyenda_umbrales, eje, sensor, fecha_slider, incl
         # Para otros tipos de sensores, no mostrar umbrales
         deformadas = []
 
-    print(f"DEBUG: deformadas filtradas para {sensor}: {deformadas}")
+    pass  # print(f"DEBUG: deformadas filtradas para {sensor}: {deformadas}")
 
     # Agregar cada deformada al gráfico
     for deformada in deformadas:

@@ -15,14 +15,14 @@ def listar_grupos_disponibles():
     Retorna una lista de diccionarios [{'label': nombre, 'value': nombre}] 
     de grupos disponibles en la biblioteca.
     """
-    print(f"DEBUG: Buscando grupos en: {GRUPOS_DIR}")
+    pass  # print(f"DEBUG: Buscando grupos en: {GRUPOS_DIR}")
     
     if not GRUPOS_DIR.exists():
-        print(f"DEBUG: La carpeta {GRUPOS_DIR} no existe. Creándola...")
+        pass  # print(f"DEBUG: La carpeta {GRUPOS_DIR} no existe. Creándola...")
         try:
             GRUPOS_DIR.mkdir(parents=True, exist_ok=True)
         except Exception as e:
-            print(f"DEBUG: Error creando directorio de grupos: {e}")
+            pass  # print(f"DEBUG: Error creando directorio de grupos: {e}")
         return []
     
     grupos = []
@@ -37,9 +37,9 @@ def listar_grupos_disponibles():
                     # print(f"DEBUG: Grupo encontrado: {nombre}")
                     grupos.append({'label': nombre, 'value': nombre})
                 else:
-                    print(f"DEBUG: Directorio {nombre} ignorado (falta {nombre}.json)")
+                    pass  # print(f"DEBUG: Directorio {nombre} ignorado (falta {nombre}.json)")
     except Exception as e:
-        print(f"DEBUG: Error listando grupos: {e}")
+        pass  # print(f"DEBUG: Error listando grupos: {e}")
         
     return grupos
 

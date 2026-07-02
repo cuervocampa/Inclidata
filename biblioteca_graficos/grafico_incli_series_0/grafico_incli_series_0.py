@@ -217,7 +217,7 @@ def crear_leyenda_fechas_adaptiva(ax, elementos, ancho_cm, alto_cm):
     texto_x = gap_borde + ancho_indicador + gap_indicador_texto
     ancho_texto = ancho_cm - texto_x - gap_borde  # ← ESTA LÍNEA ESPECIFICA EL ANCHO DEL TEXTO
 
-    print(f"=== DEBUG ESPACIOS FECHAS ===")
+    pass  # print(f"=== DEBUG ESPACIOS FECHAS ===")
     print(f"Indicador: {ancho_indicador:.2f}cm en X={indicador_x:.2f}cm")
     print(f"Texto: inicia en X={texto_x:.2f}cm, ancho disponible: {ancho_texto:.2f}cm")  # ← ANCHO DEL TEXTO
     print(f"Por elemento: alto={altura_por_elemento:.2f}cm")
