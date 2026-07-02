@@ -358,73 +358,111 @@ def _convertir_anchos_pct_a_cm(data: dict) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Resolución de rutas de plantillas
+# ---------------------------------------------------------------------------
+
+# Trasplantado de Maketator (fase 3) — requerido por engines/html_engine.py
+def _encontrar_json_plantilla(nombre: str, engine: str | None = None) -> Path | None:
+    """Localiza el archivo JSON de una plantilla dado su nombre o ruta con namespace.
+
+    Estrategia de búsqueda (en orden de prioridad):
+
+    1. Si ``nombre`` contiene ``/``: es una ruta relativa desde ``PLANTILLAS_DIR``
+       (ej. ``"html/mi_plantilla"``). El stem es el último componente.
+       Busca directamente en ese subárbol antes de recurrir a rglob global.
+    2. Si se pasa ``engine``: prioriza ``PLANTILLAS_DIR/{engine}/{nombre}/{nombre}.json``
+       y rglob dentro de ese motor antes de buscar en el resto.
+    3. Ruta canónica legacy: ``{PLANTILLAS_DIR}/{nombre}/{nombre}.json``.
+    4. Búsqueda recursiva global como último recurso.
+
+    Args:
+        nombre: Nombre sin extensión (ej. ``"temporal_test_03"``) **o** ruta
+                relativa con namespace (ej. ``"html/temporal_test_03"``).
+        engine: Motor opcional (``"html"``…) para priorizar
+                la búsqueda en la subcarpeta correspondiente.
+
+    Returns:
+        ``Path`` al JSON encontrado, o ``None`` si no existe.
+    """
+    # 1. Nombre con namespace: ruta relativa desde PLANTILLAS_DIR
+    if "/" in nombre:
+        stem = Path(nombre).name  # último componente = nombre real de la plantilla
+        direct = PLANTILLAS_DIR / nombre / f"{stem}.json"
+        if direct.is_file():
+            return direct
+        subdir = PLANTILLAS_DIR / nombre
+        if subdir.is_dir():
+            # Buscar por stem exacto primero
+            hits = list(subdir.rglob(f"{stem}.json"))
+            if hits:
+                return hits[0]
+            # Fallback: cualquier JSON en ese directorio (nombre de carpeta ≠ stem del JSON)
+            any_hits = sorted(subdir.glob("*.json"))
+            if any_hits:
+                log.warning(
+                    "_encontrar_json_plantilla: la carpeta '%s' no contiene '%s.json'; "
+                    "usando '%s' como alternativa.",
+                    subdir, stem, any_hits[0].name,
+                )
+                return any_hits[0]
+        # Fallback global (formato de nombre inesperado)
+        hits = list(PLANTILLAS_DIR.rglob(f"{stem}.json"))
+        return hits[0] if hits else None
+
+    # 2. Motor explícito: priorizar subcarpeta del motor
+    if engine:
+        engine_dir = PLANTILLAS_DIR / engine
+        if engine_dir.is_dir():
+            engine_canonical = engine_dir / nombre / f"{nombre}.json"
+            if engine_canonical.is_file():
+                return engine_canonical
+            engine_hits = list(engine_dir.rglob(f"{nombre}.json"))
+            if engine_hits:
+                return engine_hits[0]
+
+    # 3. Ruta canónica legacy (compatibilidad con plantillas ya existentes)
+    legacy = PLANTILLAS_DIR / nombre / f"{nombre}.json"
+    if legacy.is_file():
+        return legacy
+
+    # 4. Búsqueda recursiva global — soporta estructuras de carpeta no estándar
+    matches = list(PLANTILLAS_DIR.rglob(f"{nombre}.json"))
+    return matches[0] if matches else None
+
+
+# ---------------------------------------------------------------------------
 # Carga de plantillas
 # ---------------------------------------------------------------------------
 
-def cargar_plantilla(nombre: str) -> Plantilla:
-    """
-    Carga una plantilla desde disco y la devuelve como objeto ``Plantilla``.
+# Cuerpo trasplantado de Maketator (fase 3): devuelve dict crudo del JSON.
+# La versión Pydantic original está en info/legacy/ si se necesita consultar.
+def cargar_plantilla(nombre: str) -> dict:
+    """Carga y devuelve el JSON de una plantilla dado su nombre (stem).
 
-    Pasos:
-      1. Lee ``biblioteca_plantillas/{nombre}/{nombre}.json``.
-      2. Valida y normaliza con ``Plantilla.model_validate()``:
-           - Estructura plana (sin ``paginas``) → estructura paginada.
-           - Estilos antiguos (color_relleno, opacidad 0-100…) → nuevos nombres.
-           - Geometría de tablas (ancho_maximo/alto_maximo → ancho/alto).
-      3. Inyecta data URIs de imágenes desde el almacén de assets.
-      4. Convierte anchos de columna de cm → % para el editor React.
+    Localiza el archivo mediante :func:`_encontrar_json_plantilla`, que busca
+    primero en la ruta canónica y luego de forma recursiva.
 
     Args:
-        nombre: Nombre de la plantilla (= nombre de la carpeta y del archivo JSON).
+        nombre: Nombre del archivo sin extensión (ej. ``"temporal_test_03"``).
 
     Returns:
-        Objeto ``Plantilla`` listo para usar o para serializar al editor.
+        Diccionario con la estructura completa de la plantilla.
 
     Raises:
-        PlantillaNoEncontrada: Si el archivo JSON no existe.
-        PlantillaInvalida:     Si el JSON no tiene la estructura esperada.
+        PlantillaNoEncontrada: si no se encuentra el JSON.
+        PlantillaInvalida: si el JSON tiene errores de sintaxis.
     """
-    ruta_json = PLANTILLAS_DIR / nombre / f"{nombre}.json"
-    if not ruta_json.exists():
-        raise PlantillaNoEncontrada(
-            f"Plantilla '{nombre}' no encontrada en {ruta_json}"
-        )
-
+    json_path = _encontrar_json_plantilla(nombre)
+    if json_path is None:
+        raise PlantillaNoEncontrada(f"Plantilla '{nombre}' no encontrada en {PLANTILLAS_DIR}.")
     try:
-        with open(ruta_json, encoding="utf-8") as f:
-            data = json.load(f)
+        with json_path.open(encoding="utf-8") as f:
+            return json.load(f)
     except json.JSONDecodeError as exc:
-        raise PlantillaInvalida(
-            f"JSON inválido en plantilla '{nombre}': {exc}"
-        ) from exc
-
-    # Garantizar configuración mínima antes de model_validate
-    if "configuracion" not in data or "nombre_plantilla" not in data.get("configuracion", {}):
-        data.setdefault("configuracion", {})
-        data["configuracion"].setdefault("nombre_plantilla", nombre)
-        data["configuracion"].setdefault(
-            "num_paginas", len(data.get("paginas", {})) or 1
-        )
-
-    try:
-        plantilla = Plantilla.model_validate(data)
-    except Exception as exc:
-        raise PlantillaInvalida(
-            f"Error validando plantilla '{nombre}': {exc}"
-        ) from exc
-
-    # Inyectar data URIs para que el editor React pueda mostrar las imágenes.
-    # Los anchos de columna se mantienen en cm en el modelo (formato disco);
-    # la conversión a % ocurre en to_editor_dict() para evitar doble conversión.
-    _inyectar_imagenes(plantilla)
-
-    log.info(
-        "Plantilla '%s' cargada: %d página(s).",
-        nombre, len(plantilla.paginas),
-    )
-    return plantilla
+        raise PlantillaInvalida(f"JSON inválido en plantilla '{nombre}': {exc}") from exc
 
 
+# MUERTA desde fase 3: esperaba el retorno Pydantic antiguo. No usar. Pendiente de archivado.
 def cargar_plantilla_para_editor(nombre: str) -> dict:
     """
     Carga una plantilla y devuelve el dict listo para el componente React.

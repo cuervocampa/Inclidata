@@ -21,7 +21,29 @@
       "Bash(rm \"C:\\\\_\\\\03_PYTHON\\\\GitHub\\\\IncliData\\\\pages\\\\editor_plantilla.py\" \"C:\\\\_\\\\03_PYTHON\\\\GitHub\\\\IncliData\\\\pages\\\\editor_plantilla_layout.py\" \"C:\\\\_\\\\03_PYTHON\\\\GitHub\\\\IncliData\\\\pages\\\\editor_visual.py\")",
       "Bash(rm -rf \"C:\\\\_\\\\03_PYTHON\\\\GitHub\\\\IncliData\\\\dash_component_editor_src\")",
       "Bash(venv/Scripts/python.exe -c \"import app; print\\('import OK'\\)\")",
-      "Bash(venv/Scripts/python.exe -c \"from utils.report_engine import generate_report_pdf; from utils.template_service import cargar_plantilla; print\\('OK motor intacto'\\)\")"
+      "Bash(venv/Scripts/python.exe -c \"from utils.report_engine import generate_report_pdf; from utils.template_service import cargar_plantilla; print\\('OK motor intacto'\\)\")",
+      "Bash(python -c ' *)",
+      "Bash(git mv *)",
+      "Bash(cp -r \"C:\\\\_\\\\03_PYTHON\\\\GitHub\\\\Maketator_web\\\\engines/.\" engines/)",
+      "Bash(cp -r \"C:\\\\_\\\\03_PYTHON\\\\GitHub\\\\Maketator_web\\\\biblioteca_graficos/html/.\" biblioteca_graficos/html/)",
+      "Bash(cp -r \"C:\\\\_\\\\03_PYTHON\\\\GitHub\\\\Maketator_web\\\\biblioteca_tablas/funciones/.\" biblioteca_tablas/funciones/)",
+      "Bash(cp \"C:\\\\_\\\\03_PYTHON\\\\GitHub\\\\Maketator_web\\\\utils\\\\report_engine.py\" utils/)",
+      "Bash(cp \"C:\\\\_\\\\03_PYTHON\\\\GitHub\\\\Maketator_web\\\\utils\\\\script_registry.py\" utils/)",
+      "Bash(cp \"C:\\\\_\\\\03_PYTHON\\\\GitHub\\\\Maketator_web\\\\utils\\\\cell_function_registry.py\" utils/)",
+      "Bash(cp -r \"C:\\\\_\\\\03_PYTHON\\\\GitHub\\\\Maketator_web\\\\biblioteca_grupos\\\\Tabla_inclis_6_lecturas\" biblioteca_grupos/)",
+      "Bash(cp -r \"C:\\\\_\\\\03_PYTHON\\\\GitHub\\\\Maketator_web\\\\biblioteca_grupos\\\\Tabla_inclis_3_lecturas\" biblioteca_grupos/)",
+      "Bash(cp -r \"C:\\\\_\\\\03_PYTHON\\\\GitHub\\\\Maketator_web\\\\biblioteca_plantillas\\\\html\\\\Incli_vertical_00_iter_0\" biblioteca_plantillas/html/)",
+      "Bash(cp -r \"C:\\\\_\\\\03_PYTHON\\\\GitHub\\\\Maketator_web\\\\biblioteca_plantillas\\\\html\\\\Borrador_inclis_AR_v1\" biblioteca_plantillas/html/)",
+      "Bash(venv/Scripts/pip install *)",
+      "Bash(venv/Scripts/python.exe -m playwright install chromium)",
+      "Bash(venv/Scripts/python.exe -c \"import plotly; print\\('plotly', plotly.__version__\\)\")",
+      "Bash(mkdir -p json_inclis)",
+      "Bash(venv/Scripts/python.exe -c \"import app; print\\('import app OK'\\)\")",
+      "Bash(venv/Scripts/python.exe -c \"from utils.report_engine import generate_report_pdf; print\\('OK'\\)\")",
+      "Bash(venv/Scripts/python.exe -c ' *)",
+      "Bash(venv/Scripts/python.exe -c \"import app; print\\('F1 OK — import app sin traceback'\\)\")",
+      "Bash(venv/Scripts/python.exe -c \"from utils.report_engine import generate_report_pdf; print\\('F2 OK — motor importado'\\)\")",
+      "Bash(python *)"
     ]
   }
 }

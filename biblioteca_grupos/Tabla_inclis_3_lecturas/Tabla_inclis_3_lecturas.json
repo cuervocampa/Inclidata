@@ -1,0 +1,889 @@
+{
+    "nombre": "Tabla_inclis_3_lecturas",
+    "descripcion": "",
+    "elementos": {
+        "el_1777930103612_rhscb6hn2": {
+            "tipo": "tabla",
+            "geometria": {
+                "x": 1.5,
+                "y": 4,
+                "ancho": 18,
+                "alto": 24
+            },
+            "estilo": {},
+            "contenido": {},
+            "metadata": {
+                "zIndex": 9,
+                "visible": true,
+                "nombre": "Tabla_3_lecturas"
+            },
+            "configuracion": {
+                "script": "",
+                "formato": "svg",
+                "parametros": {},
+                "plantilla": "__new__"
+            },
+            "id": "el_1777930103612_rhscb6hn2",
+            "cuadricula": {
+                "sin_ancla": true,
+                "overflow": "paginar",
+                "params_clasificacion": {
+                    "overflow": {
+                        "tipo": "secundario",
+                        "label": "Overflow tabla"
+                    }
+                },
+                "niveles": [
+                    {
+                        "id": 1,
+                        "tipo": "estatico",
+                        "num_columnas": 4,
+                        "alto_fila": 0.7,
+                        "estilo": {
+                            "fuente": "Aptos",
+                            "tamano": 10
+                        },
+                        "columnas": [
+                            {
+                                "ancho": 10,
+                                "contenido": "",
+                                "formato": {
+                                    "fuente": "Roboto",
+                                    "tamano": 10,
+                                    "color_texto": "#000000",
+                                    "color_fondo": "#ffffff",
+                                    "alineacion": "center",
+                                    "negrita": true
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 30,
+                                "contenido": "Col 2",
+                                "formato": {
+                                    "fuente": "Roboto",
+                                    "tamano": 10,
+                                    "color_texto": "#000000",
+                                    "color_fondo": "#ffffff",
+                                    "alineacion": "center",
+                                    "negrita": true
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    }
+                                },
+                                "colspan": 2,
+                                "context_key": "fecha_antepenultima",
+                                "origen": {
+                                    "tipo": "funcion",
+                                    "funcion": "antepenultima_lect_incli",
+                                    "parametros": {
+                                        "sensor": {
+                                            "ref": "contexto",
+                                            "clave": "$CURRENT"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 30,
+                                "contenido": "Col 3",
+                                "formato": {
+                                    "fuente": "Roboto",
+                                    "tamano": 10,
+                                    "color_texto": "#000000",
+                                    "color_fondo": "#ffffff",
+                                    "alineacion": "center",
+                                    "negrita": true
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    }
+                                },
+                                "colspan": 2,
+                                "context_key": "fecha_penultima",
+                                "origen": {
+                                    "tipo": "funcion",
+                                    "funcion": "penultima_lect_incli",
+                                    "parametros": {
+                                        "sensor": {
+                                            "ref": "contexto",
+                                            "clave": "$CURRENT"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 30,
+                                "contenido": "Col 4",
+                                "formato": {
+                                    "fuente": "Roboto",
+                                    "tamano": 10,
+                                    "color_texto": "#000000",
+                                    "color_fondo": "#ffffff",
+                                    "alineacion": "center",
+                                    "negrita": true
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    }
+                                },
+                                "colspan": 2,
+                                "context_key": "fecha_ultima",
+                                "origen": {
+                                    "tipo": "funcion",
+                                    "funcion": "ultima_lect_incli",
+                                    "parametros": {
+                                        "sensor": {
+                                            "ref": "contexto",
+                                            "clave": "$CURRENT"
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "id": 2,
+                        "tipo": "estatico",
+                        "num_columnas": 7,
+                        "alto_fila": 0.7,
+                        "estilo": {
+                            "fuente": "Aptos",
+                            "tamano": 10
+                        },
+                        "columnas": [
+                            {
+                                "ancho": 10,
+                                "contenido": "Prof.",
+                                "formato": {
+                                    "fuente": "Roboto",
+                                    "tamano": 10,
+                                    "color_texto": "#000000",
+                                    "color_fondo": "#ffffff",
+                                    "alineacion": "center",
+                                    "negrita": true
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 15,
+                                "contenido": "A (mm)",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#000000",
+                                    "color_fondo": "#ffffff",
+                                    "alineacion": "center",
+                                    "negrita": true
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 15,
+                                "contenido": "B (mm)",
+                                "formato": {
+                                    "fuente": "Roboto",
+                                    "tamano": 10,
+                                    "color_texto": "#000000",
+                                    "color_fondo": "#ffffff",
+                                    "alineacion": "center",
+                                    "negrita": true
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 15,
+                                "contenido": "A  (mm)",
+                                "formato": {
+                                    "fuente": "Roboto",
+                                    "tamano": 10,
+                                    "color_texto": "#000000",
+                                    "color_fondo": "#ffffff",
+                                    "alineacion": "center",
+                                    "negrita": true
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 15,
+                                "contenido": "B (mm)",
+                                "formato": {
+                                    "fuente": "Roboto",
+                                    "tamano": 10,
+                                    "color_texto": "#000000",
+                                    "color_fondo": "#ffffff",
+                                    "alineacion": "center",
+                                    "negrita": true
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 15,
+                                "contenido": " A (mm)",
+                                "formato": {
+                                    "fuente": "Roboto",
+                                    "tamano": 10,
+                                    "color_texto": "#000000",
+                                    "color_fondo": "#ffffff",
+                                    "alineacion": "center",
+                                    "negrita": true
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 15,
+                                "contenido": "B (mm)",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#000000",
+                                    "color_fondo": "#ffffff",
+                                    "alineacion": "center",
+                                    "negrita": true
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "id": 3,
+                        "tipo": "autorrelleno",
+                        "num_columnas": 7,
+                        "alto_fila": 0.5,
+                        "estilo": {
+                            "fuente": "Aptos",
+                            "tamano": 10
+                        },
+                        "columnas": [
+                            {
+                                "ancho": 10,
+                                "contenido": "depth",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#000000",
+                                    "color_fondo": "#ffffff",
+                                    "alineacion": "right",
+                                    "negrita": true
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    }
+                                },
+                                "origen": {
+                                    "tipo": "funcion",
+                                    "funcion": "columna_incli_json",
+                                    "parametros": {
+                                        "sensor": {
+                                            "ref": "contexto",
+                                            "clave": "$CURRENT"
+                                        },
+                                        "fecha": {
+                                            "ref": "contexto",
+                                            "clave": "fecha_ultima"
+                                        },
+                                        "clave": {
+                                            "ref": "literal",
+                                            "valor": "depth"
+                                        },
+                                        "decimales": {
+                                            "ref": "literal",
+                                            "valor": 2
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 15,
+                                "contenido": "desp_a_antep",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#000000",
+                                    "color_fondo": "#ffffff",
+                                    "alineacion": "right",
+                                    "negrita": false,
+                                    "ajustar_texto": false
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    }
+                                },
+                                "origen": {
+                                    "tipo": "funcion",
+                                    "funcion": "columna_incli_json",
+                                    "parametros": {
+                                        "sensor": {
+                                            "ref": "contexto",
+                                            "clave": "$CURRENT"
+                                        },
+                                        "fecha": {
+                                            "ref": "contexto",
+                                            "clave": "fecha_antepenultima"
+                                        },
+                                        "clave": {
+                                            "ref": "literal",
+                                            "valor": "desp_a"
+                                        },
+                                        "decimales": {
+                                            "ref": "literal",
+                                            "valor": 2
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 15,
+                                "contenido": "desp_b_antep",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#000000",
+                                    "color_fondo": "#ffffff",
+                                    "alineacion": "right",
+                                    "negrita": false
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    }
+                                },
+                                "origen": {
+                                    "tipo": "funcion",
+                                    "funcion": "columna_incli_json",
+                                    "parametros": {
+                                        "sensor": {
+                                            "ref": "contexto",
+                                            "clave": "$CURRENT"
+                                        },
+                                        "fecha": {
+                                            "ref": "contexto",
+                                            "clave": "fecha_antepenultima"
+                                        },
+                                        "clave": {
+                                            "ref": "literal",
+                                            "valor": "desp_b"
+                                        },
+                                        "decimales": {
+                                            "ref": "literal",
+                                            "valor": 2
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 15,
+                                "contenido": "desp_a_pen",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#000000",
+                                    "color_fondo": "#ffffff",
+                                    "alineacion": "right",
+                                    "negrita": false
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    }
+                                },
+                                "origen": {
+                                    "tipo": "funcion",
+                                    "funcion": "columna_incli_json",
+                                    "parametros": {
+                                        "sensor": {
+                                            "ref": "contexto",
+                                            "clave": "$CURRENT"
+                                        },
+                                        "fecha": {
+                                            "ref": "contexto",
+                                            "clave": "fecha_penultima"
+                                        },
+                                        "clave": {
+                                            "ref": "literal",
+                                            "valor": "desp_a"
+                                        },
+                                        "decimales": {
+                                            "ref": "literal",
+                                            "valor": 2
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 15,
+                                "contenido": "desp_b_pen",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#000000",
+                                    "color_fondo": "#ffffff",
+                                    "alineacion": "right",
+                                    "negrita": false
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    }
+                                },
+                                "origen": {
+                                    "tipo": "funcion",
+                                    "funcion": "columna_incli_json",
+                                    "parametros": {
+                                        "sensor": {
+                                            "ref": "contexto",
+                                            "clave": "$CURRENT"
+                                        },
+                                        "fecha": {
+                                            "ref": "contexto",
+                                            "clave": "fecha_penultima"
+                                        },
+                                        "clave": {
+                                            "ref": "literal",
+                                            "valor": "desp_b"
+                                        },
+                                        "decimales": {
+                                            "ref": "literal",
+                                            "valor": 2
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 15,
+                                "contenido": "desp_a_ult",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#000000",
+                                    "color_fondo": "#ffffff",
+                                    "alineacion": "right",
+                                    "negrita": false
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    }
+                                },
+                                "origen": {
+                                    "tipo": "funcion",
+                                    "funcion": "columna_incli_json",
+                                    "parametros": {
+                                        "sensor": {
+                                            "ref": "contexto",
+                                            "clave": "$CURRENT"
+                                        },
+                                        "fecha": {
+                                            "ref": "contexto",
+                                            "clave": "fecha_ultima"
+                                        },
+                                        "clave": {
+                                            "ref": "literal",
+                                            "valor": "desp_a"
+                                        },
+                                        "decimales": {
+                                            "ref": "literal",
+                                            "valor": 2
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "ancho": 15,
+                                "contenido": "desp_b_ult",
+                                "formato": {
+                                    "fuente": "Aptos",
+                                    "tamano": 10,
+                                    "color_texto": "#000000",
+                                    "color_fondo": "#ffffff",
+                                    "alineacion": "right",
+                                    "negrita": false
+                                },
+                                "bordes": {
+                                    "superior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "inferior": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "izquierdo": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    },
+                                    "derecho": {
+                                        "activo": true,
+                                        "grosor": 1,
+                                        "color": "#000000"
+                                    }
+                                },
+                                "origen": {
+                                    "tipo": "funcion",
+                                    "funcion": "columna_incli_json",
+                                    "parametros": {
+                                        "sensor": {
+                                            "ref": "contexto",
+                                            "clave": "$CURRENT"
+                                        },
+                                        "fecha": {
+                                            "ref": "contexto",
+                                            "clave": "fecha_ultima"
+                                        },
+                                        "clave": {
+                                            "ref": "literal",
+                                            "valor": "desp_b"
+                                        },
+                                        "decimales": {
+                                            "ref": "literal",
+                                            "valor": 2
+                                        }
+                                    }
+                                }
+                            }
+                        ],
+                        "configuracion_dinamica": {
+                            "sombreado_alterno": true,
+                            "color_par": "#ffffff",
+                            "color_impar": "#f8fafc"
+                        }
+                    }
+                ]
+            },
+            "grupo": {
+                "nombre": "Tabla_inclis_3_lecturas",
+                "color": "#cccccc"
+            }
+        }
+    }
+}

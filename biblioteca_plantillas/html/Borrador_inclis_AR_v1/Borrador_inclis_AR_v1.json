@@ -1,0 +1,2647 @@
+{
+  "paginas": {
+    "1": {
+      "elementos": {
+        "Rectángulo 1": {
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 0.6,
+            "y": 0.5293944738389182,
+            "ancho": 4.409746588693958,
+            "alto": 1.5179615705931497
+          },
+          "estilo": {
+            "grosor_borde": 0.5,
+            "color_borde": "#000000",
+            "color_relleno": "#0000ff",
+            "opacidad": 100,
+            "color": "#000000"
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "bloqueado": false
+          },
+          "id": "Rectángulo 1",
+          "contenido": {}
+        },
+        "Rectángulo 3": {
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 0.6,
+            "y": 2,
+            "ancho": 4.4,
+            "alto": 0.5
+          },
+          "estilo": {
+            "grosor_borde": 0.5,
+            "color_borde": "#000000",
+            "color_relleno": "#ffc000",
+            "opacidad": 100
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "bloqueado": false
+          },
+          "id": "Rectángulo 3",
+          "contenido": {}
+        },
+        "Rectángulo 4": {
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 5,
+            "y": 0.5,
+            "ancho": 8.7,
+            "alto": 2
+          },
+          "estilo": {
+            "grosor_borde": 0.5,
+            "color_borde": "#000000",
+            "color_relleno": "#FFFFFF",
+            "opacidad": 100
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "bloqueado": false
+          },
+          "id": "Rectángulo 4",
+          "contenido": {}
+        },
+        "Rectángulo 5": {
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 13.7,
+            "y": 0.5,
+            "ancho": 8.8,
+            "alto": 2
+          },
+          "estilo": {
+            "grosor_borde": 0.5,
+            "color_borde": "#000000",
+            "color_relleno": "#FFFFFF",
+            "opacidad": 100
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "bloqueado": false
+          },
+          "id": "Rectángulo 5",
+          "contenido": {}
+        },
+        "Rectángulo 6": {
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 22.5,
+            "y": 0.5,
+            "ancho": 6.5,
+            "alto": 2
+          },
+          "estilo": {
+            "grosor_borde": 0.5,
+            "color_borde": "#000000",
+            "color_relleno": "#FFFFFF",
+            "opacidad": 100
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "bloqueado": false
+          },
+          "id": "Rectángulo 6",
+          "contenido": {}
+        },
+        "titulo": {
+          "tipo": "texto",
+          "geometria": {
+            "x": 10.137416225749558,
+            "y": 1.3173280423280422,
+            "ancho": 3.2562169312169305,
+            "alto": 0.9834656084656085
+          },
+          "estilo": {
+            "familia_fuente": "Helvetica",
+            "tamano": 7,
+            "negrita": "normal",
+            "cursiva": "normal",
+            "color": "#000000",
+            "alineacion_h": "center",
+            "alineacion_v": "top",
+            "rotacion": 0
+          },
+          "contenido": {
+            "texto": "ROZMARIN JUNCTION",
+            "ajuste_automatico": true,
+            "editable": false
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 20,
+            "visible": true,
+            "bloqueado": false
+          },
+          "id": "titulo"
+        },
+        "proyecto": {
+          "tipo": "texto",
+          "geometria": {
+            "x": 11.438121693121694,
+            "y": 0.65,
+            "ancho": 2,
+            "alto": 0.5
+          },
+          "estilo": {
+            "familia_fuente": "Helvetica",
+            "tamano": 7,
+            "negrita": "bold",
+            "cursiva": "normal",
+            "color": "#000000",
+            "alineacion_h": "left",
+            "alineacion_v": "top",
+            "rotacion": 0
+          },
+          "contenido": {
+            "texto": "שם הפרויקט:",
+            "ajuste_automatico": true,
+            "editable": false
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 20,
+            "visible": true,
+            "bloqueado": false
+          },
+          "id": "proyecto"
+        },
+        "nombre_sensor": {
+          "tipo": "texto",
+          "geometria": {
+            "x": 0.7227126458120608,
+            "y": 1.9706055261610818,
+            "ancho": 3.6651381540270433,
+            "alto": 0.5
+          },
+          "estilo": {
+            "familia_fuente": "Helvetica",
+            "tamano": 9,
+            "negrita": "normal",
+            "cursiva": "normal",
+            "color": "#000000",
+            "alineacion_h": "center",
+            "alineacion_v": "middle",
+            "rotacion": 0
+          },
+          "contenido": {
+            "texto": "{{nombre_sensor}}",
+            "ajuste_automatico": true,
+            "editable": false
+          },
+          "grupo": {
+            "nombre": "grupo_encab_hor_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 20,
+            "visible": true,
+            "bloqueado": false
+          },
+          "id": "nombre_sensor",
+          "editable": false
+        },
+        "el_1779274981415_r71qppw15": {
+          "tipo": "imagen",
+          "geometria": {
+            "x": 23.333333333333336,
+            "y": 0.6845236076879754,
+            "ancho": 5.413359788359788,
+            "alto": 1.6355820105820102
+          },
+          "estilo": {},
+          "contenido": {
+            "src": ""
+          },
+          "metadata": {
+            "zIndex": 21,
+            "visible": true,
+            "nombre": "LOGO_AR_pag_1"
+          },
+          "imagen_config": {
+            "modo": "dinamica",
+            "marco": {
+              "borde_ancho": 0,
+              "borde_color": "#ffffff",
+              "borde_radio": 0,
+              "fondo": "transparent"
+            },
+            "posicion": "center",
+            "ajuste": "contain"
+          },
+          "id": "el_1779274981415_r71qppw15"
+        },
+        "el_1779275041723_xgqpevdwe": {
+          "tipo": "imagen",
+          "geometria": {
+            "x": 5.238095238095238,
+            "y": 0.652557319223986,
+            "ancho": 4.223985890652557,
+            "alto": 1.6719576719576716
+          },
+          "estilo": {},
+          "contenido": {
+            "src": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAawBvAAD/4QAiRXhpZgAATU0AKgAAAAgAAQESAAMAAAABAAEAAAAAAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCABFAJcDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD3+iiigAooooAKKKKACiimSyCKJ5GztUFjjrQA+iubsvG2k395Daw+f5krBV3R4GfrmujHSgBaKKSgBaQ0ma5Txj4gfSjZW8EhWWV97leojH/6/wBKFqJuyudXn1pRXls3iLU9P1C3uWvZpbeOQGSPOQyd/wBOa9PidZIldGDIwBBHcVc6bik+5z4fExr3tpYkoooqDpCiiigAphbbz27k9qfUcsSTxPFIMo6lWGcZBoA4S5+JQWZ1tbBXjU8PJNgsPXAH9a0tE8c22qXSWlzbm1nkOEO7crH0z2Nbx0bTfs/2cWFuIiMbfKGK8b1CIWGsXUUBKrb3DCMk8ja3H8qYHpvifxYPD0sEKWy3Esql2UybNi9j0PXn8qd4b8WR6/LLA1sbe4jXftD7gy5xkHA9vzpvje1t38NXdw0KGaMJtk2jcPnA6/ia5P4ec+JZcjn7K/P/AAJP/rUgN7W/Hn9latNZQ2SXAhwGczbeepGNp+lael+IrfX9KuniQxTRoRJExzjIOCD3FUPHenWg8PyXa28a3CSqRKqgNknB579axPhzg6veKRkGDkf8CHagDldMvTp2o212qeYYXDhCdufxxxXZf8LLl6/2SmP+vn/7GuyOjaVg502z6ckwL/hXkdxjWfEDpaIkcdzPshVF2gKTgcfQZpgeqR68D4YGtXEBiHlGTyt2SfQA+/GPrXKn4lM74Ol4QnAKXHzf+g13JsrY2kdq0KPAiqqxuoIwvTg+mBXA+P10rFsbT7P9qDlZBEVztx/EPrikB1NhcTaxYLe6bqkqhsjZcQowU+hA2n9a4DxlFfxa8TqMkcjtEux4kKrt6cKScc5710/w3P8AxKr1QeBcdB05UVY8faWbvRlvIxmW0bcTjnYeD/j+dO5KVtTi1/0vTQG+8ny/h2NdT4P8V2EOkw6bqF5Hb3EB8pPOO0Og+7gng+n4VyemvtfaejjH0NLbWtiPENvFqUCyWlyTC+SQVJ+6QRjHIH4Zrrp8tSDjLoeNV5sNibx2kewRzJKgkjdXQjIZTkEVIOa8Y1t/+EL1zy/D+qyFMbpoWIZYz/dbsc/mK9Z0a6mvtHtLu4hME00au8Z/hJHSsatHkSknoz0qGI9pJwas0X6KKKxOkKKKKAEJxXiOug/2/qef+fmX/wBCNe3EVz1z4J0W7uZbiWGUyyuzuRKRkk5NAC+MznwlfDPQJn/vta474e/8jJLj/n1b8PmSvSNQ0+31Oxks7lWaGTG4BiCcHPX8KoaX4X0vR7o3NnFIspQoS0hbgkE9foKAOd8beILCewutIR3N0sibht+UYIJ5rO+HH/IYvCevkD+YrqZ/BOiXFxLPLDM0kjl2PnNyScmrmleGtN0Wd5rKN0d12sWctx+NAFbxhqJ07w5csjYkmHkp9W6n8Bk1xvgHT/tWvG5I/d2keRx/E3A/TdXoGq6HZa0sS3qyMsRJVVcqMnvxRpOiWWiRSR2MTKsjBmLMWJP1NAGX421R9M0BhC5Sa4cRKR1A5JP5DH415+dGRfCI1c5817ryxz0QAjr67s16drWjabqqRyaju8u3DEN5hVRnqT+VZE8+hT6Kuj2VrdalbKRtWzBYZzn/AFhIXr700m9iXJLcpfDeYG31CLI4dG59wR/StXWtdSPVG0oFNht2MzHoM/wn04z+YrP03Q9YtDMdMtrXR0mADvNK1zLgZx8vCg8+prh5LSS61ef+1HkuLhZSJN5xyOOg+mKp001qzN1JP4URSX9tYztFGwnZWIXyuc/iKZdNqmpJvNt5EI9ev4/nXRX+n2lsYpbOCOJSMMqLj8/XqazNY1iPTYoomj815cnaG27QK2w+IprWC+8wq5ficV7q1l0R0HgPwppNzYxarOWurlXI8uQfLGw9u5wc85616MowK81+F15Pd3WpskRSzwjMCc/vDnp+HX8K9LHSoxEm5u7ubUKMqMeSas+otFFFYm4UUUUAFFFFABRRRQAmaikuIovvuAew7n8O9OaNW4bJHpmlSNEBCqB9BQLUrtczMcQWzN6NIdi/1P6VE0F9P/rLsQL/AHYEGfxZs5/IVfxRincVr7mauh6eZBLNB9plByHuWMpU/wCzuzt/DFaO0DgDH0p1JSuNJIbt5rhfE2jiLxHDdxriK6XMh9GXr+Y2/rXe0x40kGHUMB2IqZJuLSKi0ndnnFwrXU8dvGBvlYKg7c1yWreF/El9qc0o0i4KL8kZyuNo/GvcVtoVcMsSBh0IUVJt96zw1N0Fvc9FZi4S5oR6WOc8EaG2heGbeCZNl1KTNOO4Zu34DA/CukAwKBxxS1u3d3POlJyd2FFFFIQUUUUAJmloooAKKKKAENLRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQB//9k="
+          },
+          "metadata": {
+            "zIndex": 22,
+            "visible": true,
+            "nombre": "LOGO_CLIENT_pag_1"
+          },
+          "imagen_config": {
+            "modo": "dinamica",
+            "marco": {
+              "borde_ancho": 0,
+              "borde_color": "#e2e8f0",
+              "borde_radio": 0,
+              "fondo": "transparent"
+            },
+            "posicion": "center",
+            "ajuste": "contain"
+          },
+          "id": "el_1779275041723_xgqpevdwe",
+          "imagen": {
+            "formato": "jpeg",
+            "nombre_archivo": "Rozmarin.jpeg",
+            "ruta_nueva": "assets/Rozmarin.jpeg",
+            "estado": "nueva"
+          }
+        },
+        "el_1779275181909_89rmn0pqe": {
+          "tipo": "texto",
+          "geometria": {
+            "x": 0.8730158730158731,
+            "y": 0.7883594654224537,
+            "ancho": 3.6904761904761907,
+            "alto": 0.8412698412698413
+          },
+          "estilo": {
+            "color": "#ffffff",
+            "tamano": 10,
+            "textAlign": "left",
+            "negrita": "bold"
+          },
+          "contenido": {
+            "texto": "INCLINOMETERS"
+          },
+          "metadata": {
+            "zIndex": 23,
+            "visible": true,
+            "nombre": "Tipo_sensor"
+          },
+          "id": "el_1779275181909_89rmn0pqe"
+        },
+        "el_1779285669584_snjnclhal": {
+          "tipo": "grafico",
+          "geometria": {
+            "x": 6.190476190476191,
+            "y": 3.5264550264550265,
+            "ancho": 9,
+            "alto": 16
+          },
+          "estilo": {
+            "opacity": 1
+          },
+          "contenido": {},
+          "metadata": {
+            "zIndex": 24,
+            "visible": true,
+            "nombre": "EjeA"
+          },
+          "configuracion": {
+            "script": "html/grafico_inclinometro_v2.py",
+            "formato": "svg",
+            "parametros": {
+              "variable_x": "desp_a",
+              "variable_y": "depth",
+              "escala_grafico": "manual",
+              "valor_min_x": -20,
+              "valor_max_x": 20,
+              "color_scheme": "Azules",
+              "x_axis_title": "(mm)",
+              "y_axis_title": "Depth (m)",
+              "titulo": "A"
+            },
+            "params_clasificacion": {
+              "sensor": {
+                "tipo": "secundario",
+                "label": "sensor"
+              },
+              "variable_x": {
+                "tipo": "secundario",
+                "label": "variable_x"
+              },
+              "variable_y": {
+                "tipo": "secundario",
+                "label": "variable_y"
+              },
+              "total_camp": {
+                "tipo": "secundario",
+                "label": "total_camp"
+              },
+              "ultimas_camp": {
+                "tipo": "secundario",
+                "label": "ultimas_camp"
+              },
+              "cadencia_dias": {
+                "tipo": "secundario",
+                "label": "cadencia_dias"
+              },
+              "fecha_inicio": {
+                "tipo": "secundario",
+                "label": "fecha_inicio"
+              },
+              "fecha_fin": {
+                "tipo": "secundario",
+                "label": "fecha_fin"
+              },
+              "escala_grafico": {
+                "tipo": "secundario",
+                "label": "escala_grafico"
+              },
+              "valor_min_x": {
+                "tipo": "secundario",
+                "label": "valor_min_x"
+              },
+              "valor_max_x": {
+                "tipo": "secundario",
+                "label": "valor_max_x"
+              },
+              "color_scheme": {
+                "tipo": "secundario",
+                "label": "color_scheme"
+              },
+              "mostrar_umbrales": {
+                "tipo": "secundario",
+                "label": "mostrar_umbrales"
+              },
+              "show_markers": {
+                "tipo": "secundario",
+                "label": "show_markers"
+              },
+              "show_legend": {
+                "tipo": "secundario",
+                "label": "show_legend"
+              },
+              "x_axis_title": {
+                "tipo": "secundario",
+                "label": "x_axis_title"
+              },
+              "y_axis_title": {
+                "tipo": "secundario",
+                "label": "y_axis_title"
+              },
+              "titulo": {
+                "tipo": "secundario",
+                "label": "titulo"
+              },
+              "destacar_actual": {
+                "tipo": "secundario",
+                "label": "destacar_actual"
+              },
+              "color_actual": {
+                "tipo": "secundario",
+                "label": "color_actual"
+              },
+              "width_actual": {
+                "tipo": "secundario",
+                "label": "width_actual"
+              },
+              "width_historico": {
+                "tipo": "secundario",
+                "label": "width_historico"
+              },
+              "opacity_historico": {
+                "tipo": "secundario",
+                "label": "opacity_historico"
+              },
+              "dtick_x": {
+                "tipo": "secundario",
+                "label": "dtick_x"
+              }
+            }
+          },
+          "id": "el_1779285669584_snjnclhal"
+        },
+        "el_1779285768548_5vse1nrbg": {
+          "tipo": "grafico",
+          "geometria": {
+            "x": 15.476190476190478,
+            "y": 3.5793650793650795,
+            "ancho": 9,
+            "alto": 16
+          },
+          "estilo": {
+            "opacity": 1
+          },
+          "contenido": {},
+          "metadata": {
+            "zIndex": 25,
+            "visible": true,
+            "nombre": "EjeB"
+          },
+          "configuracion": {
+            "script": "html/grafico_inclinometro_v2.py",
+            "formato": "svg",
+            "parametros": {
+              "variable_x": "desp_b",
+              "variable_y": "depth",
+              "escala_grafico": "manual",
+              "valor_min_x": -20,
+              "valor_max_x": 20,
+              "color_scheme": "Azules",
+              "x_axis_title": "(mm)",
+              "y_axis_title": "Depth (m)",
+              "titulo": "B"
+            },
+            "params_clasificacion": {
+              "sensor": {
+                "tipo": "secundario",
+                "label": "sensor"
+              },
+              "variable_x": {
+                "tipo": "secundario",
+                "label": "variable_x"
+              },
+              "variable_y": {
+                "tipo": "secundario",
+                "label": "variable_y"
+              },
+              "total_camp": {
+                "tipo": "secundario",
+                "label": "total_camp"
+              },
+              "ultimas_camp": {
+                "tipo": "secundario",
+                "label": "ultimas_camp"
+              },
+              "cadencia_dias": {
+                "tipo": "secundario",
+                "label": "cadencia_dias"
+              },
+              "fecha_inicio": {
+                "tipo": "secundario",
+                "label": "fecha_inicio"
+              },
+              "fecha_fin": {
+                "tipo": "secundario",
+                "label": "fecha_fin"
+              },
+              "escala_grafico": {
+                "tipo": "secundario",
+                "label": "escala_grafico"
+              },
+              "valor_min_x": {
+                "tipo": "secundario",
+                "label": "valor_min_x"
+              },
+              "valor_max_x": {
+                "tipo": "secundario",
+                "label": "valor_max_x"
+              },
+              "color_scheme": {
+                "tipo": "secundario",
+                "label": "color_scheme"
+              },
+              "mostrar_umbrales": {
+                "tipo": "secundario",
+                "label": "mostrar_umbrales"
+              },
+              "show_markers": {
+                "tipo": "secundario",
+                "label": "show_markers"
+              },
+              "show_legend": {
+                "tipo": "secundario",
+                "label": "show_legend"
+              },
+              "x_axis_title": {
+                "tipo": "secundario",
+                "label": "x_axis_title"
+              },
+              "y_axis_title": {
+                "tipo": "secundario",
+                "label": "y_axis_title"
+              },
+              "titulo": {
+                "tipo": "secundario",
+                "label": "titulo"
+              },
+              "destacar_actual": {
+                "tipo": "secundario",
+                "label": "destacar_actual"
+              },
+              "color_actual": {
+                "tipo": "secundario",
+                "label": "color_actual"
+              },
+              "width_actual": {
+                "tipo": "secundario",
+                "label": "width_actual"
+              },
+              "width_historico": {
+                "tipo": "secundario",
+                "label": "width_historico"
+              },
+              "opacity_historico": {
+                "tipo": "secundario",
+                "label": "opacity_historico"
+              },
+              "dtick_x": {
+                "tipo": "secundario",
+                "label": "dtick_x"
+              }
+            }
+          },
+          "id": "el_1779285768548_5vse1nrbg"
+        },
+        "el_1779285833424_pw3y9qemn": {
+          "tipo": "grafico",
+          "geometria": {
+            "x": 25,
+            "y": 3.5,
+            "ancho": 4,
+            "alto": 12
+          },
+          "estilo": {
+            "opacity": 1
+          },
+          "contenido": {},
+          "metadata": {
+            "zIndex": 26,
+            "visible": true,
+            "nombre": "Leyenda"
+          },
+          "configuracion": {
+            "script": "html/grafico_escala_inclis.py",
+            "formato": "svg",
+            "parametros": {
+              "color_scheme": "Azules"
+            },
+            "params_clasificacion": {
+              "sensor": {
+                "tipo": "secundario",
+                "label": "sensor"
+              },
+              "total_camp": {
+                "tipo": "secundario",
+                "label": "total_camp"
+              },
+              "ultimas_camp": {
+                "tipo": "secundario",
+                "label": "ultimas_camp"
+              },
+              "cadencia_dias": {
+                "tipo": "secundario",
+                "label": "cadencia_dias"
+              },
+              "fecha_inicio": {
+                "tipo": "secundario",
+                "label": "fecha_inicio"
+              },
+              "fecha_fin": {
+                "tipo": "secundario",
+                "label": "fecha_fin"
+              },
+              "color_scheme": {
+                "tipo": "secundario",
+                "label": "color_scheme"
+              },
+              "mostrar_umbrales": {
+                "tipo": "secundario",
+                "label": "mostrar_umbrales"
+              },
+              "orientacion": {
+                "tipo": "secundario",
+                "label": "orientacion"
+              },
+              "titulo": {
+                "tipo": "secundario",
+                "label": "titulo"
+              },
+              "font_size": {
+                "tipo": "secundario",
+                "label": "font_size"
+              },
+              "pin_actual": {
+                "tipo": "secundario",
+                "label": "pin_actual"
+              },
+              "etiqueta_actual": {
+                "tipo": "secundario",
+                "label": "etiqueta_actual"
+              },
+              "color_actual": {
+                "tipo": "secundario",
+                "label": "color_actual"
+              },
+              "etiqueta_historico": {
+                "tipo": "secundario",
+                "label": "etiqueta_historico"
+              },
+              "bg_pin": {
+                "tipo": "secundario",
+                "label": "bg_pin"
+              },
+              "eje": {
+                "tipo": "secundario",
+                "label": "eje"
+              }
+            }
+          },
+          "id": "el_1779285833424_pw3y9qemn"
+        }
+      },
+      "configuracion": {
+        "orientacion": "landscape"
+      }
+    },
+    "2": {
+      "elementos": {
+        "Rectángulo 2": {
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 0.6,
+            "y": 0.5,
+            "ancho": 3,
+            "alto": 1.5
+          },
+          "estilo": {
+            "grosor_borde": 0.5,
+            "color_borde": "#000000",
+            "color_relleno": "#0000ff",
+            "opacidad": 100
+          },
+          "grupo": {
+            "nombre": "grupo_encab_vert_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "bloqueado": false
+          },
+          "id": "Rectángulo 2",
+          "contenido": {}
+        },
+        "Rectángulo 3": {
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 0.6,
+            "y": 2,
+            "ancho": 3,
+            "alto": 0.5
+          },
+          "estilo": {
+            "grosor_borde": 0.5,
+            "color_borde": "#000000",
+            "color_relleno": "#ffc000",
+            "opacidad": 100
+          },
+          "grupo": {
+            "nombre": "grupo_encab_vert_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "bloqueado": false
+          },
+          "id": "Rectángulo 3",
+          "contenido": {}
+        },
+        "Rectángulo 4": {
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 3.6,
+            "y": 0.5,
+            "ancho": 6,
+            "alto": 2
+          },
+          "estilo": {
+            "grosor_borde": 0.5,
+            "color_borde": "#000000",
+            "color_relleno": "#FFFFFF",
+            "opacidad": 100
+          },
+          "grupo": {
+            "nombre": "grupo_encab_vert_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "bloqueado": false
+          },
+          "id": "Rectángulo 4",
+          "contenido": {}
+        },
+        "Rectángulo 5": {
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 9.6,
+            "y": 0.5,
+            "ancho": 6,
+            "alto": 2
+          },
+          "estilo": {
+            "grosor_borde": 0.5,
+            "color_borde": "#000000",
+            "color_relleno": "#FFFFFF",
+            "opacidad": 100
+          },
+          "grupo": {
+            "nombre": "grupo_encab_vert_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "bloqueado": false
+          },
+          "id": "Rectángulo 5",
+          "contenido": {}
+        },
+        "Rectángulo 6": {
+          "tipo": "rectangulo",
+          "geometria": {
+            "x": 15.6,
+            "y": 0.5,
+            "ancho": 4.4,
+            "alto": 2
+          },
+          "estilo": {
+            "grosor_borde": 0.5,
+            "color_borde": "#000000",
+            "color_relleno": "#FFFFFF",
+            "opacidad": 100
+          },
+          "grupo": {
+            "nombre": "grupo_encab_vert_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 5,
+            "visible": true,
+            "bloqueado": false
+          },
+          "id": "Rectángulo 6",
+          "contenido": {}
+        },
+        "titulo": {
+          "tipo": "texto",
+          "geometria": {
+            "x": 3.97,
+            "y": 1.4,
+            "ancho": 5.5,
+            "alto": 1
+          },
+          "estilo": {
+            "familia_fuente": "Helvetica",
+            "tamano": 7,
+            "negrita": "normal",
+            "cursiva": "normal",
+            "color": "#000000",
+            "alineacion_h": "center",
+            "alineacion_v": "top",
+            "rotacion": 0
+          },
+          "contenido": {
+            "texto": "ROZMARIN JUNCTION",
+            "ajuste_automatico": true,
+            "editable": true
+          },
+          "grupo": {
+            "nombre": "grupo_encab_vert_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 20,
+            "visible": true,
+            "bloqueado": false
+          },
+          "id": "titulo"
+        },
+        "proyecto": {
+          "tipo": "texto",
+          "geometria": {
+            "x": 3.97,
+            "y": 0.65,
+            "ancho": 5.5,
+            "alto": 0.5
+          },
+          "estilo": {
+            "familia_fuente": "Helvetica",
+            "tamano": 6,
+            "negrita": "bold",
+            "cursiva": "normal",
+            "color": "#000000",
+            "alineacion_h": "left",
+            "alineacion_v": "top",
+            "rotacion": 0
+          },
+          "contenido": {
+            "texto": "שם הפרויקט:",
+            "ajuste_automatico": true,
+            "editable": false
+          },
+          "grupo": {
+            "nombre": "grupo_encab_vert_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 20,
+            "visible": true,
+            "bloqueado": false
+          },
+          "id": "proyecto"
+        },
+        "nombre_sensor": {
+          "tipo": "texto",
+          "geometria": {
+            "x": 0.65,
+            "y": 2,
+            "ancho": 3,
+            "alto": 0.5
+          },
+          "estilo": {
+            "familia_fuente": "Helvetica",
+            "tamano": 9,
+            "negrita": "normal",
+            "cursiva": "normal",
+            "color": "#000000",
+            "alineacion_h": "center",
+            "alineacion_v": "middle",
+            "rotacion": 0
+          },
+          "contenido": {
+            "texto": "{{nombre_sensor}}",
+            "ajuste_automatico": true,
+            "editable": true
+          },
+          "grupo": {
+            "nombre": "grupo_encab_vert_L9",
+            "color": "#cccccc"
+          },
+          "metadata": {
+            "zIndex": 20,
+            "visible": true,
+            "bloqueado": false
+          },
+          "id": "nombre_sensor"
+        },
+        "el_1779742971987_yaovcd950": {
+          "tipo": "texto",
+          "geometria": {
+            "x": 0.8201058201058201,
+            "y": 0.8333333333333334,
+            "ancho": 1.9576719576719572,
+            "alto": 0.6957671957671958
+          },
+          "estilo": {
+            "color": "#ffffff",
+            "tamano": 10,
+            "textAlign": "left",
+            "negrita": "bold"
+          },
+          "contenido": {
+            "texto": "Inclinometers"
+          },
+          "metadata": {
+            "zIndex": 21,
+            "visible": true,
+            "nombre": "Texto d950"
+          },
+          "id": "el_1779742971987_yaovcd950"
+        },
+        "el_1779743153162_wu69fpunn": {
+          "tipo": "imagen",
+          "geometria": {
+            "x": 10.912698412698413,
+            "y": 0.7804232804232806,
+            "ancho": 3.082010582010582,
+            "alto": 1.566137566137566
+          },
+          "estilo": {},
+          "contenido": {
+            "src": "assets/Rozmarin.jpeg"
+          },
+          "metadata": {
+            "zIndex": 22,
+            "visible": true,
+            "nombre": "LOGO_CLIENTE_PAG_1"
+          },
+          "imagen_config": {
+            "modo": "dinamica",
+            "marco": {
+              "borde_ancho": 0,
+              "borde_color": "#e2e8f0",
+              "borde_radio": 0,
+              "fondo": "transparent"
+            },
+            "posicion": "center",
+            "ajuste": "contain"
+          },
+          "id": "el_1779743153162_wu69fpunn",
+          "imagen": {
+            "ruta_nueva": "assets/Rozmarin.jpeg",
+            "estado": "url"
+          }
+        },
+        "el_1779743201343_w62iv4hva": {
+          "tipo": "imagen",
+          "geometria": {
+            "x": 16.600529100529105,
+            "y": 0.7142857142857143,
+            "ancho": 2.4867724867724865,
+            "alto": 1.579365079365079
+          },
+          "estilo": {},
+          "contenido": {
+            "src": ""
+          },
+          "metadata": {
+            "zIndex": 23,
+            "visible": true,
+            "nombre": "LOGO_AR_PAG2"
+          },
+          "imagen_config": {
+            "modo": "dinamica",
+            "marco": {
+              "borde_ancho": 0,
+              "borde_color": "#e2e8f0",
+              "borde_radio": 0,
+              "fondo": "transparent"
+            },
+            "posicion": "center",
+            "ajuste": "contain"
+          },
+          "id": "el_1779743201343_w62iv4hva"
+        },
+        "el_1779743247472_jarl94fpa": {
+          "tipo": "tabla",
+          "geometria": {
+            "x": 0.6466784244562023,
+            "y": 2.821624594390708,
+            "ancho": 19.33064583858235,
+            "alto": 26.054841689762327
+          },
+          "estilo": {},
+          "contenido": {},
+          "metadata": {
+            "zIndex": 24,
+            "visible": true,
+            "nombre": "Tabla 4fpa"
+          },
+          "configuracion": {
+            "script": "",
+            "formato": "svg",
+            "parametros": {},
+            "plantilla": "tabla_inclis_6_lecturas"
+          },
+          "id": "el_1779743247472_jarl94fpa",
+          "cuadricula": {
+            "sin_ancla": true,
+            "overflow": "paginar",
+            "params_clasificacion": {
+              "overflow": {
+                "tipo": "secundario",
+                "label": "Overflow tabla"
+              }
+            },
+            "niveles": [
+              {
+                "id": 1,
+                "tipo": "estatico",
+                "num_columnas": 7,
+                "alto_fila": 0.7,
+                "estilo": {
+                  "fuente": "Aptos",
+                  "tamano": 6
+                },
+                "columnas": [
+                  {
+                    "ancho": 4,
+                    "contenido": "",
+                    "formato": {
+                      "fuente": "Roboto",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "center",
+                      "negrita": true
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 16,
+                    "contenido": "Col 2",
+                    "formato": {
+                      "fuente": "Roboto",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "center",
+                      "negrita": true
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    },
+                    "colspan": 2,
+                    "context_key": "fecha_lect_1",
+                    "origen": {
+                      "tipo": "funcion",
+                      "funcion": "nesima_lect_incli",
+                      "parametros": {
+                        "sensor": {
+                          "ref": "contexto",
+                          "clave": "$CURRENT"
+                        },
+                        "posicion": {
+                          "ref": "literal",
+                          "valor": 1
+                        },
+                        "max_lecturas": {
+                          "ref": "literal",
+                          "valor": 6
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 16,
+                    "contenido": "Col 3",
+                    "formato": {
+                      "fuente": "Roboto",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "center",
+                      "negrita": true
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    },
+                    "colspan": 2,
+                    "context_key": "fecha_lect_2",
+                    "origen": {
+                      "tipo": "funcion",
+                      "funcion": "nesima_lect_incli",
+                      "parametros": {
+                        "sensor": {
+                          "ref": "contexto",
+                          "clave": "$CURRENT"
+                        },
+                        "posicion": {
+                          "ref": "literal",
+                          "valor": 2
+                        },
+                        "max_lecturas": {
+                          "ref": "literal",
+                          "valor": 6
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 16,
+                    "contenido": "Col 4",
+                    "formato": {
+                      "fuente": "Roboto",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "center",
+                      "negrita": true
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    },
+                    "colspan": 2,
+                    "context_key": "fecha_lect_3",
+                    "origen": {
+                      "tipo": "funcion",
+                      "funcion": "nesima_lect_incli",
+                      "parametros": {
+                        "sensor": {
+                          "ref": "contexto",
+                          "clave": "$CURRENT"
+                        },
+                        "posicion": {
+                          "ref": "literal",
+                          "valor": 3
+                        },
+                        "max_lecturas": {
+                          "ref": "literal",
+                          "valor": 6
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 16,
+                    "contenido": "Col 5",
+                    "formato": {
+                      "fuente": "Roboto",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "center",
+                      "negrita": true
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    },
+                    "colspan": 2,
+                    "context_key": "fecha_lect_4",
+                    "origen": {
+                      "tipo": "funcion",
+                      "funcion": "nesima_lect_incli",
+                      "parametros": {
+                        "sensor": {
+                          "ref": "contexto",
+                          "clave": "$CURRENT"
+                        },
+                        "posicion": {
+                          "ref": "literal",
+                          "valor": 4
+                        },
+                        "max_lecturas": {
+                          "ref": "literal",
+                          "valor": 6
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 16,
+                    "contenido": "Col 6",
+                    "formato": {
+                      "fuente": "Roboto",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "center",
+                      "negrita": true
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    },
+                    "colspan": 2,
+                    "context_key": "fecha_lect_5",
+                    "origen": {
+                      "tipo": "funcion",
+                      "funcion": "nesima_lect_incli",
+                      "parametros": {
+                        "sensor": {
+                          "ref": "contexto",
+                          "clave": "$CURRENT"
+                        },
+                        "posicion": {
+                          "ref": "literal",
+                          "valor": 5
+                        },
+                        "max_lecturas": {
+                          "ref": "literal",
+                          "valor": 6
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 16,
+                    "contenido": "Col 7",
+                    "formato": {
+                      "fuente": "Roboto",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "center",
+                      "negrita": true
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    },
+                    "colspan": 2,
+                    "context_key": "fecha_lect_6",
+                    "origen": {
+                      "tipo": "funcion",
+                      "funcion": "nesima_lect_incli",
+                      "parametros": {
+                        "sensor": {
+                          "ref": "contexto",
+                          "clave": "$CURRENT"
+                        },
+                        "posicion": {
+                          "ref": "literal",
+                          "valor": 6
+                        },
+                        "max_lecturas": {
+                          "ref": "literal",
+                          "valor": 6
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "tipo": "estatico",
+                "num_columnas": 13,
+                "alto_fila": 0.7,
+                "estilo": {
+                  "fuente": "Aptos",
+                  "tamano": 6
+                },
+                "columnas": [
+                  {
+                    "ancho": 4,
+                    "contenido": "Prof.",
+                    "formato": {
+                      "fuente": "Roboto",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "center",
+                      "negrita": true
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 8,
+                    "contenido": "A (mm)",
+                    "formato": {
+                      "fuente": "Roboto",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "center",
+                      "negrita": true
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 8,
+                    "contenido": "B (mm)",
+                    "formato": {
+                      "fuente": "Roboto",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "center",
+                      "negrita": true
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 8,
+                    "contenido": "A (mm)",
+                    "formato": {
+                      "fuente": "Roboto",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "center",
+                      "negrita": true
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 8,
+                    "contenido": "B (mm)",
+                    "formato": {
+                      "fuente": "Roboto",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "center",
+                      "negrita": true
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 8,
+                    "contenido": "A (mm)",
+                    "formato": {
+                      "fuente": "Roboto",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "center",
+                      "negrita": true
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 8,
+                    "contenido": "B (mm)",
+                    "formato": {
+                      "fuente": "Roboto",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "center",
+                      "negrita": true
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 8,
+                    "contenido": "A (mm)",
+                    "formato": {
+                      "fuente": "Roboto",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "center",
+                      "negrita": true
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 8,
+                    "contenido": "B (mm)",
+                    "formato": {
+                      "fuente": "Roboto",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "center",
+                      "negrita": true
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 8,
+                    "contenido": "A (mm)",
+                    "formato": {
+                      "fuente": "Roboto",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "center",
+                      "negrita": true
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 8,
+                    "contenido": "B (mm)",
+                    "formato": {
+                      "fuente": "Roboto",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "center",
+                      "negrita": true
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 8,
+                    "contenido": "A (mm)",
+                    "formato": {
+                      "fuente": "Roboto",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "center",
+                      "negrita": true
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 8,
+                    "contenido": "B (mm)",
+                    "formato": {
+                      "fuente": "Roboto",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "center",
+                      "negrita": true
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": 3,
+                "tipo": "autorrelleno",
+                "num_columnas": 13,
+                "alto_fila": 0.5,
+                "estilo": {
+                  "fuente": "Aptos",
+                  "tamano": 6
+                },
+                "columnas": [
+                  {
+                    "ancho": 4,
+                    "contenido": "depth",
+                    "formato": {
+                      "fuente": "Aptos",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "right",
+                      "negrita": true
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    },
+                    "origen": {
+                      "tipo": "funcion",
+                      "funcion": "columna_incli_json",
+                      "parametros": {
+                        "sensor": {
+                          "ref": "contexto",
+                          "clave": "$CURRENT"
+                        },
+                        "fecha": {
+                          "ref": "contexto",
+                          "clave": "fecha_lect_6"
+                        },
+                        "clave": {
+                          "ref": "literal",
+                          "valor": "depth"
+                        },
+                        "decimales": {
+                          "ref": "literal",
+                          "valor": 2
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 8,
+                    "contenido": "desp_a_1",
+                    "formato": {
+                      "fuente": "Aptos",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "right",
+                      "negrita": false,
+                      "ajustar_texto": false
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    },
+                    "origen": {
+                      "tipo": "funcion",
+                      "funcion": "columna_incli_json",
+                      "parametros": {
+                        "sensor": {
+                          "ref": "contexto",
+                          "clave": "$CURRENT"
+                        },
+                        "fecha": {
+                          "ref": "contexto",
+                          "clave": "fecha_lect_1"
+                        },
+                        "clave": {
+                          "ref": "literal",
+                          "valor": "desp_a"
+                        },
+                        "decimales": {
+                          "ref": "literal",
+                          "valor": 2
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 8,
+                    "contenido": "desp_b_1",
+                    "formato": {
+                      "fuente": "Aptos",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "right",
+                      "negrita": false,
+                      "ajustar_texto": false
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    },
+                    "origen": {
+                      "tipo": "funcion",
+                      "funcion": "columna_incli_json",
+                      "parametros": {
+                        "sensor": {
+                          "ref": "contexto",
+                          "clave": "$CURRENT"
+                        },
+                        "fecha": {
+                          "ref": "contexto",
+                          "clave": "fecha_lect_1"
+                        },
+                        "clave": {
+                          "ref": "literal",
+                          "valor": "desp_b"
+                        },
+                        "decimales": {
+                          "ref": "literal",
+                          "valor": 2
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 8,
+                    "contenido": "desp_a_2",
+                    "formato": {
+                      "fuente": "Aptos",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "right",
+                      "negrita": false,
+                      "ajustar_texto": false
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    },
+                    "origen": {
+                      "tipo": "funcion",
+                      "funcion": "columna_incli_json",
+                      "parametros": {
+                        "sensor": {
+                          "ref": "contexto",
+                          "clave": "$CURRENT"
+                        },
+                        "fecha": {
+                          "ref": "contexto",
+                          "clave": "fecha_lect_2"
+                        },
+                        "clave": {
+                          "ref": "literal",
+                          "valor": "desp_a"
+                        },
+                        "decimales": {
+                          "ref": "literal",
+                          "valor": 2
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 8,
+                    "contenido": "desp_b_2",
+                    "formato": {
+                      "fuente": "Aptos",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "right",
+                      "negrita": false,
+                      "ajustar_texto": false
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    },
+                    "origen": {
+                      "tipo": "funcion",
+                      "funcion": "columna_incli_json",
+                      "parametros": {
+                        "sensor": {
+                          "ref": "contexto",
+                          "clave": "$CURRENT"
+                        },
+                        "fecha": {
+                          "ref": "contexto",
+                          "clave": "fecha_lect_2"
+                        },
+                        "clave": {
+                          "ref": "literal",
+                          "valor": "desp_b"
+                        },
+                        "decimales": {
+                          "ref": "literal",
+                          "valor": 2
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 8,
+                    "contenido": "desp_a_3",
+                    "formato": {
+                      "fuente": "Aptos",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "right",
+                      "negrita": false,
+                      "ajustar_texto": false
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    },
+                    "origen": {
+                      "tipo": "funcion",
+                      "funcion": "columna_incli_json",
+                      "parametros": {
+                        "sensor": {
+                          "ref": "contexto",
+                          "clave": "$CURRENT"
+                        },
+                        "fecha": {
+                          "ref": "contexto",
+                          "clave": "fecha_lect_3"
+                        },
+                        "clave": {
+                          "ref": "literal",
+                          "valor": "desp_a"
+                        },
+                        "decimales": {
+                          "ref": "literal",
+                          "valor": 2
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 8,
+                    "contenido": "desp_b_3",
+                    "formato": {
+                      "fuente": "Aptos",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "right",
+                      "negrita": false,
+                      "ajustar_texto": false
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    },
+                    "origen": {
+                      "tipo": "funcion",
+                      "funcion": "columna_incli_json",
+                      "parametros": {
+                        "sensor": {
+                          "ref": "contexto",
+                          "clave": "$CURRENT"
+                        },
+                        "fecha": {
+                          "ref": "contexto",
+                          "clave": "fecha_lect_3"
+                        },
+                        "clave": {
+                          "ref": "literal",
+                          "valor": "desp_b"
+                        },
+                        "decimales": {
+                          "ref": "literal",
+                          "valor": 2
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 8,
+                    "contenido": "desp_a_4",
+                    "formato": {
+                      "fuente": "Aptos",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "right",
+                      "negrita": false,
+                      "ajustar_texto": false
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    },
+                    "origen": {
+                      "tipo": "funcion",
+                      "funcion": "columna_incli_json",
+                      "parametros": {
+                        "sensor": {
+                          "ref": "contexto",
+                          "clave": "$CURRENT"
+                        },
+                        "fecha": {
+                          "ref": "contexto",
+                          "clave": "fecha_lect_4"
+                        },
+                        "clave": {
+                          "ref": "literal",
+                          "valor": "desp_a"
+                        },
+                        "decimales": {
+                          "ref": "literal",
+                          "valor": 2
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 8,
+                    "contenido": "desp_b_4",
+                    "formato": {
+                      "fuente": "Aptos",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "right",
+                      "negrita": false,
+                      "ajustar_texto": false
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    },
+                    "origen": {
+                      "tipo": "funcion",
+                      "funcion": "columna_incli_json",
+                      "parametros": {
+                        "sensor": {
+                          "ref": "contexto",
+                          "clave": "$CURRENT"
+                        },
+                        "fecha": {
+                          "ref": "contexto",
+                          "clave": "fecha_lect_4"
+                        },
+                        "clave": {
+                          "ref": "literal",
+                          "valor": "desp_b"
+                        },
+                        "decimales": {
+                          "ref": "literal",
+                          "valor": 2
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 8,
+                    "contenido": "desp_a_5",
+                    "formato": {
+                      "fuente": "Aptos",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "right",
+                      "negrita": false,
+                      "ajustar_texto": false
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    },
+                    "origen": {
+                      "tipo": "funcion",
+                      "funcion": "columna_incli_json",
+                      "parametros": {
+                        "sensor": {
+                          "ref": "contexto",
+                          "clave": "$CURRENT"
+                        },
+                        "fecha": {
+                          "ref": "contexto",
+                          "clave": "fecha_lect_5"
+                        },
+                        "clave": {
+                          "ref": "literal",
+                          "valor": "desp_a"
+                        },
+                        "decimales": {
+                          "ref": "literal",
+                          "valor": 2
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 8,
+                    "contenido": "desp_b_5",
+                    "formato": {
+                      "fuente": "Aptos",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "right",
+                      "negrita": false,
+                      "ajustar_texto": false
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    },
+                    "origen": {
+                      "tipo": "funcion",
+                      "funcion": "columna_incli_json",
+                      "parametros": {
+                        "sensor": {
+                          "ref": "contexto",
+                          "clave": "$CURRENT"
+                        },
+                        "fecha": {
+                          "ref": "contexto",
+                          "clave": "fecha_lect_5"
+                        },
+                        "clave": {
+                          "ref": "literal",
+                          "valor": "desp_b"
+                        },
+                        "decimales": {
+                          "ref": "literal",
+                          "valor": 2
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 8,
+                    "contenido": "desp_a_6",
+                    "formato": {
+                      "fuente": "Aptos",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "right",
+                      "negrita": false,
+                      "ajustar_texto": false
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    },
+                    "origen": {
+                      "tipo": "funcion",
+                      "funcion": "columna_incli_json",
+                      "parametros": {
+                        "sensor": {
+                          "ref": "contexto",
+                          "clave": "$CURRENT"
+                        },
+                        "fecha": {
+                          "ref": "contexto",
+                          "clave": "fecha_lect_6"
+                        },
+                        "clave": {
+                          "ref": "literal",
+                          "valor": "desp_a"
+                        },
+                        "decimales": {
+                          "ref": "literal",
+                          "valor": 2
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "ancho": 8,
+                    "contenido": "desp_b_6",
+                    "formato": {
+                      "fuente": "Aptos",
+                      "tamano": 6,
+                      "color_texto": "#000000",
+                      "color_fondo": "#ffffff",
+                      "alineacion": "right",
+                      "negrita": false,
+                      "ajustar_texto": false
+                    },
+                    "bordes": {
+                      "superior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "inferior": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "izquierdo": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      },
+                      "derecho": {
+                        "activo": true,
+                        "grosor": 1,
+                        "color": "#000000"
+                      }
+                    },
+                    "origen": {
+                      "tipo": "funcion",
+                      "funcion": "columna_incli_json",
+                      "parametros": {
+                        "sensor": {
+                          "ref": "contexto",
+                          "clave": "$CURRENT"
+                        },
+                        "fecha": {
+                          "ref": "contexto",
+                          "clave": "fecha_lect_6"
+                        },
+                        "clave": {
+                          "ref": "literal",
+                          "valor": "desp_b"
+                        },
+                        "decimales": {
+                          "ref": "literal",
+                          "valor": 2
+                        }
+                      }
+                    }
+                  }
+                ],
+                "configuracion_dinamica": {
+                  "sombreado_alterno": true,
+                  "color_par": "#ffffff",
+                  "color_impar": "#f8fafc"
+                }
+              }
+            ]
+          }
+        }
+      },
+      "configuracion": {
+        "orientacion": "portrait"
+      }
+    }
+  },
+  "configuracion": {
+    "nombre_plantilla": "Borrador_inclis_AR_v1",
+    "num_paginas": 2,
+    "engine": "html"
+  },
+  "engine": "html",
+  "selectedIds": [
+    "el_1779285768548_5vse1nrbg"
+  ]
+}
