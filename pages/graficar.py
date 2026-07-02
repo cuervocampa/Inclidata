@@ -153,6 +153,7 @@ def register_callbacks(app):
             try:
                 data = json.loads(decoded)
                 nom_sensor = data.get("info", {}).get("nom_sensor", filename)
+                sensor_id = data.get("info", {}).get("nom_sensor") or Path(filename).stem
 
                 # Crear el nuevo diccionario
                 nuevo_diccionario = {
@@ -188,6 +189,27 @@ def register_callbacks(app):
                             "spike": valor.get("spike", []),
                             "bias": valor.get("bias", []),
                         }
+
+                nuevo_diccionario["_sensor_id"] = sensor_id
+
+                # Persistir JSON completo en disco para el motor HTML (lee json_inclis/{sensor_id}.json)
+                try:
+                    json_inclis_dir = Path("json_inclis")
+                    json_inclis_dir.mkdir(exist_ok=True)
+                    (json_inclis_dir / f"{sensor_id}.json").write_text(
+                        decoded.decode("utf-8"), encoding="utf-8"
+                    )
+                    try:
+                        from biblioteca_tablas.funciones import columna_incli_json
+                        columna_incli_json._json_cache.clear()
+                    except Exception:
+                        logging.getLogger(__name__).warning(
+                            "No se pudo limpiar _json_cache de columna_incli_json"
+                        )
+                except Exception as write_err:
+                    logging.getLogger(__name__).error(
+                        "No se pudo escribir json_inclis/%s.json: %s", sensor_id, write_err
+                    )
 
                 return f"\t{filename}", nuevo_diccionario, nom_sensor
             except Exception as e:
@@ -1301,50 +1323,15 @@ def register_callbacks(app):
             return []
 
         try:
-            # Ruta a la carpeta de plantillas
-            plantillas_dir = r"biblioteca_plantillas"
+            html_dir = Path("biblioteca_plantillas") / "html"
+            if not html_dir.is_dir():
+                return [{"label": "No hay plantillas disponibles", "value": ""}]
 
-            # Ruta absoluta para depuración
-            ruta_absoluta = os.path.abspath(plantillas_dir)
-            # print("\n" + "=" * 50)
-            # print(f"DIAGNÓSTICO DE CARPETAS DE PLANTILLAS")
-            # print("=" * 50)
-            # print(f"Buscando plantillas en: {ruta_absoluta}")
-
-            # Verificar si la carpeta existe
-            if not os.path.exists(plantillas_dir):
-                print(f"ERROR: No se encontró la carpeta: {plantillas_dir}")
-                return [{"label": f"No se encontró: {ruta_absoluta}", "value": ""}]
-
-            # Listar contenido para depuración
-            contenido = os.listdir(plantillas_dir)
-            # print(f"Contenido de la carpeta principal: {contenido}")
-
-            # Examinar cada elemento y verificar si es una carpeta
-            # print("\nSubcarpetas detectadas:")
-            subcarpetas = []
-            for item in contenido:
-                path_item = os.path.join(plantillas_dir, item)
-                if os.path.isdir(path_item):
-                    subcarpetas.append(item)
-                    # Verificar si contiene el archivo JSON esperado
-                    json_path = os.path.join(path_item, f"{item}.json")
-                    if os.path.exists(json_path):
-                        pass # print(f"  ✓ {item} (Contiene archivo JSON '{item}.json')")
-                    else:
-                        pass # print(f"  ✗ {item} (No contiene archivo JSON '{item}.json')")
-                else:
-                    pass # print(f"  - {item} (No es una carpeta)")
-
-            # print(f"\nTotal de subcarpetas encontradas: {len(subcarpetas)}")
-
-            # Obtener nombres de carpetas (plantillas)
-            plantillas = [{"label": nombre, "value": nombre}
-                          for nombre in contenido
-                          if os.path.isdir(os.path.join(plantillas_dir, nombre))]
-
-            # print(f"Plantillas disponibles para selección: {[p['label'] for p in plantillas]}")
-            # print("=" * 50 + "\n")
+            plantillas = [
+                {"label": p.name, "value": f"html/{p.name}"}
+                for p in sorted(html_dir.iterdir())
+                if p.is_dir()
+            ]
 
             if not plantillas:
                 return [{"label": "No hay plantillas disponibles", "value": ""}]
@@ -1395,9 +1382,10 @@ def register_callbacks(app):
 
         try:
             # Cargar JSON de la plantilla
-            ruta_json = os.path.join("biblioteca_plantillas", nombre_plantilla, f"{nombre_plantilla}.json")
+            from utils.template_service import _encontrar_json_plantilla
+            ruta_json = _encontrar_json_plantilla(nombre_plantilla)
 
-            if not os.path.exists(ruta_json):
+            if not ruta_json or not ruta_json.is_file():
                 return None, [
                     dmc.Alert(f"No se encontró el archivo JSON para la plantilla '{nombre_plantilla}'", c="red")]
 
@@ -1727,62 +1715,47 @@ def register_callbacks(app):
         """
         Genera un informe PDF basado en una plantilla JSON y los datos del tubo.
         """
-        print(f"[PDF] Callback generar_informe_pdf iniciado. n_clicks={n_clicks}, plantilla={'SI' if plantilla_json else 'NO'}")
         import os
         import copy
+        import tempfile
         from pathlib import Path
-        import io
         from datetime import datetime
+        from utils.report_engine import generate_report_pdf_from_state
 
-        # Importar el módulo de generación de PDF
-        try:
-            from utils.pdf_generator import generate_pdf_from_template
-            print("[PDF] pdf_generator importado correctamente")
-        except ImportError as imp_err:
-            print(f"[PDF] ERROR ImportError: {imp_err}")
-            # Si falla, mostrar mensaje de error
-            mensaje_error = dmc.Alert(
-                "Error: No se pudo importar el módulo pdf_generator.py",
-                title="Error de importación",
-                c="red",
-                icon=[DashIconify(icon="mdi:alert")],
-            )
-            return None, False, [mensaje_error]
+        _log = logging.getLogger(__name__)
 
         if not n_clicks or not plantilla_json:
-            print(f"[PDF] Salida temprana: n_clicks={n_clicks}, plantilla_json={bool(plantilla_json)}")
             return None, True, []
 
         try:
-            # Crear una copia profunda de la plantilla para no modificar el original
             plantilla_modificada = copy.deepcopy(plantilla_json)
 
-            # Obtener fecha seleccionada del tooltip
-            # El tooltip puede contener formato "Fecha seleccionada: YYYY-MM-DD HH:MM:SS"
-            # Necesitamos convertirlo a formato ISO "YYYY-MM-DDTHH:MM:SS" para coincidir con el JSON
+            # Parsear fecha seleccionada del tooltip
             fecha_seleccionada = None
             if slider_tooltip and "Fecha seleccionada: " in str(slider_tooltip):
-                # Formato esperado: "Fecha seleccionada: YYYY-MM-DD HH:MM:SS"
                 parts = str(slider_tooltip).replace("Fecha seleccionada: ", "").strip()
-                # Convertir formato "YYYY-MM-DD HH:MM:SS" a "YYYY-MM-DDTHH:MM:SS" (ISO)
-                if " " in parts:
-                    fecha_seleccionada = parts.replace(" ", "T")
-                else:
-                    fecha_seleccionada = parts
-                    
-            pass  # print(f"DEBUG generar_informe_pdf: slider_tooltip = {slider_tooltip}")
-            pass  # print(f"DEBUG generar_informe_pdf: fecha_seleccionada extraída = {fecha_seleccionada}")
-            
-            # Si no hay fecha en el slider, usar la fecha final del rango o la última disponible
+                fecha_seleccionada = parts.replace(" ", "T") if " " in parts else parts
             if not fecha_seleccionada and fecha_final:
                 fecha_seleccionada = fecha_final
-                pass  # print(f"DEBUG generar_informe_pdf: usando fecha_final como fecha_seleccionada = {fecha_final}")
 
-            # Recopilar valores actuales para sustituciones $CURRENT
+            # Guardas: sensor_id requerido por el motor HTML
+            sensor_id = (datos_tubo or {}).get("_sensor_id")
+            if sensor_id is None:
+                return None, True, [dmc.Alert(
+                    "Vuelve a cargar el archivo del sensor: los datos en memoria son de una sesión anterior al nuevo motor.",
+                    title="Sensor no identificado", c="orange", icon=[DashIconify(icon="mdi:alert")],
+                )]
+            if not (Path("json_inclis") / f"{sensor_id}.json").is_file():
+                return None, True, [dmc.Alert(
+                    f"No se encontró json_inclis/{sensor_id}.json. Vuelve a cargar el archivo del sensor.",
+                    title="Archivo de sensor no disponible", c="orange", icon=[DashIconify(icon="mdi:alert")],
+                )]
+
+            # Claves de estilo para sustitución $CURRENT (las reservadas del motor viajan solo en context)
             current_values = {
                 'eje': eje,
-                'orden': True if orden == 'ascendente' else False,  # Convertir a booleano
-                'orden_ascendente': True if orden == 'ascendente' else False,  # Alias para compatibilidad
+                'orden': True if orden == 'ascendente' else False,
+                'orden_ascendente': True if orden == 'ascendente' else False,
                 'color_scheme': color_scheme,
                 'escala_desplazamiento': escala_desplazamiento,
                 'escala_incremento': escala_incremento,
@@ -1793,88 +1766,52 @@ def register_callbacks(app):
                 'escala_temporal': escala_temporal,
                 'valor_positivo_temporal': valor_positivo_temporal,
                 'valor_negativo_temporal': valor_negativo_temporal,
-                'fecha_inicial': fecha_inicial,
-                'fecha_final': fecha_final,
                 'total_camp': total_camp,
-                'ultimas_camp': ultimas_camp,
                 'cadencia_dias': cadencia_dias,
-                'sensor': datos_tubo.get('info', {}).get('codigo', 'desconocido') if datos_tubo else 'desconocido',
-                'nombre_sensor': datos_tubo.get('info', {}).get('nombre', 'Sin nombre') if datos_tubo else 'Sin nombre',
-                'leyenda_umbrales': leyenda_umbrales,
-                'fecha_seleccionada': fecha_seleccionada
             }
 
-            # Procesar la plantilla para reemplazar los valores $CURRENT restantes
+            # Sustituir $CURRENT en parámetros de elementos grafico/tabla
             for pagina_num, pagina_data in plantilla_modificada.get("paginas", {}).items():
                 for elemento_id, elemento in pagina_data.get("elementos", {}).items():
-                    # Procesar elementos de tipo grafico y tabla
                     tipo_elemento = elemento.get("tipo")
                     if tipo_elemento in ["grafico", "tabla"] and "configuracion" in elemento:
-                        # Obtener los parámetros actuales
                         parametros = elemento["configuracion"].get("parametros", {})
-
-                        # Reemplazar valores $CURRENT
                         for param_key, param_value in list(parametros.items()):
                             if param_value == "$CURRENT" and param_key in current_values:
                                 elemento["configuracion"]["parametros"][param_key] = current_values[param_key]
+                        # El motor HTML lee umbrales del JSON del sensor; no inyectar leyenda_umbrales aquí.
 
-                        # Inyectar leyenda_umbrales si no está en los parámetros de la plantilla
-                        if tipo_elemento == "grafico" and "leyenda_umbrales" not in parametros:
-                            elemento["configuracion"]["parametros"]["leyenda_umbrales"] = current_values.get("leyenda_umbrales", {})
+            # Contexto del contrato §2.2
+            context = {
+                "sensor": sensor_id,
+                "sensores": [sensor_id],
+                "fecha_inicial": fecha_inicial,
+                "fecha_final": fecha_final,
+                "fecha_seleccionada": fecha_seleccionada,
+                "ultimas_camp": ultimas_camp,
+                "data": {},
+            }
 
-            # Obtener el nombre de la plantilla para el archivo
-            nombre_plantilla = plantilla_modificada.get("configuracion", {}).get("nombre_plantilla", "informe")
-            if not nombre_plantilla:
-                nombre_plantilla = "informe"
-
-            # Definir timestamp para el nombre del archivo
+            nombre_plantilla = plantilla_modificada.get("configuracion", {}).get("nombre_plantilla", "informe") or "informe"
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             nombre_archivo = f"{nombre_plantilla}_{timestamp}.pdf"
 
-            # Crear buffer para el PDF
-            buffer = io.BytesIO()
+            # Render a archivo temporal (cerrar antes de leer — compatibilidad Windows)
+            tmp = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
+            tmp.close()
+            ruta_temporal = tmp.name
+            try:
+                log_hitos = generate_report_pdf_from_state(plantilla_modificada, context, ruta_temporal)
+                _log.info("[PDF] Hitos del motor: %s", log_hitos)
+                pdf_bytes = Path(ruta_temporal).read_bytes()
+            finally:
+                try:
+                    Path(ruta_temporal).unlink(missing_ok=True)
+                except Exception:
+                    pass
 
-            # Modificación aquí: Separar las rutas de plantillas y gráficos
-            biblioteca_plantillas_path = Path("biblioteca_plantillas")
-            biblioteca_graficos_path = Path("biblioteca_graficos")  # Ruta directa, no dentro de plantillas
-            biblioteca_tablas_path = Path("biblioteca_tablas")  # Ruta a scripts de tablas
-
-            # Para mantener compatibilidad con gráficos que esperan la estructura original de datos_tubo,
-            # pasamos datos_tubo directamente. Los valores de current_values ya fueron reemplazados
-            # en los parámetros de los elementos arriba (líneas 2102-2104).
-            # 
-            # Para tablas que necesitan acceder a fecha_seleccionada, ultimas_camp, etc.,
-            # estos valores se pueden obtener de los parámetros del elemento, que ya fueron
-            # reemplazados con los valores de current_values.
-            #
-            # NOTA: Si es necesario pasar valores adicionales al data_source para tablas,
-            # se debe hacer de forma selectiva sin interferir con las claves de datos_tubo.
-            data_source_for_pdf = datos_tubo.copy() if datos_tubo else {}
-            
-            # Añadir SOLO los valores específicos que necesitan los scripts de tabla
-            # y que NO existen en datos_tubo (para no sobrescribir fechas u otros datos)
-            table_specific_values = ['fecha_seleccionada', 'ultimas_camp']
-            for key in table_specific_values:
-                if key in current_values:
-                    data_source_for_pdf[key] = current_values[key]
-
-            # Generar PDF usando el módulo importado
-            generate_pdf_from_template(
-                plantilla_modificada,
-                data_source_for_pdf,
-                buffer,
-                biblioteca_plantillas_path,
-                biblioteca_graficos_path,
-                biblioteca_tablas_path  # Añadir ruta de tablas
-            )
-
-
-            # Preparar buffer para envío
-            buffer.seek(0)
-
-            print(f"[PDF] PDF generado correctamente: {nombre_archivo} ({len(buffer.getvalue())} bytes)")
-            # Cerrar el modal y retornar el PDF para descarga
-            return dcc.send_bytes(buffer.getvalue(), nombre_archivo), False, [
+            _log.info("[PDF] %s generado (%d bytes)", nombre_archivo, len(pdf_bytes))
+            return dcc.send_bytes(pdf_bytes, nombre_archivo), False, [
                 dmc.Alert(
                     f"PDF generado correctamente como {nombre_archivo}",
                     title="PDF generado",
@@ -1889,7 +1826,6 @@ def register_callbacks(app):
             print(f"Error al generar PDF: {str(e)}")
             print(error_stack)
 
-            # Mostrar error pero mantener el modal abierto
             return None, True, [
                 dmc.Alert(
                     f"Error al generar el PDF: {str(e)}",
