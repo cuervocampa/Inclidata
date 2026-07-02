@@ -337,11 +337,23 @@ def generar_seccion_grafico(num_pagina, nombre_elemento, elemento, scripts_dispo
         list: Componentes de la sección del gráfico
     """
     configuracion = elemento.get("configuracion", {})
+
+    # Tablas del motor Maketator: usan grupo + funciones de celda, sin clave "script".
+    # El selector de script y su validación no aplican a este formato.
+    if elemento.get("tipo") == "tabla" and "script" not in configuracion:
+        return [
+            dmc.Alert(
+                "Tabla gestionada por el motor (grupo + funciones de celda). Se configura desde Maketator.",
+                c="blue",
+                variant="light",
+            )
+        ]
+
     script_valor = configuracion.get("script")
     # Si es None, convertir a cadena vacía
     if script_valor is None:
         script_valor = ""
-        
+
     parametros_json = configuracion.get("parametros", {})
 
     # Eliminar la extensión .py si está presente

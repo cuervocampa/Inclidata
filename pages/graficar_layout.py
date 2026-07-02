@@ -565,16 +565,17 @@ def layout():
                     dmc.Divider(label="Configuración del gráfico"),
                     dmc.Space(h=10),
 
-                    # Botón para generar vista previa
-                    dmc.Button(
-                        "Generar Vista Previa",
-                        id="btn-generar-preview",
-                        variant="outline",
-                        color="blue",
-                        fullWidth=True,
-                        leftSection=DashIconify(icon="mdi:eye-outline")
-                    ),
-                    dmc.Space(h=10),
+                    # Vista Previa deshabilitada: era un mini-motor ReportLab; los scripts HTML de Maketator
+                    # tienen otro contrato (punto de entrada, datos y salida). Reactivable en el futuro via render del motor.
+                    # dmc.Button(
+                    #     "Generar Vista Previa",
+                    #     id="btn-generar-preview",
+                    #     variant="outline",
+                    #     color="blue",
+                    #     fullWidth=True,
+                    #     leftSection=DashIconify(icon="mdi:eye-outline")
+                    # ),
+                    # dmc.Space(h=10),
 
                     # Contenedor para la vista previa del gráfico
                     html.Div(id="contenedor-grafico-informe", children=[]),
