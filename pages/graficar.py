@@ -2244,36 +2244,38 @@ def register_callbacks(app):
         return plantilla_modificada
 
 
-    # pruebas para previsualizar los gráficos en html
-    @app.callback(
-        Output("descargar-vista-previa-html", "data"),
-        Input("btn-generar-preview", "n_clicks"),
-        [State("fechas_multiselect", "value"),
-         State("fechas_multiselect", "data"),
-         State("slider_fecha_tooltip", "children"),
-         State("graficar-tubo", "data"),
-         State("alto_graficos_slider", "value"),
-         State("color_scheme_selector", "value"),
-         State("escala_graficos_desplazamiento", "value"),
-         State("escala_graficos_incremento", "value"),
-         State("valor_positivo_desplazamiento", "value"),
-         State("valor_negativo_desplazamiento", "value"),
-         State("valor_positivo_incremento", "value"),
-         State("valor_negativo_incremento", "value"),
-         State("leyenda_umbrales", "data"),
-         State("unidades_eje", "value"),
-         State("orden", "value"),
-         State("date_range_picker", "start_date"),
-         State("date_range_picker", "end_date"),
-         State({"type": "script-grafico", "pagina": ALL, "elemento": ALL}, "value"),
-         State({"type": "param-grafico", "pagina": ALL, "elemento": ALL, "param": ALL}, "value"),
-         State({"type": "param-grafico", "pagina": ALL, "elemento": ALL, "param": ALL}, "id"),
-         State("plantilla-json-data", "data"),
-         State("total_camp", "value"),
-         State("ultimas_camp", "value"),
-         State("cadencia_dias", "value")],
-        prevent_initial_call=True
-    )
+    # Vista Previa deshabilitada: era un mini-motor ReportLab; los scripts HTML de Maketator
+    # tienen otro contrato (punto de entrada, datos y salida). Reactivable en el futuro via render del motor.
+    # pruebas para previsualizar los gráficos en html — DECORADOR COMENTADO; btn-generar-preview no existe en el layout
+    # @app.callback(
+    #     Output("descargar-vista-previa-html", "data"),
+    #     Input("btn-generar-preview", "n_clicks"),
+    #     [State("fechas_multiselect", "value"),
+    #      State("fechas_multiselect", "data"),
+    #      State("slider_fecha_tooltip", "children"),
+    #      State("graficar-tubo", "data"),
+    #      State("alto_graficos_slider", "value"),
+    #      State("color_scheme_selector", "value"),
+    #      State("escala_graficos_desplazamiento", "value"),
+    #      State("escala_graficos_incremento", "value"),
+    #      State("valor_positivo_desplazamiento", "value"),
+    #      State("valor_negativo_desplazamiento", "value"),
+    #      State("valor_positivo_incremento", "value"),
+    #      State("valor_negativo_incremento", "value"),
+    #      State("leyenda_umbrales", "data"),
+    #      State("unidades_eje", "value"),
+    #      State("orden", "value"),
+    #      State("date_range_picker", "start_date"),
+    #      State("date_range_picker", "end_date"),
+    #      State({"type": "script-grafico", "pagina": ALL, "elemento": ALL}, "value"),
+    #      State({"type": "param-grafico", "pagina": ALL, "elemento": ALL, "param": ALL}, "value"),
+    #      State({"type": "param-grafico", "pagina": ALL, "elemento": ALL, "param": ALL}, "id"),
+    #      State("plantilla-json-data", "data"),
+    #      State("total_camp", "value"),
+    #      State("ultimas_camp", "value"),
+    #      State("cadencia_dias", "value")],
+    #     prevent_initial_call=True
+    # )
     def generar_vista_previa_graficos(n_clicks, fechas_seleccionadas, fechas_colores, slider_value,
                                       data, alto_graficos, color_scheme, escala_desplazamiento,
                                       escala_incremento, valor_positivo_desplazamiento,

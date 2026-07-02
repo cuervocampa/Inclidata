@@ -190,10 +190,41 @@ importar_umbrales.register_callbacks(app)
 
 
 if __name__ == "__main__":
+    import sys
+    from logging.handlers import RotatingFileHandler
+
+    # TEMPORAL diagnóstico: fuerza visibilidad total en consola y archivo.
+    # force=True arrastra la configuración previa de basicConfig(level=ERROR) del módulo.
+    _fmt = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
+    _console = logging.StreamHandler(sys.stdout)
+    _console.setFormatter(_fmt)
+    _logfile = RotatingFileHandler("debug_incli.log", maxBytes=5_000_000, backupCount=1, encoding="utf-8")
+    _logfile.setFormatter(_fmt)
+    logging.basicConfig(
+        level=logging.INFO,
+        handlers=[_console, _logfile],
+        force=True,
+    )
+    # Werkzeug: handlers propios (propagate=False) para que los logs de acceso lleguen
+    # al archivo aunque Dash/reloader reconfigure la cadena de propagación.
+    _wz = logging.getLogger("werkzeug")
+    _wz.setLevel(logging.INFO)
+    _wz.propagate = False
+    _wz.handlers.clear()
+    _wz.addHandler(_console)
+    _wz.addHandler(_logfile)
+
+    import faulthandler
+    _fh = open("hang_dump.log", "a", encoding="utf-8")
+    faulthandler.dump_traceback_later(timeout=45, repeat=True, file=_fh)  # TEMPORAL diagnóstico: vuelca los stacks de todos los threads cada 45s a hang_dump.log. Retirar tras cazar el bug del PDF.
+
     from utils.dev_logging import apply_callback_logging
     apply_callback_logging(app)
 
     if hasattr(app, "run"):
-        app.run(debug=True, dev_tools_hot_reload=False, port=8051)
+        # debug=False + use_reloader=False: proceso único, werkzeug access logs visibles.
+        # En debug=True Dash reconfigura el logger werkzeug internamente y los suprime.
+        # TEMPORAL diagnóstico: restaurar a debug=True tras cazar el bug del PDF.
+        app.run(debug=False, use_reloader=False, port=8051)
     else:
-        app.run_server(debug=True, port=8051)
+        app.run_server(debug=False, use_reloader=False, port=8051)
