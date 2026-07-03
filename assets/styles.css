@@ -1,21 +1,37 @@
 /* assets/styles.css */
 
-/* Línea temporal de campañas: ticks proporcionales al tiempo, etiquetas rotadas sin pisar */
-.slider-timeline-fechas .rc-slider-tooltip {
-    display: none !important;
-}
+/* Línea temporal de campañas: ticks de snap proporcionales al tiempo, sin texto en las marcas */
 .slider-timeline-fechas .rc-slider-mark-text {
-    display: block;
-    font-size: 10px;
-    white-space: nowrap;
-    transform: rotate(-45deg) translateX(-60%);
-    transform-origin: top center;
-    color: var(--id-text-primary, #495057);
+    display: none;
 }
 .slider-timeline-fechas .rc-slider-dot {
     width: 6px;
     height: 6px;
     bottom: -2px;
+}
+
+/* Eje temporal de campañas: etiquetas de mes horizontales posicionadas bajo el slider */
+.slider-fechas-eje {
+    position: relative;
+    height: 26px;
+    margin-top: 2px;
+}
+.slider-fechas-eje .eje-fecha-label {
+    position: absolute;
+    top: 6px;
+    transform: translateX(-50%);
+    font-size: 10px;
+    white-space: nowrap;
+    color: var(--id-text-secondary, #868e96);
+}
+.slider-fechas-eje .eje-fecha-label::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: -6px;
+    width: 1px;
+    height: 5px;
+    background: var(--id-text-secondary, #adb5bd);
 }
 
 /* ========================================

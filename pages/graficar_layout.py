@@ -491,11 +491,11 @@ def layout():
                             value=1,
                             marks={},
                             step=None,
-                            tooltip={"placement": "bottom", "always_visible": False},
                             className='slider-timeline-fechas'
                         ),
-                        style={"paddingBottom": "38px"}
+                        style={"paddingBottom": "8px"}
                     ),
+                    html.Div(id='slider_fechas_eje', className='slider-fechas-eje'),
                     html.Div(id='slider_fecha_tooltip', style={'marginTop': '10px', 'fontWeight': 'bold'}),
                   ], className="id-graph-card"),
                 span=3)  # Ocupa el 30% de la fila

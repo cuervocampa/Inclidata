@@ -67,44 +67,11 @@ def _construir_marcas_slider(fechas_str):
             )
         seen[c] = i
 
-    rango_total = claves[-1] if n > 1 else 1
-    umbral_gap = 0.06 * rango_total if rango_total > 0 else 0
-
-    candidatos = {0, n - 1}
-    ultimo_mes = None
-    for i, (dt, _) in enumerate(pares):
-        mes_key = (dt.year, dt.month)
-        if mes_key != ultimo_mes:
-            candidatos.add(i)
-            ultimo_mes = mes_key
-
-    labeled = {}
-    ultima_etiqueta_clave = None
-    for idx in sorted(candidatos):
-        if idx == n - 1:
-            continue
-        clave = claves[idx]
-        dt = pares[idx][0]
-        label = f"{MESES_ES[dt.month]} {str(dt.year)[2:]}"
-        if ultima_etiqueta_clave is None or (clave - ultima_etiqueta_clave) >= umbral_gap:
-            labeled[idx] = label
-            ultima_etiqueta_clave = clave
-
-    ultima_clave = claves[n - 1]
-    ultima_dt = pares[n - 1][0]
-    ultima_label = f"{MESES_ES[ultima_dt.month]} {str(ultima_dt.year)[2:]}"
-    if ultima_etiqueta_clave is None or (ultima_clave - ultima_etiqueta_clave) >= umbral_gap:
-        labeled[n - 1] = ultima_label
-    else:
-        if labeled:
-            del labeled[max(labeled.keys())]
-        labeled[n - 1] = ultima_label
-
     mapa_min_a_iso = {}
     marks = {}
-    for i, (clave, (dt, s)) in enumerate(zip(claves, pares)):
+    for clave, (_, s) in zip(claves, pares):
         mapa_min_a_iso[clave] = s
-        marks[clave] = {"label": labeled.get(i, "")}
+        marks[clave] = {"label": ""}
 
     return marks, mapa_min_a_iso
 
@@ -129,6 +96,64 @@ def _lookup_fecha_slider(slider_value, fechas_seleccionadas):
     except Exception as e:
         logger.error("Error en lookup de fecha slider: %s", e)
         return list(fechas_seleccionadas)[-1]
+
+
+def _construir_eje_temporal(fechas_str):
+    """Genera html.Span para el eje temporal bajo el slider, uno por inicio de mes natural."""
+    if not fechas_str:
+        return []
+
+    pares = sorted([(datetime.fromisoformat(s), s) for s in fechas_str], key=lambda x: x[0])
+    dt_inicio = pares[0][0]
+    dt_fin = pares[-1][0]
+    minutos_totales = int((dt_fin - dt_inicio).total_seconds() // 60)
+    if minutos_totales <= 0:
+        return []
+
+    # Inicios de mes naturales dentro del rango [dt_inicio, dt_fin]
+    candidatos = []
+    year, month = dt_inicio.year, dt_inicio.month
+    while True:
+        mes_dt = datetime(year, month, 1)
+        if mes_dt > dt_fin:
+            break
+        if mes_dt >= dt_inicio:
+            candidatos.append(mes_dt)
+        month += 1
+        if month > 12:
+            month = 1
+            year += 1
+
+    if len(candidatos) < 2:
+        candidatos = [dt_inicio, dt_fin]
+
+    num_meses = len(candidatos)
+    paso = max(1, math.ceil(0.08 * num_meses))
+    incluir_anio = paso > 1
+
+    spans = []
+    ultima_pct = None
+    for i, mes_dt in enumerate(candidatos):
+        if i % paso != 0:
+            continue
+
+        minutos_cand = int((mes_dt - dt_inicio).total_seconds() // 60)
+        pct = (minutos_cand / minutos_totales) * 100
+
+        if ultima_pct is not None and (pct - ultima_pct) < 8.0:
+            continue
+
+        texto = (f"{MESES_ES[mes_dt.month]} {mes_dt.year}" if incluir_anio
+                 else f"{MESES_ES[mes_dt.month]} {str(mes_dt.year)[2:]}")
+
+        spans.append(html.Span(
+            texto,
+            className='eje-fecha-label',
+            style={"left": f"{pct:.2f}%"}
+        ))
+        ultima_pct = pct
+
+    return spans
 
 
 from pages.graficar_layout import layout
@@ -1241,22 +1266,24 @@ def register_callbacks(app):
         [Output('slider_fechas', 'min'),
          Output('slider_fechas', 'max'),
          Output('slider_fechas', 'marks'),
-         Output('slider_fechas', 'value')],
+         Output('slider_fechas', 'value'),
+         Output('slider_fechas_eje', 'children')],
         [Input('fechas_multiselect', 'value')]
     )
     def update_slider_dates(fechas):
         if not fechas:
-            return 0, 0, {}, 0
+            return 0, 0, {}, 0, []
         try:
             marks, mapa = _construir_marcas_slider(list(fechas))
             claves = sorted(mapa.keys())
-            return claves[0], claves[-1], marks, claves[-1]
+            eje = _construir_eje_temporal(list(fechas))
+            return claves[0], claves[-1], marks, claves[-1], eje
         except ValueError as e:
             logger.error("Colisión en clave de minutos al construir slider: %s", e)
-            return 0, 0, {}, 0
+            return 0, 0, {}, 0, []
         except Exception as e:
             logger.error("Error al construir slider de fechas: %s", e)
-            return 0, 0, {}, 0
+            return 0, 0, {}, 0, []
 
     """ update_slider_tooltip(value, fechas)**:
     - **Propósito**: Actualiza el tooltip del slider mostrando la fecha seleccionada.
