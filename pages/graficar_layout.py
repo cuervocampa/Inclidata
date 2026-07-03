@@ -483,14 +483,18 @@ def layout():
                         searchable=True
                     ),
                     dmc.Space(h=10),
-                    dcc.Slider(
-                        id='slider_fechas',
-                        min=0,
-                        max=1,
-                        value=1,
-                        marks={},
-                        tooltip={"placement": "bottom", "always_visible": False},
-                        className='slider-ocultar-tooltip-marks'
+                    html.Div(
+                        dcc.Slider(
+                            id='slider_fechas',
+                            min=0,
+                            max=1,
+                            value=1,
+                            marks={},
+                            step=None,
+                            tooltip={"placement": "bottom", "always_visible": False},
+                            className='slider-timeline-fechas'
+                        ),
+                        style={"paddingBottom": "38px"}
                     ),
                     html.Div(id='slider_fecha_tooltip', style={'marginTop': '10px', 'fontWeight': 'bold'}),
                   ], className="id-graph-card"),

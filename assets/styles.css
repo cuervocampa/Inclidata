@@ -1,15 +1,21 @@
 /* assets/styles.css */
 
-/* Ocultar el tooltip del slider y las marcas para sliders con la clase 'slider-ocultar-tooltip-marks' */
-
-/* Ocultar el tooltip del slider */
-.slider-ocultar-tooltip-marks .rc-slider-tooltip {
+/* Línea temporal de campañas: ticks proporcionales al tiempo, etiquetas rotadas sin pisar */
+.slider-timeline-fechas .rc-slider-tooltip {
     display: none !important;
 }
-
-/* Ocultar las marcas del slider */
-.slider-ocultar-tooltip-marks .rc-slider-mark-text {
-    display: none !important;
+.slider-timeline-fechas .rc-slider-mark-text {
+    display: block;
+    font-size: 10px;
+    white-space: nowrap;
+    transform: rotate(-45deg) translateX(-60%);
+    transform-origin: top center;
+    color: var(--id-text-primary, #495057);
+}
+.slider-timeline-fechas .rc-slider-dot {
+    width: 6px;
+    height: 6px;
+    bottom: -2px;
 }
 
 /* ========================================
