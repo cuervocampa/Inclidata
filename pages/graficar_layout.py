@@ -513,6 +513,20 @@ def layout():
                 # Gráfico polar
                 html.Div([
                     dcc.Graph(id='grafico_polar', config={'responsive': True, 'scrollZoom': True}, style={'height': '100%'}),
+                    dmc.SegmentedControl(
+                        id="toggle-polar-3d",
+                        data=[{"value": "polar", "label": "Polar"}, {"value": "3d", "label": "3D"}],
+                        value="polar",
+                        size="xs",
+                        style={"position": "absolute", "top": "5px", "left": "5px", "zIndex": 10},
+                    ),
+                    dmc.SegmentedControl(
+                        id="toggle-3d-campanas",
+                        data=[{"value": "fecha", "label": "Fecha"}, {"value": "todas", "label": "Todas"}],
+                        value="fecha",
+                        size="xs",
+                        style={"display": "none", "position": "absolute", "top": "5px", "left": "130px", "zIndex": 10},
+                    ),
                     dmc.Button("🔍 Debug Polar", id="btn-debug-polar", variant="subtle", size="xs",
                               style={"position": "absolute", "top": "5px", "right": "5px", "zIndex": 10,
                                      "opacity": 0.7}),

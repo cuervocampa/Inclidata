@@ -1168,9 +1168,11 @@ def register_callbacks(app):
         [Input("graficar-tubo", "data"),
          Input("slider_fechas", "value"),
          Input("fechas_multiselect", "value"),
-         Input("unidades_eje", "value")]
+         Input("unidades_eje", "value"),
+         Input("toggle-polar-3d", "value"),
+         Input("toggle-3d-campanas", "value")]
     )
-    def actualizar_grafico_polar(data, slider_value, fechas_seleccionadas, eje):
+    def actualizar_grafico_polar(data, slider_value, fechas_seleccionadas, eje, modo, alcance_camp):
         if not data or not fechas_seleccionadas or slider_value is None:
             fig_vacia = go.Figure()
             fig_vacia.update_layout(autosize=False, uirevision='constant')
@@ -1182,6 +1184,131 @@ def register_callbacks(app):
             fig_vacia = go.Figure()
             fig_vacia.update_layout(autosize=False, uirevision='constant')
             return fig_vacia
+
+        if modo == "3d":
+            calc_data = data[fecha_slider]["calc"]
+
+            def _get_z(punto):
+                return punto.get(eje, punto.get("cota_abs", 0)) or 0
+
+            xs = [punto.get("desp_a", 0) or 0 for punto in calc_data]
+            ys = [punto.get("desp_b", 0) or 0 for punto in calc_data]
+            zs = [_get_z(punto) for punto in calc_data]
+
+            hover_3d = []
+            for punto in calc_data:
+                desp_a = punto.get("desp_a", 0) or 0
+                desp_b = punto.get("desp_b", 0) or 0
+                r = math.sqrt(desp_a ** 2 + desp_b ** 2)
+                theta = math.degrees(math.atan2(desp_b, desp_a))
+                prof = punto.get(eje, punto.get("cota_abs", "?"))
+                hover_3d.append(
+                    f"{eje}: {prof}<br>"
+                    f"A: {desp_a:.2f}  B: {desp_b:.2f}<br>"
+                    f"R: {r:.2f}  θ: {theta:.1f}°"
+                )
+
+            fig_3d = go.Figure()
+            fig_3d.add_trace(go.Scatter3d(
+                x=xs, y=ys, z=zs,
+                mode="markers+lines",
+                name=fecha_slider[:10],
+                marker=dict(size=4),
+                line=dict(width=4),
+                hovertext=hover_3d,
+                hoverinfo="text+name",
+            ))
+
+            if alcance_camp == "todas":
+                for fecha in fechas_seleccionadas:
+                    if fecha == fecha_slider:
+                        continue
+                    if fecha not in data or "calc" not in data[fecha]:
+                        continue
+                    fc_data = data[fecha]["calc"]
+                    xf = [p.get("desp_a", 0) or 0 for p in fc_data]
+                    yf = [p.get("desp_b", 0) or 0 for p in fc_data]
+                    zf = [_get_z(p) for p in fc_data]
+                    fig_3d.add_trace(go.Scatter3d(
+                        x=xf, y=yf, z=zf,
+                        mode="lines",
+                        name=fecha[:10],
+                        line=dict(width=1, color="#777777"),
+                        opacity=0.35,
+                        hoverinfo="name",
+                    ))
+
+            z_min = min(zs) if zs else 0
+            z_max = max(zs) if zs else 1
+            fig_3d.add_trace(go.Scatter3d(
+                x=[0, 0], y=[0, 0], z=[z_min, z_max],
+                mode="lines",
+                line=dict(dash="dash", color="#666666", width=1.5),
+                name="Referencia",
+                showlegend=False,
+            ))
+
+            z_base = z_max if eje == "depth" else z_min
+            fig_3d.add_trace(go.Scatter3d(
+                x=xs, y=ys, z=[z_base] * len(xs),
+                mode="lines",
+                line=dict(color="#888888", width=1),
+                opacity=0.4,
+                showlegend=False,
+                hoverinfo="skip",
+            ))
+
+            if eje == "depth":
+                z_title = "Profundidad (m)"
+                zaxis_autorange = "reversed"
+            elif eje == "cota_abs":
+                z_title = "Cota (m)"
+                zaxis_autorange = True
+            else:
+                z_title = "Índice"
+                zaxis_autorange = True
+
+            fig_3d.update_layout(
+                title=dict(
+                    text=f"<b>Deformada 3D — {fecha_slider[:10]}</b>",
+                    font=dict(family="Arial", size=16, color="#c1c2c5"),
+                    x=0, xanchor="left", yanchor="top"
+                ),
+                scene=dict(
+                    xaxis=dict(
+                        title="A (mm)",
+                        gridcolor="#555555",
+                        linecolor="#666666",
+                        tickfont=dict(color="#888888"),
+                        backgroundcolor="rgba(0,0,0,0)",
+                    ),
+                    yaxis=dict(
+                        title="B (mm)",
+                        gridcolor="#555555",
+                        linecolor="#666666",
+                        tickfont=dict(color="#888888"),
+                        backgroundcolor="rgba(0,0,0,0)",
+                    ),
+                    zaxis=dict(
+                        title=z_title,
+                        gridcolor="#555555",
+                        linecolor="#666666",
+                        tickfont=dict(color="#888888"),
+                        autorange=zaxis_autorange,
+                        backgroundcolor="rgba(0,0,0,0)",
+                    ),
+                    bgcolor="rgba(0,0,0,0)",
+                    aspectmode="manual",
+                    aspectratio=dict(x=1, y=1, z=1.6),
+                ),
+                margin=dict(l=30, r=30, t=50, b=30),
+                legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color="#c1c2c5", size=10)),
+                showlegend=True,
+                paper_bgcolor="rgba(0,0,0,0)",
+                autosize=False,
+                uirevision="constant",
+            )
+            return fig_3d
 
         fig_polar = go.Figure()
 
@@ -1259,6 +1386,19 @@ def register_callbacks(app):
         )
 
         return fig_polar
+
+    _STYLE_CAMPANAS_VISIBLE = {"display": "inline-flex", "position": "absolute", "top": "5px", "left": "130px", "zIndex": 10}
+    _STYLE_CAMPANAS_HIDDEN = {"display": "none", "position": "absolute", "top": "5px", "left": "130px", "zIndex": 10}
+
+    @app.callback(
+        Output("toggle-3d-campanas", "style"),
+        Input("toggle-polar-3d", "value"),
+        prevent_initial_call=True
+    )
+    def toggle_3d_campanas_visibilidad(modo):
+        if modo == "3d":
+            return _STYLE_CAMPANAS_VISIBLE
+        return _STYLE_CAMPANAS_HIDDEN
 
     # Callback TEMPORAL de depuración: exportar cálculos del gráfico polar a Markdown
     @app.callback(
