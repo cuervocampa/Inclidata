@@ -1,9 +1,23 @@
 /* assets/styles.css */
 
 /* Línea temporal de campañas: ticks de snap proporcionales al tiempo.
-   Los textos de marca no se usan; las fechas viven en el eje propio slider-fechas-eje */
+   Las fechas viven en el eje propio slider-fechas-eje, no en las marcas del slider.
+   Dash 4.0 usa dash-slider-mark (no rc-slider-mark); se incluyen ambos como doble seguro. */
+.slider-timeline-fechas .dash-slider-mark,
+.slider-timeline-fechas .dash-slider-mark-outside-selection {
+    display: none !important;
+}
 .slider-timeline-fechas .rc-slider-mark {
     display: none !important;
+}
+.slider-timeline-fechas .rc-slider-mark-text {
+    display: none !important;
+    font-size: 0 !important;
+}
+/* Ticks de campaña: Dash 4 usa dash-slider-dot */
+.slider-timeline-fechas .dash-slider-dot {
+    width: 6px;
+    height: 6px;
 }
 .slider-timeline-fechas .rc-slider-dot {
     width: 6px;

@@ -71,8 +71,9 @@ def _construir_marcas_slider(fechas_str):
     marks = {}
     for clave, (_, s) in zip(claves, pares):
         mapa_min_a_iso[clave] = s
-        marks[clave] = {"label": ""}
+        marks[clave] = ""
 
+    logger.debug("[SLIDER] marks generadas: %s... total=%d", list(marks.items())[:3], len(marks))
     return marks, mapa_min_a_iso
 
 
