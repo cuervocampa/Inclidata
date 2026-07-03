@@ -19,8 +19,6 @@ numpy>=2.4.1
 scipy>=1.17.0
 
 # Generación de PDF
-reportlab>=4.4.9
-svglib>=1.6.0
 playwright>=1.61.0
 
 # Procesamiento de imágenes

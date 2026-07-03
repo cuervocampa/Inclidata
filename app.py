@@ -24,10 +24,6 @@ from pages import (
 )
 from utils import funciones_comunes as utils
 
-# ---------------------------------------------------------------------------
-# Logging de errores del servidor Flask
-# ---------------------------------------------------------------------------
-logging.basicConfig(level=logging.ERROR)
 _logger = logging.getLogger("inclidata")
 
 # ---------------------------------------------------------------------------
@@ -190,11 +186,10 @@ importar_umbrales.register_callbacks(app)
 
 
 if __name__ == "__main__":
+    import os
     import sys
     from logging.handlers import RotatingFileHandler
 
-    # TEMPORAL diagnóstico: fuerza visibilidad total en consola y archivo.
-    # force=True arrastra la configuración previa de basicConfig(level=ERROR) del módulo.
     _fmt = logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
     _console = logging.StreamHandler(sys.stdout)
     _console.setFormatter(_fmt)
@@ -214,17 +209,16 @@ if __name__ == "__main__":
     _wz.addHandler(_console)
     _wz.addHandler(_logfile)
 
-    import faulthandler
-    _fh = open("hang_dump.log", "a", encoding="utf-8")
-    faulthandler.dump_traceback_later(timeout=45, repeat=True, file=_fh)  # TEMPORAL diagnóstico: vuelca los stacks de todos los threads cada 45s a hang_dump.log. Retirar tras cazar el bug del PDF.
-
     from utils.dev_logging import apply_callback_logging
     apply_callback_logging(app)
 
-    if hasattr(app, "run"):
-        # debug=False + use_reloader=False: proceso único, werkzeug access logs visibles.
-        # En debug=True Dash reconfigura el logger werkzeug internamente y los suprime.
-        # TEMPORAL diagnóstico: restaurar a debug=True tras cazar el bug del PDF.
-        app.run(debug=False, use_reloader=False, port=8051)
+    # CRITICO: en modo dev, exclude_patterns evita que el reloader reinicie el servidor cuando la app
+    # escribe archivos en runtime (json_inclis, logs). Sin esto, los callbacks en vuelo mueren con
+    # 'server did not respond'. Ver CONTEXT.md.
+    modo_dev = os.environ.get("INCLIDATA_DEBUG") == "1"
+    if modo_dev:
+        app.run(debug=True, dev_tools_hot_reload=False, port=8051,
+                exclude_patterns=["*json_inclis*", "*.log", "*.pdf", "*vista_previa*",
+                                   "*_assets/registry.json*"])
     else:
-        app.run_server(debug=False, use_reloader=False, port=8051)
+        app.run(debug=False, use_reloader=False, port=8051)

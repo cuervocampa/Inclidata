@@ -23,7 +23,7 @@ from io import BytesIO
 from pathlib import Path
 from typing import Any, Callable, Dict, Optional
 
-from models.template_models import (
+from info.legacy.template_models import (
     Elemento,
     Plantilla,
     TipoElemento,
@@ -411,7 +411,7 @@ def generate_report_pdf_from_state(
     Útil para previsualizar la maquetación durante la edición.
     """
     import copy
-    from utils.template_service import _convertir_anchos_pct_a_cm
+    from info.legacy.template_service_editor_funcs import _convertir_anchos_pct_a_cm
     from utils.asset_manager import get_asset_data_uri
     from utils.pdf_generator import generate_pdf_from_template
 
