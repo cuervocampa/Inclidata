@@ -1,8 +1,9 @@
 /* assets/styles.css */
 
-/* Línea temporal de campañas: ticks de snap proporcionales al tiempo, sin texto en las marcas */
-.slider-timeline-fechas .rc-slider-mark-text {
-    display: none;
+/* Línea temporal de campañas: ticks de snap proporcionales al tiempo.
+   Los textos de marca no se usan; las fechas viven en el eje propio slider-fechas-eje */
+.slider-timeline-fechas .rc-slider-mark {
+    display: none !important;
 }
 .slider-timeline-fechas .rc-slider-dot {
     width: 6px;

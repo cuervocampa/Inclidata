@@ -99,7 +99,10 @@ def _lookup_fecha_slider(slider_value, fechas_seleccionadas):
 
 
 def _construir_eje_temporal(fechas_str):
-    """Genera html.Span para el eje temporal bajo el slider, uno por inicio de mes natural."""
+    """
+    Genera html.Span para el eje temporal bajo el slider.
+    Granularidad adaptativa: dias, semanas, quincenas, meses, trimestres, semestres, anos.
+    """
     if not fechas_str:
         return []
 
@@ -107,47 +110,130 @@ def _construir_eje_temporal(fechas_str):
     dt_inicio = pares[0][0]
     dt_fin = pares[-1][0]
     minutos_totales = int((dt_fin - dt_inicio).total_seconds() // 60)
-    if minutos_totales <= 0:
-        return []
 
-    # Inicios de mes naturales dentro del rango [dt_inicio, dt_fin]
-    candidatos = []
-    year, month = dt_inicio.year, dt_inicio.month
-    while True:
-        mes_dt = datetime(year, month, 1)
-        if mes_dt > dt_fin:
+    # Caso borde: rango < 1 dia o campana unica
+    if minutos_totales < 1440 or len(pares) == 1:
+        texto = f"{dt_inicio.day} {MESES_ES[dt_inicio.month]} {str(dt_inicio.year)[2:]}"
+        return [html.Span(texto, className='eje-fecha-label', style={"left": "50.00%"})]
+
+    rango_dias = minutos_totales / 1440.0
+
+    # Seleccion de granularidad: el intervalo mas fino con <= 10 etiquetas estimadas
+    _GRANOS = [
+        ('dias',       1),
+        ('dias2',      2),
+        ('semanas',    7),
+        ('quincenas',  14),
+        ('meses',      30.44),
+        ('trimestres', 91.31),
+        ('semestres',  182.63),
+        ('anos',       365.25),
+    ]
+    granularidad = 'anos'
+    anos_paso = 1
+    for nombre, intervalo_dias in _GRANOS:
+        if rango_dias / intervalo_dias <= 10:
+            granularidad = nombre
             break
-        if mes_dt >= dt_inicio:
-            candidatos.append(mes_dt)
-        month += 1
-        if month > 12:
-            month = 1
-            year += 1
+    else:
+        anos_paso = max(1, math.ceil(rango_dias / 365.25 / 10))
 
-    if len(candidatos) < 2:
-        candidatos = [dt_inicio, dt_fin]
+    cruza_anio = dt_inicio.year != dt_fin.year
 
-    num_meses = len(candidatos)
-    paso = max(1, math.ceil(0.08 * num_meses))
-    incluir_anio = paso > 1
+    # Generacion de ticks anclados a fronteras naturales
+    ticks = []
 
+    if granularidad in ('dias', 'dias2'):
+        paso_dias = 1 if granularidad == 'dias' else 2
+        primer_dia = datetime(dt_inicio.year, dt_inicio.month, dt_inicio.day)
+        if primer_dia < dt_inicio:
+            primer_dia += timedelta(days=1)
+        cur = primer_dia
+        while cur <= dt_fin:
+            ticks.append(cur)
+            cur += timedelta(days=paso_dias)
+
+    elif granularidad in ('semanas', 'quincenas'):
+        paso_dias = 7 if granularidad == 'semanas' else 14
+        base = datetime(dt_inicio.year, dt_inicio.month, dt_inicio.day)
+        dias_hasta_lunes = (7 - base.weekday()) % 7
+        primer_lunes = base + timedelta(days=dias_hasta_lunes)
+        if primer_lunes < dt_inicio:
+            primer_lunes += timedelta(days=7)
+        cur = primer_lunes
+        while cur <= dt_fin:
+            ticks.append(cur)
+            cur += timedelta(days=paso_dias)
+
+    elif granularidad == 'meses':
+        year, month = dt_inicio.year, dt_inicio.month
+        while True:
+            mes_dt = datetime(year, month, 1)
+            if mes_dt > dt_fin:
+                break
+            if mes_dt >= dt_inicio:
+                ticks.append(mes_dt)
+            month += 1
+            if month > 12:
+                month = 1
+                year += 1
+
+    elif granularidad == 'trimestres':
+        _MESES_TRIM = {1, 4, 7, 10}
+        year, month = dt_inicio.year, dt_inicio.month
+        while True:
+            dt_cand = datetime(year, month, 1)
+            if dt_cand > dt_fin:
+                break
+            if month in _MESES_TRIM and dt_cand >= dt_inicio:
+                ticks.append(dt_cand)
+            month += 1
+            if month > 12:
+                month = 1
+                year += 1
+
+    elif granularidad == 'semestres':
+        _MESES_SEM = {1, 7}
+        year, month = dt_inicio.year, dt_inicio.month
+        while True:
+            dt_cand = datetime(year, month, 1)
+            if dt_cand > dt_fin:
+                break
+            if month in _MESES_SEM and dt_cand >= dt_inicio:
+                ticks.append(dt_cand)
+            month += 1
+            if month > 12:
+                month = 1
+                year += 1
+
+    elif granularidad == 'anos':
+        year = dt_inicio.year
+        while True:
+            ano_dt = datetime(year, 1, 1)
+            if ano_dt > dt_fin:
+                break
+            if ano_dt >= dt_inicio:
+                ticks.append(ano_dt)
+            year += anos_paso
+
+    def _fmt(dt):
+        if granularidad in ('dias', 'dias2', 'semanas', 'quincenas'):
+            base = f"{dt.day} {MESES_ES[dt.month]}"
+            return f"{base} {str(dt.year)[2:]}" if cruza_anio else base
+        if granularidad in ('meses', 'trimestres', 'semestres'):
+            return f"{MESES_ES[dt.month]} {str(dt.year)[2:]}"
+        return str(dt.year)
+
+    # Spans con guarda del 8%
     spans = []
     ultima_pct = None
-    for i, mes_dt in enumerate(candidatos):
-        if i % paso != 0:
-            continue
-
-        minutos_cand = int((mes_dt - dt_inicio).total_seconds() // 60)
-        pct = (minutos_cand / minutos_totales) * 100
-
+    for tick_dt in ticks:
+        minutos_tick = int((tick_dt - dt_inicio).total_seconds() // 60)
+        pct = (minutos_tick / minutos_totales) * 100
         if ultima_pct is not None and (pct - ultima_pct) < 8.0:
             continue
-
-        texto = (f"{MESES_ES[mes_dt.month]} {mes_dt.year}" if incluir_anio
-                 else f"{MESES_ES[mes_dt.month]} {str(mes_dt.year)[2:]}")
-
         spans.append(html.Span(
-            texto,
+            _fmt(tick_dt),
             className='eje-fecha-label',
             style={"left": f"{pct:.2f}%"}
         ))
