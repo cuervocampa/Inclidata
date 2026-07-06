@@ -1,0 +1,1 @@
+- [IncliData v2.0 motor HTML](project_v2_motor_html.md) — Motor HTML/Playwright productivo; ReportLab retirado; editor eliminado; tag v2.0-motor-html (2026-07-03)

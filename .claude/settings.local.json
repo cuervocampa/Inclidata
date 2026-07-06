@@ -47,7 +47,30 @@
       "Bash(ls .venv/)",
       "Bash(ls venv/)",
       "Bash(.venv/Scripts/python -c \"import app\")",
-      "Bash(venv/Scripts/python.exe -c \"import app\")"
+      "Bash(venv/Scripts/python.exe -c \"import app\")",
+      "Bash(./venv/Scripts/python.exe -c ' *)",
+      "Bash(timeout 120 ./venv/Scripts/python.exe -c ' *)",
+      "Bash(ls assets/)",
+      "Bash(ls assets/plotly.js)",
+      "Bash(du -sh assets/plotly.js)",
+      "PowerShell(Remove-Item *)",
+      "Bash(.\\\\.venv\\\\Scripts\\\\python.exe -c \"import dash; print\\(dash.__version__\\)\")",
+      "PowerShell(& \"C:\\\\_\\\\03_PYTHON\\\\GitHub\\\\IncliData\\\\venv\\\\Scripts\\\\python.exe\" -c \"import dash; print\\(dash.__version__\\); import werkzeug; print\\(werkzeug.__version__\\)\")",
+      "PowerShell(& \"C:\\\\_\\\\03_PYTHON\\\\GitHub\\\\IncliData\\\\venv\\\\Scripts\\\\python.exe\" -c \"import werkzeug; import importlib.metadata; print\\(importlib.metadata.version\\('werkzeug'\\)\\)\")",
+      "PowerShell(Copy-Item *)",
+      "PowerShell(git fetch *)",
+      "PowerShell(git branch *)",
+      "PowerShell(git tag *)",
+      "PowerShell(git push *)",
+      "PowerShell(git ls-remote *)",
+      "PowerShell(git remote *)",
+      "PowerShell(git checkout *)",
+      "PowerShell($content = Get-Content \"C:\\\\_\\\\03_PYTHON\\\\GitHub\\\\IncliData\\\\venv\\\\Lib\\\\site-packages\\\\dash\\\\dcc\\\\async-slider.js\" -Raw; $matches = [regex]::Matches\\($content, '\"rc-slider[^\"]{0,40}\"'\\); $matches | ForEach-Object { $_.Value } | Sort-Object -Unique)",
+      "PowerShell($content = Get-Content \"C:\\\\_\\\\03_PYTHON\\\\GitHub\\\\IncliData\\\\venv\\\\Lib\\\\site-packages\\\\dash\\\\dcc\\\\async-slider.js\" -Raw; $matches = [regex]::Matches\\($content, 'rc-slider[a-zA-Z-]{0,30}'\\); $matches | ForEach-Object { $_.Value } | Sort-Object -Unique | Select-Object -First 30)",
+      "PowerShell(Get-Content *)",
+      "PowerShell($content = Get-Content \"C:\\\\_\\\\03_PYTHON\\\\GitHub\\\\IncliData\\\\venv\\\\Lib\\\\site-packages\\\\dash\\\\dcc\\\\async-slider.js\" -Raw; $m = [regex]::Matches\\($content, '.{0,60}typeof f.{0,60}'\\); $m | ForEach-Object { $_.Value } | Select-Object -First 5)",
+      "Bash(git remote *)",
+      "Bash(git fetch *)"
     ]
   }
 }

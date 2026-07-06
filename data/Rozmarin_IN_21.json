@@ -8102,14 +8102,14 @@
                 "dev_b": 14.14,
                 "incr_checksum_a": 0.17,
                 "incr_checksum_b": -0.06,
-                "incr_dev_a": 0,
+                "incr_dev_a": 0.0,
                 "incr_dev_b": -0.02,
-                "incr_dev_abs_a": 0,
+                "incr_dev_abs_a": 0.0,
                 "incr_dev_abs_b": -0.02,
-                "abs_dev_a": -194.6,
-                "abs_dev_b": 24.59,
-                "desp_a": 21.85,
-                "desp_b": 12.27
+                "abs_dev_a": -213.44,
+                "abs_dev_b": 13.56,
+                "desp_a": 3.01,
+                "desp_b": 1.24
             },
             {
                 "index": 1001,
@@ -8129,10 +8129,10 @@
                 "incr_dev_b": 0.01,
                 "incr_dev_abs_a": -0.03,
                 "incr_dev_abs_b": 0.01,
-                "abs_dev_a": -182.47,
-                "abs_dev_b": 10.45,
-                "desp_a": 21.85,
-                "desp_b": 12.29
+                "abs_dev_a": -201.31,
+                "abs_dev_b": -0.58,
+                "desp_a": 3.01,
+                "desp_b": 1.26
             },
             {
                 "index": 1002,
@@ -8152,10 +8152,10 @@
                 "incr_dev_b": -0.03,
                 "incr_dev_abs_a": 0.04,
                 "incr_dev_abs_b": -0.03,
-                "abs_dev_a": -170.73,
-                "abs_dev_b": 0.23,
-                "desp_a": 21.88,
-                "desp_b": 12.28
+                "abs_dev_a": -189.57,
+                "abs_dev_b": -10.8,
+                "desp_a": 3.04,
+                "desp_b": 1.25
             },
             {
                 "index": 1003,
@@ -8175,10 +8175,10 @@
                 "incr_dev_b": -0.1,
                 "incr_dev_abs_a": -0.02,
                 "incr_dev_abs_b": -0.1,
-                "abs_dev_a": -160.41,
-                "abs_dev_b": -6.53,
-                "desp_a": 21.84,
-                "desp_b": 12.31
+                "abs_dev_a": -179.25,
+                "abs_dev_b": -17.56,
+                "desp_a": 3.0,
+                "desp_b": 1.28
             },
             {
                 "index": 1004,
@@ -8194,14 +8194,14 @@
                 "dev_b": 1.63,
                 "incr_checksum_a": 0.23,
                 "incr_checksum_b": -0.03,
-                "incr_dev_a": 0,
+                "incr_dev_a": 0.0,
                 "incr_dev_b": -0.06,
-                "incr_dev_abs_a": 0,
+                "incr_dev_abs_a": 0.0,
                 "incr_dev_abs_b": -0.06,
-                "abs_dev_a": -154.43,
-                "abs_dev_b": -11.16,
-                "desp_a": 21.86,
-                "desp_b": 12.41
+                "abs_dev_a": -173.27,
+                "abs_dev_b": -22.19,
+                "desp_a": 3.02,
+                "desp_b": 1.38
             },
             {
                 "index": 1005,
@@ -8216,15 +8216,15 @@
                 "dev_a": -2.17,
                 "dev_b": -0.4,
                 "incr_checksum_a": 0.26,
-                "incr_checksum_b": 0,
+                "incr_checksum_b": 0.0,
                 "incr_dev_a": -0.03,
                 "incr_dev_b": 0.02,
                 "incr_dev_abs_a": -0.03,
                 "incr_dev_abs_b": 0.02,
-                "abs_dev_a": -150.3,
-                "abs_dev_b": -12.79,
-                "desp_a": 21.86,
-                "desp_b": 12.47
+                "abs_dev_a": -169.14,
+                "abs_dev_b": -23.82,
+                "desp_a": 3.02,
+                "desp_b": 1.44
             },
             {
                 "index": 1006,
@@ -8244,10 +8244,10 @@
                 "incr_dev_b": -0.01,
                 "incr_dev_abs_a": 0.02,
                 "incr_dev_abs_b": -0.01,
-                "abs_dev_a": -148.13,
-                "abs_dev_b": -12.39,
-                "desp_a": 21.89,
-                "desp_b": 12.45
+                "abs_dev_a": -166.97,
+                "abs_dev_b": -23.42,
+                "desp_a": 3.05,
+                "desp_b": 1.42
             },
             {
                 "index": 1007,
@@ -8267,10 +8267,10 @@
                 "incr_dev_b": -0.08,
                 "incr_dev_abs_a": 0.03,
                 "incr_dev_abs_b": -0.08,
-                "abs_dev_a": -147.8,
-                "abs_dev_b": -10.68,
-                "desp_a": 21.87,
-                "desp_b": 12.46
+                "abs_dev_a": -166.64,
+                "abs_dev_b": -21.71,
+                "desp_a": 3.03,
+                "desp_b": 1.43
             },
             {
                 "index": 1008,
@@ -8290,10 +8290,10 @@
                 "incr_dev_b": 0.01,
                 "incr_dev_abs_a": 0.04,
                 "incr_dev_abs_b": 0.01,
-                "abs_dev_a": -149.65,
-                "abs_dev_b": -7.39,
-                "desp_a": 21.84,
-                "desp_b": 12.54
+                "abs_dev_a": -168.49,
+                "abs_dev_b": -18.42,
+                "desp_a": 3.0,
+                "desp_b": 1.51
             },
             {
                 "index": 1009,
@@ -8313,10 +8313,10 @@
                 "incr_dev_b": 0.02,
                 "incr_dev_abs_a": 0.04,
                 "incr_dev_abs_b": 0.02,
-                "abs_dev_a": -153.44,
-                "abs_dev_b": -4.48,
-                "desp_a": 21.8,
-                "desp_b": 12.53
+                "abs_dev_a": -172.28,
+                "abs_dev_b": -15.51,
+                "desp_a": 2.96,
+                "desp_b": 1.5
             },
             {
                 "index": 1010,
@@ -8336,10 +8336,10 @@
                 "incr_dev_b": -0.04,
                 "incr_dev_abs_a": 0.05,
                 "incr_dev_abs_b": -0.04,
-                "abs_dev_a": -157.97,
-                "abs_dev_b": -4.89,
-                "desp_a": 21.76,
-                "desp_b": 12.51
+                "abs_dev_a": -176.81,
+                "abs_dev_b": -15.92,
+                "desp_a": 2.92,
+                "desp_b": 1.48
             },
             {
                 "index": 1011,
@@ -8359,10 +8359,10 @@
                 "incr_dev_b": -0.09,
                 "incr_dev_abs_a": 0.06,
                 "incr_dev_abs_b": -0.09,
-                "abs_dev_a": -163.58,
-                "abs_dev_b": -5.38,
-                "desp_a": 21.71,
-                "desp_b": 12.55
+                "abs_dev_a": -182.42,
+                "abs_dev_b": -16.41,
+                "desp_a": 2.87,
+                "desp_b": 1.52
             },
             {
                 "index": 1012,
@@ -8382,10 +8382,10 @@
                 "incr_dev_b": -0.05,
                 "incr_dev_abs_a": 0.05,
                 "incr_dev_abs_b": -0.05,
-                "abs_dev_a": -170.77,
-                "abs_dev_b": -5.64,
-                "desp_a": 21.65,
-                "desp_b": 12.64
+                "abs_dev_a": -189.61,
+                "abs_dev_b": -16.67,
+                "desp_a": 2.81,
+                "desp_b": 1.61
             },
             {
                 "index": 1013,
@@ -8405,10 +8405,10 @@
                 "incr_dev_b": -0.01,
                 "incr_dev_abs_a": 0.05,
                 "incr_dev_abs_b": -0.01,
-                "abs_dev_a": -178.98,
-                "abs_dev_b": -5.13,
-                "desp_a": 21.6,
-                "desp_b": 12.69
+                "abs_dev_a": -197.82,
+                "abs_dev_b": -16.16,
+                "desp_a": 2.76,
+                "desp_b": 1.66
             },
             {
                 "index": 1014,
@@ -8428,10 +8428,10 @@
                 "incr_dev_b": -0.03,
                 "incr_dev_abs_a": 0.07,
                 "incr_dev_abs_b": -0.03,
-                "abs_dev_a": -187.82,
-                "abs_dev_b": -3.93,
-                "desp_a": 21.55,
-                "desp_b": 12.7
+                "abs_dev_a": -206.66,
+                "abs_dev_b": -14.96,
+                "desp_a": 2.71,
+                "desp_b": 1.67
             },
             {
                 "index": 1015,
@@ -8451,10 +8451,10 @@
                 "incr_dev_b": -0.07,
                 "incr_dev_abs_a": 0.02,
                 "incr_dev_abs_b": -0.07,
-                "abs_dev_a": -196.94,
-                "abs_dev_b": -2.09,
-                "desp_a": 21.48,
-                "desp_b": 12.73
+                "abs_dev_a": -215.78,
+                "abs_dev_b": -13.12,
+                "desp_a": 2.64,
+                "desp_b": 1.7
             },
             {
                 "index": 1016,
@@ -8474,10 +8474,10 @@
                 "incr_dev_b": -0.01,
                 "incr_dev_abs_a": 0.02,
                 "incr_dev_abs_b": -0.01,
-                "abs_dev_a": -201.45,
-                "abs_dev_b": -0.87,
-                "desp_a": 21.46,
-                "desp_b": 12.8
+                "abs_dev_a": -220.29,
+                "abs_dev_b": -11.9,
+                "desp_a": 2.62,
+                "desp_b": 1.77
             },
             {
                 "index": 1017,
@@ -8497,10 +8497,10 @@
                 "incr_dev_b": 0.02,
                 "incr_dev_abs_a": 0.03,
                 "incr_dev_abs_b": 0.02,
-                "abs_dev_a": -205.76,
-                "abs_dev_b": 0.17,
-                "desp_a": 21.44,
-                "desp_b": 12.81
+                "abs_dev_a": -224.6,
+                "abs_dev_b": -10.86,
+                "desp_a": 2.6,
+                "desp_b": 1.78
             },
             {
                 "index": 1018,
@@ -8512,18 +8512,18 @@
                 "b180": 0.6,
                 "checksum_a": 1.03,
                 "checksum_b": 0.13,
-                "dev_a": 4,
+                "dev_a": 4.0,
                 "dev_b": -0.53,
                 "incr_checksum_a": 0.26,
-                "incr_checksum_b": 0,
-                "incr_dev_a": 0,
+                "incr_checksum_b": 0.0,
+                "incr_dev_a": 0.0,
                 "incr_dev_b": -0.01,
-                "incr_dev_abs_a": 0,
+                "incr_dev_abs_a": 0.0,
                 "incr_dev_abs_b": -0.01,
-                "abs_dev_a": -209.73,
-                "abs_dev_b": 1.1,
-                "desp_a": 21.41,
-                "desp_b": 12.79
+                "abs_dev_a": -228.57,
+                "abs_dev_b": -9.93,
+                "desp_a": 2.57,
+                "desp_b": 1.76
             },
             {
                 "index": 1019,
@@ -8543,10 +8543,10 @@
                 "incr_dev_b": -0.03,
                 "incr_dev_abs_a": 0.01,
                 "incr_dev_abs_b": -0.03,
-                "abs_dev_a": -213.73,
-                "abs_dev_b": 1.63,
-                "desp_a": 21.41,
-                "desp_b": 12.8
+                "abs_dev_a": -232.57,
+                "abs_dev_b": -9.4,
+                "desp_a": 2.57,
+                "desp_b": 1.77
             },
             {
                 "index": 1020,
@@ -8566,10 +8566,10 @@
                 "incr_dev_b": 0.03,
                 "incr_dev_abs_a": 0.01,
                 "incr_dev_abs_b": 0.03,
-                "abs_dev_a": -217.51,
-                "abs_dev_b": 2.21,
-                "desp_a": 21.4,
-                "desp_b": 12.83
+                "abs_dev_a": -236.35,
+                "abs_dev_b": -8.82,
+                "desp_a": 2.56,
+                "desp_b": 1.8
             },
             {
                 "index": 1021,
@@ -8586,13 +8586,13 @@
                 "incr_checksum_a": 0.2,
                 "incr_checksum_b": 0.05,
                 "incr_dev_a": 0.03,
-                "incr_dev_b": 0,
+                "incr_dev_b": 0.0,
                 "incr_dev_abs_a": 0.03,
-                "incr_dev_abs_b": 0,
-                "abs_dev_a": -220.98,
-                "abs_dev_b": 3.33,
-                "desp_a": 21.39,
-                "desp_b": 12.8
+                "incr_dev_abs_b": 0.0,
+                "abs_dev_a": -239.82,
+                "abs_dev_b": -7.7,
+                "desp_a": 2.55,
+                "desp_b": 1.77
             },
             {
                 "index": 1022,
@@ -8612,10 +8612,10 @@
                 "incr_dev_b": 0.02,
                 "incr_dev_abs_a": 0.07,
                 "incr_dev_abs_b": 0.02,
-                "abs_dev_a": -225.06,
-                "abs_dev_b": 4.69,
-                "desp_a": 21.36,
-                "desp_b": 12.8
+                "abs_dev_a": -243.9,
+                "abs_dev_b": -6.34,
+                "desp_a": 2.52,
+                "desp_b": 1.77
             },
             {
                 "index": 1023,
@@ -8635,10 +8635,10 @@
                 "incr_dev_b": -0.01,
                 "incr_dev_abs_a": 0.04,
                 "incr_dev_abs_b": -0.01,
-                "abs_dev_a": -227.09,
-                "abs_dev_b": 6.86,
-                "desp_a": 21.29,
-                "desp_b": 12.78
+                "abs_dev_a": -245.93,
+                "abs_dev_b": -4.17,
+                "desp_a": 2.45,
+                "desp_b": 1.75
             },
             {
                 "index": 1024,
@@ -8658,10 +8658,10 @@
                 "incr_dev_b": 0.02,
                 "incr_dev_abs_a": 0.06,
                 "incr_dev_abs_b": 0.02,
-                "abs_dev_a": -227.11,
-                "abs_dev_b": 10.2,
-                "desp_a": 21.25,
-                "desp_b": 12.79
+                "abs_dev_a": -245.95,
+                "abs_dev_b": -0.83,
+                "desp_a": 2.41,
+                "desp_b": 1.76
             },
             {
                 "index": 1025,
@@ -8681,10 +8681,10 @@
                 "incr_dev_b": 0.1,
                 "incr_dev_abs_a": 0.12,
                 "incr_dev_abs_b": 0.1,
-                "abs_dev_a": -225.23,
-                "abs_dev_b": 13.81,
-                "desp_a": 21.19,
-                "desp_b": 12.77
+                "abs_dev_a": -244.07,
+                "abs_dev_b": 2.78,
+                "desp_a": 2.35,
+                "desp_b": 1.74
             },
             {
                 "index": 1026,
@@ -8704,10 +8704,10 @@
                 "incr_dev_b": 0.19,
                 "incr_dev_abs_a": -0.04,
                 "incr_dev_abs_b": 0.19,
-                "abs_dev_a": -220.58,
-                "abs_dev_b": 18.17,
-                "desp_a": 21.07,
-                "desp_b": 12.67
+                "abs_dev_a": -239.42,
+                "abs_dev_b": 7.14,
+                "desp_a": 2.23,
+                "desp_b": 1.64
             },
             {
                 "index": 1027,
@@ -8727,10 +8727,10 @@
                 "incr_dev_b": 0.04,
                 "incr_dev_abs_a": 0.33,
                 "incr_dev_abs_b": 0.04,
-                "abs_dev_a": -212.83,
-                "abs_dev_b": 23.92,
-                "desp_a": 21.11,
-                "desp_b": 12.48
+                "abs_dev_a": -231.67,
+                "abs_dev_b": 12.89,
+                "desp_a": 2.27,
+                "desp_b": 1.45
             },
             {
                 "index": 1028,
@@ -8750,10 +8750,10 @@
                 "incr_dev_b": 0.11,
                 "incr_dev_abs_a": 0.05,
                 "incr_dev_abs_b": 0.11,
-                "abs_dev_a": -200.35,
-                "abs_dev_b": 32.31,
-                "desp_a": 20.78,
-                "desp_b": 12.44
+                "abs_dev_a": -219.19,
+                "abs_dev_b": 21.28,
+                "desp_a": 1.94,
+                "desp_b": 1.41
             },
             {
                 "index": 1029,
@@ -8773,10 +8773,10 @@
                 "incr_dev_b": 0.08,
                 "incr_dev_abs_a": 0.02,
                 "incr_dev_abs_b": 0.08,
-                "abs_dev_a": -185.81,
-                "abs_dev_b": 41.47,
-                "desp_a": 20.73,
-                "desp_b": 12.33
+                "abs_dev_a": -204.65,
+                "abs_dev_b": 30.44,
+                "desp_a": 1.89,
+                "desp_b": 1.3
             },
             {
                 "index": 1030,
@@ -8793,13 +8793,13 @@
                 "incr_checksum_a": 0.32,
                 "incr_checksum_b": -0.03,
                 "incr_dev_a": 0.01,
-                "incr_dev_b": 0,
+                "incr_dev_b": 0.0,
                 "incr_dev_abs_a": 0.01,
-                "incr_dev_abs_b": 0,
-                "abs_dev_a": -169.78,
-                "abs_dev_b": 50.66,
-                "desp_a": 20.71,
-                "desp_b": 12.25
+                "incr_dev_abs_b": 0.0,
+                "abs_dev_a": -188.62,
+                "abs_dev_b": 39.63,
+                "desp_a": 1.87,
+                "desp_b": 1.22
             },
             {
                 "index": 1031,
@@ -8819,10 +8819,10 @@
                 "incr_dev_b": -0.07,
                 "incr_dev_abs_a": -0.01,
                 "incr_dev_abs_b": -0.07,
-                "abs_dev_a": -152.95,
-                "abs_dev_b": 58.75,
-                "desp_a": 20.7,
-                "desp_b": 12.25
+                "abs_dev_a": -171.79,
+                "abs_dev_b": 47.72,
+                "desp_a": 1.86,
+                "desp_b": 1.22
             },
             {
                 "index": 1032,
@@ -8838,14 +8838,14 @@
                 "dev_b": -3.9,
                 "incr_checksum_a": 0.16,
                 "incr_checksum_b": 0.52,
-                "incr_dev_a": 0,
+                "incr_dev_a": 0.0,
                 "incr_dev_b": -0.36,
-                "incr_dev_abs_a": 0,
+                "incr_dev_abs_a": 0.0,
                 "incr_dev_abs_b": -0.36,
-                "abs_dev_a": -135.84,
-                "abs_dev_b": 64.95,
-                "desp_a": 20.71,
-                "desp_b": 12.32
+                "abs_dev_a": -154.68,
+                "abs_dev_b": 53.92,
+                "desp_a": 1.87,
+                "desp_b": 1.29
             },
             {
                 "index": 1033,
@@ -8865,10 +8865,10 @@
                 "incr_dev_b": -0.02,
                 "incr_dev_abs_a": -0.2,
                 "incr_dev_abs_b": -0.02,
-                "abs_dev_a": -119.13,
-                "abs_dev_b": 68.85,
-                "desp_a": 20.71,
-                "desp_b": 12.68
+                "abs_dev_a": -137.97,
+                "abs_dev_b": 57.82,
+                "desp_a": 1.87,
+                "desp_b": 1.65
             },
             {
                 "index": 1034,
@@ -8888,10 +8888,10 @@
                 "incr_dev_b": -0.15,
                 "incr_dev_abs_a": -0.11,
                 "incr_dev_abs_b": -0.15,
-                "abs_dev_a": -104.84,
-                "abs_dev_b": 70.3,
-                "desp_a": 20.91,
-                "desp_b": 12.7
+                "abs_dev_a": -123.68,
+                "abs_dev_b": 59.27,
+                "desp_a": 2.07,
+                "desp_b": 1.67
             },
             {
                 "index": 1035,
@@ -8911,10 +8911,10 @@
                 "incr_dev_b": -0.22,
                 "incr_dev_abs_a": -0.17,
                 "incr_dev_abs_b": -0.22,
-                "abs_dev_a": -92.14,
-                "abs_dev_b": 69.46,
-                "desp_a": 21.02,
-                "desp_b": 12.85
+                "abs_dev_a": -110.98,
+                "abs_dev_b": 58.43,
+                "desp_a": 2.18,
+                "desp_b": 1.82
             },
             {
                 "index": 1036,
@@ -8927,17 +8927,17 @@
                 "checksum_a": 1.08,
                 "checksum_b": 0.18,
                 "dev_a": -8.68,
-                "dev_b": 7,
+                "dev_b": 7.0,
                 "incr_checksum_a": 0.31,
                 "incr_checksum_b": 0.05,
                 "incr_dev_a": -0.12,
                 "incr_dev_b": -0.19,
                 "incr_dev_abs_a": -0.12,
                 "incr_dev_abs_b": -0.19,
-                "abs_dev_a": -81.36,
-                "abs_dev_b": 65.55,
-                "desp_a": 21.19,
-                "desp_b": 13.07
+                "abs_dev_a": -100.2,
+                "abs_dev_b": 54.52,
+                "desp_a": 2.35,
+                "desp_b": 2.04
             },
             {
                 "index": 1037,
@@ -8952,15 +8952,15 @@
                 "dev_a": -6.39,
                 "dev_b": 9.38,
                 "incr_checksum_a": 0.21,
-                "incr_checksum_b": 0,
+                "incr_checksum_b": 0.0,
                 "incr_dev_a": -0.14,
                 "incr_dev_b": -0.12,
                 "incr_dev_abs_a": -0.14,
                 "incr_dev_abs_b": -0.12,
-                "abs_dev_a": -72.68,
-                "abs_dev_b": 58.55,
-                "desp_a": 21.31,
-                "desp_b": 13.26
+                "abs_dev_a": -91.52,
+                "abs_dev_b": 47.52,
+                "desp_a": 2.47,
+                "desp_b": 2.23
             },
             {
                 "index": 1038,
@@ -8980,10 +8980,10 @@
                 "incr_dev_b": -0.09,
                 "incr_dev_abs_a": -0.07,
                 "incr_dev_abs_b": -0.09,
-                "abs_dev_a": -66.29,
-                "abs_dev_b": 49.17,
-                "desp_a": 21.45,
-                "desp_b": 13.38
+                "abs_dev_a": -85.13,
+                "abs_dev_b": 38.14,
+                "desp_a": 2.61,
+                "desp_b": 2.35
             },
             {
                 "index": 1039,
@@ -9003,10 +9003,10 @@
                 "incr_dev_b": -0.28,
                 "incr_dev_abs_a": -0.01,
                 "incr_dev_abs_b": -0.28,
-                "abs_dev_a": -62.56,
-                "abs_dev_b": 38.26,
-                "desp_a": 21.52,
-                "desp_b": 13.47
+                "abs_dev_a": -81.4,
+                "abs_dev_b": 27.23,
+                "desp_a": 2.68,
+                "desp_b": 2.44
             },
             {
                 "index": 1040,
@@ -9026,10 +9026,10 @@
                 "incr_dev_b": 0.06,
                 "incr_dev_abs_a": -0.13,
                 "incr_dev_abs_b": 0.06,
-                "abs_dev_a": -59.45,
-                "abs_dev_b": 23.88,
-                "desp_a": 21.53,
-                "desp_b": 13.75
+                "abs_dev_a": -78.29,
+                "abs_dev_b": 12.85,
+                "desp_a": 2.69,
+                "desp_b": 2.72
             },
             {
                 "index": 1041,
@@ -9049,10 +9049,10 @@
                 "incr_dev_b": 0.15,
                 "incr_dev_abs_a": -0.13,
                 "incr_dev_abs_b": 0.15,
-                "abs_dev_a": -58.39,
-                "abs_dev_b": 9.25,
-                "desp_a": 21.66,
-                "desp_b": 13.69
+                "abs_dev_a": -77.23,
+                "abs_dev_b": -1.78,
+                "desp_a": 2.82,
+                "desp_b": 2.66
             },
             {
                 "index": 1042,
@@ -9072,10 +9072,10 @@
                 "incr_dev_b": 0.25,
                 "incr_dev_abs_a": -0.14,
                 "incr_dev_abs_b": 0.25,
-                "abs_dev_a": -59.88,
-                "abs_dev_b": -4.24,
-                "desp_a": 21.79,
-                "desp_b": 13.54
+                "abs_dev_a": -78.72,
+                "abs_dev_b": -15.27,
+                "desp_a": 2.95,
+                "desp_b": 2.51
             },
             {
                 "index": 1043,
@@ -9095,10 +9095,10 @@
                 "incr_dev_b": 0.28,
                 "incr_dev_abs_a": -0.04,
                 "incr_dev_abs_b": 0.28,
-                "abs_dev_a": -63.57,
-                "abs_dev_b": -15.67,
-                "desp_a": 21.93,
-                "desp_b": 13.29
+                "abs_dev_a": -82.41,
+                "abs_dev_b": -26.7,
+                "desp_a": 3.09,
+                "desp_b": 2.26
             },
             {
                 "index": 1044,
@@ -9118,10 +9118,10 @@
                 "incr_dev_b": 0.1,
                 "incr_dev_abs_a": 0.39,
                 "incr_dev_abs_b": 0.1,
-                "abs_dev_a": -68.96,
-                "abs_dev_b": -24.13,
-                "desp_a": 21.97,
-                "desp_b": 13.01
+                "abs_dev_a": -87.8,
+                "abs_dev_b": -35.16,
+                "desp_a": 3.13,
+                "desp_b": 1.98
             },
             {
                 "index": 1045,
@@ -9141,10 +9141,10 @@
                 "incr_dev_b": 0.03,
                 "incr_dev_abs_a": 0.04,
                 "incr_dev_abs_b": 0.03,
-                "abs_dev_a": -74.43,
-                "abs_dev_b": -29.89,
-                "desp_a": 21.58,
-                "desp_b": 12.91
+                "abs_dev_a": -93.27,
+                "abs_dev_b": -40.92,
+                "desp_a": 2.74,
+                "desp_b": 1.88
             },
             {
                 "index": 1046,
@@ -9164,10 +9164,10 @@
                 "incr_dev_b": 0.21,
                 "incr_dev_abs_a": 0.23,
                 "incr_dev_abs_b": 0.21,
-                "abs_dev_a": -77.96,
-                "abs_dev_b": -33.82,
-                "desp_a": 21.54,
-                "desp_b": 12.88
+                "abs_dev_a": -96.8,
+                "abs_dev_b": -44.85,
+                "desp_a": 2.7,
+                "desp_b": 1.85
             },
             {
                 "index": 1047,
@@ -9187,10 +9187,10 @@
                 "incr_dev_b": 0.1,
                 "incr_dev_abs_a": 0.24,
                 "incr_dev_abs_b": 0.1,
-                "abs_dev_a": -80,
-                "abs_dev_b": -35.35,
-                "desp_a": 21.31,
-                "desp_b": 12.67
+                "abs_dev_a": -98.84,
+                "abs_dev_b": -46.38,
+                "desp_a": 2.47,
+                "desp_b": 1.64
             },
             {
                 "index": 1048,
@@ -9210,10 +9210,10 @@
                 "incr_dev_b": 0.08,
                 "incr_dev_abs_a": 0.25,
                 "incr_dev_abs_b": 0.08,
-                "abs_dev_a": -80.04,
-                "abs_dev_b": -35.24,
-                "desp_a": 21.07,
-                "desp_b": 12.57
+                "abs_dev_a": -98.88,
+                "abs_dev_b": -46.27,
+                "desp_a": 2.23,
+                "desp_b": 1.54
             },
             {
                 "index": 1049,
@@ -9233,10 +9233,10 @@
                 "incr_dev_b": 0.17,
                 "incr_dev_abs_a": 0.29,
                 "incr_dev_abs_b": 0.17,
-                "abs_dev_a": -78.2,
-                "abs_dev_b": -34.6,
-                "desp_a": 20.82,
-                "desp_b": 12.49
+                "abs_dev_a": -97.04,
+                "abs_dev_b": -45.63,
+                "desp_a": 1.98,
+                "desp_b": 1.46
             },
             {
                 "index": 1050,
@@ -9256,10 +9256,10 @@
                 "incr_dev_b": 0.27,
                 "incr_dev_abs_a": 0.22,
                 "incr_dev_abs_b": 0.27,
-                "abs_dev_a": -74.09,
-                "abs_dev_b": -33.06,
-                "desp_a": 20.53,
-                "desp_b": 12.32
+                "abs_dev_a": -92.93,
+                "abs_dev_b": -44.09,
+                "desp_a": 1.69,
+                "desp_b": 1.29
             },
             {
                 "index": 1051,
@@ -9279,10 +9279,10 @@
                 "incr_dev_b": -0.15,
                 "incr_dev_abs_a": 0.26,
                 "incr_dev_abs_b": -0.15,
-                "abs_dev_a": -67.59,
-                "abs_dev_b": -30.39,
-                "desp_a": 20.31,
-                "desp_b": 12.05
+                "abs_dev_a": -86.43,
+                "abs_dev_b": -41.42,
+                "desp_a": 1.47,
+                "desp_b": 1.02
             },
             {
                 "index": 1052,
@@ -9302,10 +9302,10 @@
                 "incr_dev_b": 0.26,
                 "incr_dev_abs_a": 0.36,
                 "incr_dev_abs_b": 0.26,
-                "abs_dev_a": -59.7,
-                "abs_dev_b": -28.02,
-                "desp_a": 20.05,
-                "desp_b": 12.2
+                "abs_dev_a": -78.54,
+                "abs_dev_b": -39.05,
+                "desp_a": 1.21,
+                "desp_b": 1.17
             },
             {
                 "index": 1053,
@@ -9325,10 +9325,10 @@
                 "incr_dev_b": 0.39,
                 "incr_dev_abs_a": 0.43,
                 "incr_dev_abs_b": 0.39,
-                "abs_dev_a": -49.29,
-                "abs_dev_b": -24.61,
-                "desp_a": 19.69,
-                "desp_b": 11.94
+                "abs_dev_a": -68.13,
+                "abs_dev_b": -35.64,
+                "desp_a": 0.85,
+                "desp_b": 0.91
             },
             {
                 "index": 1054,
@@ -9348,10 +9348,10 @@
                 "incr_dev_b": 0.36,
                 "incr_dev_abs_a": 0.33,
                 "incr_dev_abs_b": 0.36,
-                "abs_dev_a": -35.67,
-                "abs_dev_b": -18.97,
-                "desp_a": 19.26,
-                "desp_b": 11.55
+                "abs_dev_a": -54.51,
+                "abs_dev_b": -30.0,
+                "desp_a": 0.42,
+                "desp_b": 0.52
             },
             {
                 "index": 1055,
@@ -9371,34 +9371,88 @@
                 "incr_dev_b": 0.16,
                 "incr_dev_abs_a": 0.08,
                 "incr_dev_abs_b": 0.16,
-                "abs_dev_a": -18.79,
-                "abs_dev_b": -10.43,
-                "desp_a": 18.93,
-                "desp_b": 11.19
+                "abs_dev_a": -37.63,
+                "abs_dev_b": -21.46,
+                "desp_a": 0.09,
+                "desp_b": 0.16
             },
             {
                 "index": 1056,
                 "cota_abs": -28.5,
                 "depth": 28.5,
+                "a0": -18.4,
+                "a180": 19.28,
+                "b0": -10.98,
+                "b180": 11.07,
+                "checksum_a": 0.88,
+                "checksum_b": 0.09,
+                "dev_a": -18.84,
+                "dev_b": -11.03,
+                "incr_checksum_a": 0.0,
+                "incr_checksum_b": -0.02,
+                "incr_dev_a": 0.01,
+                "incr_dev_b": 0.0,
+                "incr_dev_abs_a": 0.01,
+                "incr_dev_abs_b": 0.0,
+                "abs_dev_a": -18.84,
+                "abs_dev_b": -11.03,
+                "desp_a": 0.01,
+                "desp_b": 0.0
+            },
+            {
+                "index": null,
+                "cota_abs": null,
+                "depth": 29,
                 "a0": 0,
                 "a180": 0,
                 "b0": 0,
                 "b180": 0,
                 "checksum_a": 0,
                 "checksum_b": 0,
-                "dev_a": 0,
-                "dev_b": 0,
-                "incr_checksum_a": -0.88,
-                "incr_checksum_b": -0.11,
-                "incr_dev_a": 18.85,
-                "incr_dev_b": 11.03,
-                "incr_dev_abs_a": 18.85,
-                "incr_dev_abs_b": 11.03,
-                "abs_dev_a": 0,
-                "abs_dev_b": 0,
-                "desp_a": 18.85,
-                "desp_b": 11.03
+                "dev_a": 0.0,
+                "dev_b": 0.0,
+                "incr_checksum_a": 0,
+                "incr_checksum_b": 0,
+                "incr_dev_a": 0,
+                "incr_dev_b": 0,
+                "incr_dev_abs_a": 0,
+                "incr_dev_abs_b": 0,
+                "abs_dev_a": 0.0,
+                "abs_dev_b": 0.0,
+                "desp_a": 0,
+                "desp_b": 0
             }
-        ]
+        ],
+        "bias": null,
+        "spike": {
+            "A": [
+                {
+                    "index": 1056,
+                    "cota_abs": -28.5,
+                    "depth": 28.5,
+                    "A_spk": true
+                },
+                {
+                    "index": null,
+                    "cota_abs": null,
+                    "depth": 29,
+                    "A_spk": true
+                }
+            ],
+            "B": [
+                {
+                    "index": 1056,
+                    "cota_abs": -28.5,
+                    "depth": 28.5,
+                    "B_spk": true
+                },
+                {
+                    "index": null,
+                    "cota_abs": null,
+                    "depth": 29,
+                    "B_spk": true
+                }
+            ]
+        }
     }
 }
