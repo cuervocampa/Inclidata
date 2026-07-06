@@ -1,15 +1,52 @@
 /* assets/styles.css */
 
-/* Ocultar el tooltip del slider y las marcas para sliders con la clase 'slider-ocultar-tooltip-marks' */
-
-/* Ocultar el tooltip del slider */
-.slider-ocultar-tooltip-marks .rc-slider-tooltip {
+/* Línea temporal de campañas: ticks de snap proporcionales al tiempo.
+   Las fechas viven en el eje propio slider-fechas-eje, no en las marcas del slider.
+   Dash 4.0 usa dash-slider-mark (no rc-slider-mark); se incluyen ambos como doble seguro. */
+.slider-timeline-fechas .dash-slider-mark,
+.slider-timeline-fechas .dash-slider-mark-outside-selection {
     display: none !important;
 }
-
-/* Ocultar las marcas del slider */
-.slider-ocultar-tooltip-marks .rc-slider-mark-text {
+.slider-timeline-fechas .rc-slider-mark {
     display: none !important;
+}
+.slider-timeline-fechas .rc-slider-mark-text {
+    display: none !important;
+    font-size: 0 !important;
+}
+/* Ticks de campaña: Dash 4 usa dash-slider-dot */
+.slider-timeline-fechas .dash-slider-dot {
+    width: 6px;
+    height: 6px;
+}
+.slider-timeline-fechas .rc-slider-dot {
+    width: 6px;
+    height: 6px;
+    bottom: -2px;
+}
+
+/* Eje temporal de campañas: etiquetas de mes horizontales posicionadas bajo el slider */
+.slider-fechas-eje {
+    position: relative;
+    height: 26px;
+    margin-top: 2px;
+}
+.slider-fechas-eje .eje-fecha-label {
+    position: absolute;
+    top: 6px;
+    transform: translateX(-50%);
+    font-size: 10px;
+    white-space: nowrap;
+    color: var(--id-text-secondary, #868e96);
+}
+.slider-fechas-eje .eje-fecha-label::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: -6px;
+    width: 1px;
+    height: 5px;
+    background: var(--id-text-secondary, #adb5bd);
 }
 
 /* ========================================

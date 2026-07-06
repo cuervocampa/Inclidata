@@ -42,6 +42,207 @@ datos_tubo = {
 
 
 
+MESES_ES = {1:"ene",2:"feb",3:"mar",4:"abr",5:"may",6:"jun",
+            7:"jul",8:"ago",9:"sep",10:"oct",11:"nov",12:"dic"}
+
+logger = logging.getLogger(__name__)
+
+
+def _construir_marcas_slider(fechas_str):
+    """Escala en minutos desde primera campaña. Raises ValueError si dos campañas colisionan."""
+    if not fechas_str:
+        return {}, {}
+
+    pares = sorted([(datetime.fromisoformat(s), s) for s in fechas_str], key=lambda x: x[0])
+    n = len(pares)
+    fecha_inicial = pares[0][0]
+
+    claves = [int((dt - fecha_inicial).total_seconds() // 60) for dt, _ in pares]
+
+    seen = {}
+    for i, c in enumerate(claves):
+        if c in seen:
+            raise ValueError(
+                f"Colisión en clave de minutos {c}: {pares[seen[c]][1]} y {pares[i][1]}"
+            )
+        seen[c] = i
+
+    mapa_min_a_iso = {}
+    marks = {}
+    for clave, (_, s) in zip(claves, pares):
+        mapa_min_a_iso[clave] = s
+        marks[clave] = ""
+
+    logger.debug("[SLIDER] marks generadas: %s... total=%d", list(marks.items())[:3], len(marks))
+    return marks, mapa_min_a_iso
+
+
+def _lookup_fecha_slider(slider_value, fechas_seleccionadas):
+    """Devuelve el ISO original de la campaña en slider_value. Fallback defensivo a clave más cercana."""
+    if slider_value is None or not fechas_seleccionadas:
+        return None
+    try:
+        _, mapa = _construir_marcas_slider(list(fechas_seleccionadas))
+        if slider_value in mapa:
+            return mapa[slider_value]
+        claves = sorted(mapa.keys())
+        if not claves:
+            return None
+        clave_cercana = min(claves, key=lambda c: abs(c - slider_value))
+        logger.debug("slider_value %s no en mapa; fallback a clave %s", slider_value, clave_cercana)
+        return mapa[clave_cercana]
+    except ValueError as e:
+        logger.error("Colisión en slider de fechas: %s", e)
+        return list(fechas_seleccionadas)[-1]
+    except Exception as e:
+        logger.error("Error en lookup de fecha slider: %s", e)
+        return list(fechas_seleccionadas)[-1]
+
+
+def _construir_eje_temporal(fechas_str):
+    """
+    Genera html.Span para el eje temporal bajo el slider.
+    Granularidad adaptativa: dias, semanas, quincenas, meses, trimestres, semestres, anos.
+    """
+    if not fechas_str:
+        return []
+
+    pares = sorted([(datetime.fromisoformat(s), s) for s in fechas_str], key=lambda x: x[0])
+    dt_inicio = pares[0][0]
+    dt_fin = pares[-1][0]
+    minutos_totales = int((dt_fin - dt_inicio).total_seconds() // 60)
+
+    # Caso borde: rango < 1 dia o campana unica
+    if minutos_totales < 1440 or len(pares) == 1:
+        texto = f"{dt_inicio.day} {MESES_ES[dt_inicio.month]} {str(dt_inicio.year)[2:]}"
+        return [html.Span(texto, className='eje-fecha-label', style={"left": "50.00%"})]
+
+    rango_dias = minutos_totales / 1440.0
+
+    # Seleccion de granularidad: el intervalo mas fino con <= 10 etiquetas estimadas
+    _GRANOS = [
+        ('dias',       1),
+        ('dias2',      2),
+        ('semanas',    7),
+        ('quincenas',  14),
+        ('meses',      30.44),
+        ('trimestres', 91.31),
+        ('semestres',  182.63),
+        ('anos',       365.25),
+    ]
+    granularidad = 'anos'
+    anos_paso = 1
+    for nombre, intervalo_dias in _GRANOS:
+        if rango_dias / intervalo_dias <= 10:
+            granularidad = nombre
+            break
+    else:
+        anos_paso = max(1, math.ceil(rango_dias / 365.25 / 10))
+
+    cruza_anio = dt_inicio.year != dt_fin.year
+
+    # Generacion de ticks anclados a fronteras naturales
+    ticks = []
+
+    if granularidad in ('dias', 'dias2'):
+        paso_dias = 1 if granularidad == 'dias' else 2
+        primer_dia = datetime(dt_inicio.year, dt_inicio.month, dt_inicio.day)
+        if primer_dia < dt_inicio:
+            primer_dia += timedelta(days=1)
+        cur = primer_dia
+        while cur <= dt_fin:
+            ticks.append(cur)
+            cur += timedelta(days=paso_dias)
+
+    elif granularidad in ('semanas', 'quincenas'):
+        paso_dias = 7 if granularidad == 'semanas' else 14
+        base = datetime(dt_inicio.year, dt_inicio.month, dt_inicio.day)
+        dias_hasta_lunes = (7 - base.weekday()) % 7
+        primer_lunes = base + timedelta(days=dias_hasta_lunes)
+        if primer_lunes < dt_inicio:
+            primer_lunes += timedelta(days=7)
+        cur = primer_lunes
+        while cur <= dt_fin:
+            ticks.append(cur)
+            cur += timedelta(days=paso_dias)
+
+    elif granularidad == 'meses':
+        year, month = dt_inicio.year, dt_inicio.month
+        while True:
+            mes_dt = datetime(year, month, 1)
+            if mes_dt > dt_fin:
+                break
+            if mes_dt >= dt_inicio:
+                ticks.append(mes_dt)
+            month += 1
+            if month > 12:
+                month = 1
+                year += 1
+
+    elif granularidad == 'trimestres':
+        _MESES_TRIM = {1, 4, 7, 10}
+        year, month = dt_inicio.year, dt_inicio.month
+        while True:
+            dt_cand = datetime(year, month, 1)
+            if dt_cand > dt_fin:
+                break
+            if month in _MESES_TRIM and dt_cand >= dt_inicio:
+                ticks.append(dt_cand)
+            month += 1
+            if month > 12:
+                month = 1
+                year += 1
+
+    elif granularidad == 'semestres':
+        _MESES_SEM = {1, 7}
+        year, month = dt_inicio.year, dt_inicio.month
+        while True:
+            dt_cand = datetime(year, month, 1)
+            if dt_cand > dt_fin:
+                break
+            if month in _MESES_SEM and dt_cand >= dt_inicio:
+                ticks.append(dt_cand)
+            month += 1
+            if month > 12:
+                month = 1
+                year += 1
+
+    elif granularidad == 'anos':
+        year = dt_inicio.year
+        while True:
+            ano_dt = datetime(year, 1, 1)
+            if ano_dt > dt_fin:
+                break
+            if ano_dt >= dt_inicio:
+                ticks.append(ano_dt)
+            year += anos_paso
+
+    def _fmt(dt):
+        if granularidad in ('dias', 'dias2', 'semanas', 'quincenas'):
+            base = f"{dt.day} {MESES_ES[dt.month]}"
+            return f"{base} {str(dt.year)[2:]}" if cruza_anio else base
+        if granularidad in ('meses', 'trimestres', 'semestres'):
+            return f"{MESES_ES[dt.month]} {str(dt.year)[2:]}"
+        return str(dt.year)
+
+    # Spans con guarda del 8%
+    spans = []
+    ultima_pct = None
+    for tick_dt in ticks:
+        minutos_tick = int((tick_dt - dt_inicio).total_seconds() // 60)
+        pct = (minutos_tick / minutos_totales) * 100
+        if ultima_pct is not None and (pct - ultima_pct) < 8.0:
+            continue
+        spans.append(html.Span(
+            _fmt(tick_dt),
+            className='eje-fecha-label',
+            style={"left": f"{pct:.2f}%"}
+        ))
+        ultima_pct = pct
+
+    return spans
+
+
 from pages.graficar_layout import layout
 
 # Registra los callbacks en lugar de definir un nuevo Dash app
@@ -613,25 +814,8 @@ def register_callbacks(app):
         fig3_b = go.Figure()
         fig3_total = go.Figure()
 
-        # Obtener la fecha seleccionada en el slider
-        # CORREGIDO: Ahora slider_value es el valor numérico del slider, no el texto del tooltip
-        # Necesitamos convertirlo a fecha usando la misma lógica que update_slider_tooltip
-        fecha_slider = None
-        if fechas_seleccionadas and slider_value is not None:
-            try:
-                fechas_dt = sorted([datetime.fromisoformat(f) for f in fechas_seleccionadas])
-                fecha_inicial = fechas_dt[0]
-                fecha_calculada = fecha_inicial + timedelta(days=slider_value)
-                fecha_cercana = min(fechas_dt, key=lambda x: abs((x - fecha_calculada).days))
-                fecha_slider = fecha_cercana.strftime('%Y-%m-%dT%H:%M:%S')
-                # Buscar formato exacto en fechas_seleccionadas
-                for f in fechas_seleccionadas:
-                    if f.startswith(fecha_slider[:10]):
-                        fecha_slider = f
-                        break
-            except Exception as e:
-                print(f"Error calculando fecha_slider: {e}")
-                fecha_slider = fechas_seleccionadas[-1] if fechas_seleccionadas else None
+        fecha_slider = _lookup_fecha_slider(slider_value, fechas_seleccionadas) \
+            if fechas_seleccionadas and slider_value is not None else None
 
         # BLOQUE 1: Primero agregar todas las series no seleccionadas
         for fecha in fechas_seleccionadas:
@@ -984,35 +1168,147 @@ def register_callbacks(app):
         [Input("graficar-tubo", "data"),
          Input("slider_fechas", "value"),
          Input("fechas_multiselect", "value"),
-         Input("unidades_eje", "value")]
+         Input("unidades_eje", "value"),
+         Input("toggle-polar-3d", "value"),
+         Input("toggle-3d-campanas", "value")]
     )
-    def actualizar_grafico_polar(data, slider_value, fechas_seleccionadas, eje):
+    def actualizar_grafico_polar(data, slider_value, fechas_seleccionadas, eje, modo, alcance_camp):
         if not data or not fechas_seleccionadas or slider_value is None:
             fig_vacia = go.Figure()
             fig_vacia.update_layout(autosize=False, uirevision='constant')
             return fig_vacia
 
-        # Determinar la fecha seleccionada en el slider (misma lógica que actualizar_graficos)
-        fecha_slider = None
-        try:
-            fechas_dt = sorted([datetime.fromisoformat(f) for f in fechas_seleccionadas])
-            fecha_inicial = fechas_dt[0]
-            fecha_calculada = fecha_inicial + timedelta(days=slider_value)
-            fecha_cercana = min(fechas_dt, key=lambda x: abs((x - fecha_calculada).days))
-            fecha_slider = fecha_cercana.strftime('%Y-%m-%dT%H:%M:%S')
-            # Buscar formato exacto en fechas_seleccionadas
-            for f in fechas_seleccionadas:
-                if f.startswith(fecha_slider[:10]):
-                    fecha_slider = f
-                    break
-        except Exception as e:
-            print(f"Error calculando fecha_slider para polar: {e}")
-            fecha_slider = fechas_seleccionadas[-1] if fechas_seleccionadas else None
+        fecha_slider = _lookup_fecha_slider(slider_value, fechas_seleccionadas)
 
         if not fecha_slider or fecha_slider not in data or "calc" not in data[fecha_slider]:
             fig_vacia = go.Figure()
             fig_vacia.update_layout(autosize=False, uirevision='constant')
             return fig_vacia
+
+        if modo == "3d":
+            calc_data = data[fecha_slider]["calc"]
+
+            def _get_z(punto):
+                return punto.get(eje, punto.get("cota_abs", 0)) or 0
+
+            xs = [punto.get("desp_a", 0) or 0 for punto in calc_data]
+            ys = [punto.get("desp_b", 0) or 0 for punto in calc_data]
+            zs = [_get_z(punto) for punto in calc_data]
+
+            hover_3d = []
+            for punto in calc_data:
+                desp_a = punto.get("desp_a", 0) or 0
+                desp_b = punto.get("desp_b", 0) or 0
+                r = math.sqrt(desp_a ** 2 + desp_b ** 2)
+                theta = math.degrees(math.atan2(desp_b, desp_a))
+                prof = punto.get(eje, punto.get("cota_abs", "?"))
+                hover_3d.append(
+                    f"{eje}: {prof}<br>"
+                    f"A: {desp_a:.2f}  B: {desp_b:.2f}<br>"
+                    f"R: {r:.2f}  θ: {theta:.1f}°"
+                )
+
+            fig_3d = go.Figure()
+            fig_3d.add_trace(go.Scatter3d(
+                x=xs, y=ys, z=zs,
+                mode="markers+lines",
+                name=fecha_slider[:10],
+                marker=dict(size=4),
+                line=dict(width=4),
+                hovertext=hover_3d,
+                hoverinfo="text+name",
+            ))
+
+            if alcance_camp == "todas":
+                for fecha in fechas_seleccionadas:
+                    if fecha == fecha_slider:
+                        continue
+                    if fecha not in data or "calc" not in data[fecha]:
+                        continue
+                    fc_data = data[fecha]["calc"]
+                    xf = [p.get("desp_a", 0) or 0 for p in fc_data]
+                    yf = [p.get("desp_b", 0) or 0 for p in fc_data]
+                    zf = [_get_z(p) for p in fc_data]
+                    fig_3d.add_trace(go.Scatter3d(
+                        x=xf, y=yf, z=zf,
+                        mode="lines",
+                        name=fecha[:10],
+                        line=dict(width=1, color="#777777"),
+                        opacity=0.35,
+                        hoverinfo="name",
+                    ))
+
+            z_min = min(zs) if zs else 0
+            z_max = max(zs) if zs else 1
+            fig_3d.add_trace(go.Scatter3d(
+                x=[0, 0], y=[0, 0], z=[z_min, z_max],
+                mode="lines",
+                line=dict(dash="dash", color="#666666", width=1.5),
+                name="Referencia",
+                showlegend=False,
+            ))
+
+            z_base = z_max if eje == "depth" else z_min
+            fig_3d.add_trace(go.Scatter3d(
+                x=xs, y=ys, z=[z_base] * len(xs),
+                mode="lines",
+                line=dict(color="#888888", width=1),
+                opacity=0.4,
+                showlegend=False,
+                hoverinfo="skip",
+            ))
+
+            if eje == "depth":
+                z_title = "Profundidad (m)"
+                zaxis_autorange = "reversed"
+            elif eje == "cota_abs":
+                z_title = "Cota (m)"
+                zaxis_autorange = True
+            else:
+                z_title = "Índice"
+                zaxis_autorange = True
+
+            fig_3d.update_layout(
+                title=dict(
+                    text=f"<b>Deformada 3D — {fecha_slider[:10]}</b>",
+                    font=dict(family="Arial", size=16, color="#c1c2c5"),
+                    x=0, xanchor="left", yanchor="top"
+                ),
+                scene=dict(
+                    xaxis=dict(
+                        title="A (mm)",
+                        gridcolor="#555555",
+                        linecolor="#666666",
+                        tickfont=dict(color="#888888"),
+                        backgroundcolor="rgba(0,0,0,0)",
+                    ),
+                    yaxis=dict(
+                        title="B (mm)",
+                        gridcolor="#555555",
+                        linecolor="#666666",
+                        tickfont=dict(color="#888888"),
+                        backgroundcolor="rgba(0,0,0,0)",
+                    ),
+                    zaxis=dict(
+                        title=z_title,
+                        gridcolor="#555555",
+                        linecolor="#666666",
+                        tickfont=dict(color="#888888"),
+                        autorange=zaxis_autorange,
+                        backgroundcolor="rgba(0,0,0,0)",
+                    ),
+                    bgcolor="rgba(0,0,0,0)",
+                    aspectmode="manual",
+                    aspectratio=dict(x=1, y=1, z=1.6),
+                ),
+                margin=dict(l=30, r=30, t=50, b=30),
+                legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color="#c1c2c5", size=10)),
+                showlegend=True,
+                paper_bgcolor="rgba(0,0,0,0)",
+                autosize=False,
+                uirevision="constant",
+            )
+            return fig_3d
 
         fig_polar = go.Figure()
 
@@ -1091,6 +1387,19 @@ def register_callbacks(app):
 
         return fig_polar
 
+    _STYLE_CAMPANAS_VISIBLE = {"display": "inline-flex", "position": "absolute", "top": "5px", "left": "130px", "zIndex": 10}
+    _STYLE_CAMPANAS_HIDDEN = {"display": "none", "position": "absolute", "top": "5px", "left": "130px", "zIndex": 10}
+
+    @app.callback(
+        Output("toggle-3d-campanas", "style"),
+        Input("toggle-polar-3d", "value"),
+        prevent_initial_call=True
+    )
+    def toggle_3d_campanas_visibilidad(modo):
+        if modo == "3d":
+            return _STYLE_CAMPANAS_VISIBLE
+        return _STYLE_CAMPANAS_HIDDEN
+
     # Callback TEMPORAL de depuración: exportar cálculos del gráfico polar a Markdown
     @app.callback(
         Output("descargar-debug-polar", "data"),
@@ -1106,22 +1415,9 @@ def register_callbacks(app):
             return None
 
         import math as _math
-        from datetime import datetime as _dt
-        from datetime import timedelta as _td
 
-        # Determinar la fecha seleccionada por el slider
-        fecha_slider = None
-        try:
-            fechas_dt = sorted([_dt.fromisoformat(f) for f in fechas_seleccionadas])
-            fecha_inicial = fechas_dt[0]
-            fecha_calculada = fecha_inicial + _td(days=slider_value)
-            fecha_cercana = min(fechas_dt, key=lambda x: abs((x - fecha_calculada).days))
-            fecha_slider = fecha_cercana.strftime('%Y-%m-%dT%H:%M:%S')
-            for f in fechas_seleccionadas:
-                if f.startswith(fecha_slider[:10]):
-                    fecha_slider = f
-                    break
-        except Exception:
+        fecha_slider = _lookup_fecha_slider(slider_value, fechas_seleccionadas)
+        if not fecha_slider:
             fecha_slider = fechas_seleccionadas[-1]
 
         if not fecha_slider or fecha_slider not in data or "calc" not in data[fecha_slider]:
@@ -1197,43 +1493,24 @@ def register_callbacks(app):
         [Output('slider_fechas', 'min'),
          Output('slider_fechas', 'max'),
          Output('slider_fechas', 'marks'),
-         Output('slider_fechas', 'value')],
+         Output('slider_fechas', 'value'),
+         Output('slider_fechas_eje', 'children')],
         [Input('fechas_multiselect', 'value')]
     )
     def update_slider_dates(fechas):
         if not fechas:
-            return 0, 0, {}, 0
-
+            return 0, 0, {}, 0, []
         try:
-            # Obtener la lista de fechas del campo 'value' de cada elemento del diccionario
-            #fechas_str = [fecha['value'] for fecha in fechas if 'value' in fecha]
-            fechas_str = fechas
-
-            # Convertir las fechas a objetos datetime
-            fechas_dt = [datetime.fromisoformat(fecha) for fecha in fechas_str]
-
-            # Ordenar las fechas para asegurar que están en orden cronológico
-            fechas_dt.sort()
-
-            # Obtener la fecha inicial
-            fecha_inicial = fechas_dt[0]
-
-            # Crear el diccionario de marcas donde la clave es el número de días desde la fecha inicial
-            marks = {(fecha - fecha_inicial).days: fecha.strftime('%Y-%m-%d') for fecha in fechas_dt}
-
-            # Valor mínimo y máximo del slider
-            min_value = 0
-            max_value = (fechas_dt[-1] - fecha_inicial).days
-
-            # Establecer el valor inicial como el valor máximo (última fecha)
-            value = max_value
-
-            return min_value, max_value, marks, value
-
+            marks, mapa = _construir_marcas_slider(list(fechas))
+            claves = sorted(mapa.keys())
+            eje = _construir_eje_temporal(list(fechas))
+            return claves[0], claves[-1], marks, claves[-1], eje
+        except ValueError as e:
+            logger.error("Colisión en clave de minutos al construir slider: %s", e)
+            return 0, 0, {}, 0, []
         except Exception as e:
-            # Manejar cualquier error y devolver valores por defecto
-            print(f"Error al convertir las fechas: {e}")
-            return 0, 0, {}, 0
+            logger.error("Error al construir slider de fechas: %s", e)
+            return 0, 0, {}, 0, []
 
     """ update_slider_tooltip(value, fechas)**:
     - **Propósito**: Actualiza el tooltip del slider mostrando la fecha seleccionada.
@@ -1248,45 +1525,14 @@ def register_callbacks(app):
     def update_slider_tooltip(value, fechas):
         if not fechas:
             return "No hay fechas disponibles"
-
-        try:
-            # Obtener la lista de fechas del campo 'value' de cada elemento del diccionario
-            #fechas_str = [fecha['value'] for fecha in fechas if 'value' in fecha]
-            fechas_str = fechas
-
-            # Convertir las fechas a objetos datetime
-            fechas_dt = [datetime.fromisoformat(fecha) for fecha in fechas_str]
-
-            # Ordenar las fechas para asegurar que están en orden cronológico
-            fechas_dt.sort()
-
-            # Obtener la fecha inicial
-            fecha_inicial = fechas_dt[0]
-
-            # Calcular la fecha correspondiente al valor del slider
-            fecha_seleccionada = fecha_inicial + timedelta(days=value)
-
-            # Buscar la fecha más cercana a la fecha seleccionada
-            fecha_cercana = min(fechas_dt, key=lambda x: abs((x - fecha_seleccionada).days))
-
-            # Encontrar la fecha original del JSON que corresponde a esta fecha
-            # para mantener el formato ISO exacto (con 'T' y segundos)
-            # Crear un diccionario de datetime -> fecha_str para buscar eficientemente
-            fecha_iso_original = None
-            for fecha_str in fechas_str:
-                if datetime.fromisoformat(fecha_str) == fecha_cercana:
-                    fecha_iso_original = fecha_str
-                    break
-            
-            # Si no podemos encontrar la original, usar el formato ISO estándar
-            if not fecha_iso_original:
-                fecha_iso_original = fecha_cercana.strftime('%Y-%m-%dT%H:%M:%S')
-
-            return f"Fecha seleccionada: {fecha_iso_original}"
-
-        except Exception as e:
-            print(f"Error al actualizar el tooltip del slider: {e}")
+        fecha_iso = _lookup_fecha_slider(value, fechas)
+        if not fecha_iso:
             return "Error al actualizar la fecha"
+        try:
+            dt = datetime.fromisoformat(fecha_iso)
+            return f"Fecha seleccionada: {dt.strftime('%d/%m/%Y %H:%M')}"
+        except Exception:
+            return f"Fecha seleccionada: {fecha_iso}"
 
     # IMPRIMIR INFORME
     @app.callback(
@@ -1703,7 +1949,8 @@ def register_callbacks(app):
          State("ultimas_camp", "value"),
          State("cadencia_dias", "value"),
          State("leyenda_umbrales", "data"),
-         State("slider_fecha_tooltip", "children")],  # Estado añadido para capturar la fecha seleccionada
+         State("slider_fechas", "value"),
+         State("fechas_multiselect", "value")],
         prevent_initial_call=True
     )
     def generar_informe_pdf(n_clicks, plantilla_json, datos_tubo,
@@ -1713,7 +1960,7 @@ def register_callbacks(app):
                         valor_positivo_incremento, valor_negativo_incremento,
                         escala_temporal, valor_positivo_temporal, valor_negativo_temporal,
                         fecha_inicial, fecha_final, total_camp, ultimas_camp, cadencia_dias,
-                        leyenda_umbrales, slider_tooltip):
+                        leyenda_umbrales, slider_value, fechas_multiselect):
         """
         Genera un informe PDF basado en una plantilla JSON y los datos del tubo.
         """
@@ -1736,11 +1983,9 @@ def register_callbacks(app):
         try:
             plantilla_modificada = copy.deepcopy(plantilla_json)
 
-            # Parsear fecha seleccionada del tooltip
-            fecha_seleccionada = None
-            if slider_tooltip and "Fecha seleccionada: " in str(slider_tooltip):
-                parts = str(slider_tooltip).replace("Fecha seleccionada: ", "").strip()
-                fecha_seleccionada = parts.replace(" ", "T") if " " in parts else parts
+            # Resolver fecha seleccionada por lookup directo en el mapa de minutos
+            fecha_seleccionada = _lookup_fecha_slider(slider_value, fechas_multiselect)
+            _log.debug("[PDF-TRACE] fecha_seleccionada resuelta por lookup: %s", fecha_seleccionada)
             if not fecha_seleccionada and fecha_final:
                 fecha_seleccionada = fecha_final
 
